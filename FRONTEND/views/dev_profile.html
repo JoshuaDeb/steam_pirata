@@ -1,1209 +1,990 @@
 <!DOCTYPE html>
 <html lang="es" data-bs-theme="dark">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel del desarrollador · SteamPirata</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del desarrollador · SteamPirata</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-
-  <style>
-    :root,
-    [data-bs-theme="dark"] {
-      --sp-fondo: #0A0D16;
-      --sp-superficie: #111626;
-      --sp-superficie-2: #141B30;
-      --sp-segmentado: #141A2A;
-      --sp-borde: #1D2438;
-      --sp-borde-fuerte: #262E46;
-      --sp-texto: #E8EBF3;
-      --sp-texto-2: #B5BDD2;
-      --sp-tenue: #8E97AF;
-      --sp-acento: #3F6BFF;
-      --sp-acento-hover: #5A80FF;
-      --sp-banner: #1A2C6E;
-      --sp-banner-marca: #22388A;
-      --sp-peligro: #FF9494;
-      --sp-peligro-fuerte: #C2285A;
-      --sp-exito: #7EE2B8;
-
-      --bs-body-bg: var(--sp-fondo);
-      --bs-body-color: var(--sp-texto);
-      --bs-body-font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-      --bs-secondary-color: var(--sp-tenue);
-      --bs-border-color: var(--sp-borde-fuerte);
-      --bs-link-color: #93B1FF;
-      --bs-link-color-rgb: 147, 177, 255;
-      --bs-link-hover-color: #CEDBFF;
-      --bs-link-hover-color-rgb: 206, 219, 255;
-      --bs-primary: var(--sp-acento);
-      --bs-primary-rgb: 63, 107, 255;
-      --bs-danger: var(--sp-peligro);
-      --bs-danger-rgb: 255, 148, 148;
-      --bs-form-invalid-color: var(--sp-peligro);
-      --bs-form-invalid-border-color: var(--sp-peligro);
-      color-scheme: dark;
-    }
-    body { background: var(--sp-fondo); color: var(--sp-texto); min-height: 100vh; }
-
-    .btn {
-      --bs-btn-font-size: 14px;
-      --bs-btn-font-weight: 600;
-      --bs-btn-border-radius: 10px;
-      --bs-btn-padding-x: 16px;
-      min-height: 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .btn-primary {
-      --bs-btn-bg: var(--sp-acento);
-      --bs-btn-border-color: var(--sp-acento);
-      --bs-btn-hover-bg: var(--sp-acento-hover);
-      --bs-btn-hover-border-color: var(--sp-acento-hover);
-      --bs-btn-active-bg: #3358D9;
-      --bs-btn-active-border-color: #3358D9;
-      --bs-btn-font-weight: 700;
-      background-image: none;
-    }
-    .btn-outline-secondary { color: var(--bs-btn-color); }
-    .btn-outline-secondary:hover { color: var(--bs-btn-hover-color); }
-    .btn-outline-secondary {
-      --bs-btn-color: var(--sp-texto);
-      --bs-btn-border-color: var(--sp-borde-fuerte);
-      --bs-btn-hover-color: #FFFFFF;
-      --bs-btn-hover-bg: transparent;
-      --bs-btn-hover-border-color: var(--sp-tenue);
-      --bs-btn-active-color: #FFFFFF;
-      --bs-btn-active-bg: var(--sp-superficie-2);
-      --bs-btn-active-border-color: var(--sp-tenue);
-      min-height: 44px;
-    }
-    .btn-link {
-      --bs-btn-color: var(--sp-texto-2);
-      --bs-btn-hover-color: var(--sp-texto);
-      --bs-btn-font-weight: 500;
-      text-decoration: none;
-    }
-    .btn-link.text-danger { font-weight: 600; }
-    .btn-link.text-danger:hover { text-decoration: underline; text-underline-offset: 4px; }
-    .btn-link.text-primary { color: #93B1FF !important; font-weight: 700; }
-    .btn-link.text-primary:hover { color: #CEDBFF !important; }
-    .btn-danger {
-      --bs-btn-bg: var(--sp-peligro-fuerte);
-      --bs-btn-border-color: var(--sp-peligro-fuerte);
-      --bs-btn-hover-bg: #A8204C;
-      --bs-btn-hover-border-color: #A8204C;
-      --bs-btn-font-weight: 700;
-      --bs-btn-color: #FFFFFF;
-      --bs-btn-hover-color: #FFFFFF;
-      background-image: none;
-    }
-    .btn-grande { min-height: 48px; border-radius: 14px; padding-inline: 18px; }
-
-    .topbar {
-      --bs-navbar-padding-y: 0;
-      --bs-navbar-color: var(--sp-tenue);
-      --bs-navbar-hover-color: var(--sp-texto);
-      --bs-navbar-active-color: #FFFFFF;
-      --bs-navbar-brand-color: var(--sp-texto);
-      --bs-navbar-brand-hover-color: #FFFFFF;
-      --bs-navbar-nav-link-padding-x: 0;
-      --bs-navbar-toggler-border-color: var(--sp-borde-fuerte);
-      min-height: 64px;
-    }
-    .topbar > .container-fluid { min-height: 64px; padding-inline: 32px; }
-    .topbar .navbar-brand { font-weight: 800; font-size: 18px; }
-    .topbar .navbar-nav { gap: 24px; }
-    .topbar .nav-link { min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 500; }
-    .topbar .nav-link.active { font-weight: 700; }
-    .usuario-nav { display: flex; align-items: center; gap: 10px; color: var(--sp-texto); text-decoration: none; font-size: 14px; font-weight: 700; }
-    .usuario-nav:hover { color: #FFFFFF; }
-
-    .avatar {
-      border-radius: 50%;
-      background: var(--sp-acento);
-      color: var(--sp-fondo);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      flex-shrink: 0;
-    }
-    .avatar-sm { width: 36px; height: 36px; font-size: 13px; }
-    .avatar-lg { width: 112px; height: 112px; font-size: 38px; border: 6px solid var(--sp-fondo); }
-    .usuario-nav:hover .avatar { box-shadow: 0 0 0 3px var(--sp-fondo), 0 0 0 5px var(--sp-acento); }
-
-    .banner-wrap { padding: 0 32px; }
-    .banner { position: relative; height: 200px; border-radius: 24px; overflow: hidden; background: var(--sp-banner); }
-    .banner-marca {
-      position: absolute;
-      right: -10px;
-      bottom: -70px;
-      font-size: 300px;
-      font-weight: 800;
-      letter-spacing: -0.06em;
-      line-height: 1;
-      color: var(--sp-banner-marca);
-      white-space: nowrap;
-      user-select: none;
-    }
-
-    .contenido {
-      position: relative;
-      max-width: 860px;
-      margin: -56px auto 0;
-      padding: 0 24px 48px;
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
-    }
-    .titulo-perfil { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.03em; }
-    .perfil-meta { font-size: 14px; color: var(--sp-tenue); }
-    .perfil-meta strong { color: var(--sp-texto); }
-
-    .segmentado {
-      --bs-nav-pills-border-radius: 10px;
-      --bs-nav-pills-link-active-bg: var(--sp-texto);
-      --bs-nav-pills-link-active-color: var(--sp-fondo);
-      --bs-nav-link-color: var(--sp-tenue);
-      --bs-nav-link-hover-color: var(--sp-texto);
-      --bs-nav-link-font-weight: 600;
-      --bs-nav-link-padding-x: 18px;
-      --bs-nav-link-padding-y: 0;
-      gap: 4px;
-      padding: 4px;
-      border-radius: 14px;
-      background: var(--sp-segmentado);
-      flex-wrap: nowrap;
-    }
-    .segmentado .nav-link { min-height: 40px; font-size: 14px; display: flex; align-items: center; white-space: nowrap; }
-    .segmentado .nav-link.active { font-weight: 700; }
-
-    .tarjeta.list-group {
-      --bs-list-group-bg: var(--sp-superficie);
-      --bs-list-group-color: var(--sp-texto);
-      --bs-list-group-border-color: var(--sp-borde);
-      --bs-list-group-border-radius: 20px;
-      --bs-list-group-item-padding-x: 22px;
-      --bs-list-group-item-padding-y: 16px;
-    }
-    .fila-label { font-size: 13px; color: var(--sp-tenue); }
-    .fila-valor { font-weight: 600; overflow-wrap: anywhere; }
-    .fila-meta { font-size: 13px; color: var(--sp-tenue); }
-    .form-edicion { margin-top: 16px; padding: 16px; border-radius: 14px; background: var(--sp-superficie-2); }
-
-    .form-label { font-size: 13px; color: var(--sp-tenue); margin-bottom: 6px; }
-    .form-control,
-    .form-select {
-      --bs-border-radius: 10px;
-      min-height: 44px;
-      font-size: 15px;
-      color: var(--sp-texto);
-      background-color: var(--sp-fondo);
-      border-color: var(--sp-borde-fuerte);
-    }
-    .form-control:focus,
-    .form-select:focus {
-      color: var(--sp-texto);
-      background-color: var(--sp-fondo);
-      border-color: var(--sp-acento);
-      box-shadow: 0 0 0 3px rgba(63, 107, 255, .25);
-    }
-    textarea.form-control { min-height: 72px; }
-    .form-text { color: var(--sp-tenue); font-size: 12px; }
-
-    .alert-success {
-      --bs-alert-bg: #0F2A22;
-      --bs-alert-border-color: #1F5A45;
-      --bs-alert-color: var(--sp-exito);
-      --bs-alert-border-radius: 12px;
-      font-size: 14px;
-    }
-
-    .portada {
-      width: 48px;
-      height: 64px;
-      border-radius: 8px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 15px;
-      color: rgba(255, 255, 255, .85);
-    }
-    .portada-lg { width: 120px; height: 160px; border-radius: 16px; font-size: 34px; }
-    .portada-1 { background: #5A2E52; }
-    .portada-2 { background: #2E5A44; }
-    .portada-3 { background: #6B4A1E; }
-    .portada-4 { background: #3A3F4F; }
-    .retirado .portada, .portada-retirada { filter: grayscale(1); opacity: .6; }
-    .retirado .juego-titulo, .retirado .juego-precio { color: var(--sp-tenue); }
-    .juego-info { flex: 1; min-width: 0; }
-    .juego-titulo { font-weight: 700; overflow-wrap: anywhere; }
-    .juego-precio { font-weight: 700; white-space: nowrap; }
-
-    .boton-archivo { position: relative; cursor: pointer; white-space: nowrap; }
-    .boton-archivo:focus-within { box-shadow: 0 0 0 3px rgba(63, 107, 255, .35); }
-
-    .mini-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      background: var(--sp-fondo);
-      border: 1px solid var(--sp-borde);
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .chips { --bs-nav-pills-border-radius: 999px; gap: 8px; justify-content: center; }
-    .chips .nav-link {
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 14px 0 6px;
-      border: 1px solid var(--sp-borde-fuerte);
-      color: var(--sp-texto-2);
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .chips .nav-link:hover { color: var(--sp-texto); border-color: var(--sp-tenue); }
-    .chips .nav-link.active { background: var(--sp-superficie-2); border-color: var(--sp-acento); color: var(--sp-texto); font-weight: 700; }
-    .chips .portada { width: 32px; height: 32px; border-radius: 50%; font-size: 11px; }
-
-    .dlc-agregar {
-      --bs-btn-color: #93B1FF;
-      --bs-btn-hover-color: #CEDBFF;
-      font-weight: 700;
-      min-height: 64px;
-      padding-inline: 22px;
-      justify-content: flex-start;
-      gap: 12px;
-      width: 100%;
-    }
-    .dlc-agregar .mas {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 1px dashed var(--sp-acento);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .vacio { padding: 32px 22px !important; text-align: center; color: var(--sp-tenue); font-size: 14px; }
-    .nota-centro { margin: 12px 0 0; text-align: center; color: var(--sp-tenue); font-size: 13px; }
-    .estado-publicado { color: var(--sp-exito); font-weight: 700; }
-    .estado-retirado { color: var(--sp-peligro); font-weight: 700; }
-
-    .portada-preview {
-      width: 72px;
-      height: 96px;
-      border-radius: 12px;
-      border: 1px dashed var(--sp-acento);
-      background: var(--sp-fondo);
-      color: #93B1FF;
-      font-size: 11px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .modal {
-      --bs-modal-bg: var(--sp-superficie);
-      --bs-modal-color: var(--sp-texto);
-      --bs-modal-border-color: var(--sp-borde-fuerte);
-      --bs-modal-border-radius: 20px;
-      --bs-modal-inner-border-radius: 19px;
-      --bs-modal-padding: 24px;
-      --bs-modal-header-padding: 24px 24px 0;
-      --bs-modal-header-border-width: 0;
-      --bs-modal-footer-border-width: 0;
-    }
-    .modal-angosto { --bs-modal-width: 440px; }
-    .modal-medio { --bs-modal-width: 560px; }
-    .modal-title { font-size: 22px; font-weight: 800; }
-    .modal-footer { padding-top: 0; }
-    .modal-backdrop { --bs-backdrop-bg: #06040E; --bs-backdrop-opacity: .75; }
-    .modal .tarjeta.list-group { --bs-list-group-bg: var(--sp-fondo); }
-
-    @media (max-width: 767.98px) {
-      .topbar > .container-fluid { padding-inline: 16px; }
-      .topbar .navbar-nav { gap: 0; padding-bottom: 8px; }
-      .banner-wrap { padding: 0 16px; }
-      .banner { height: 150px; }
-      .banner-marca { font-size: 180px; bottom: -40px; }
-      .contenido { padding: 0 16px 40px; }
-      .segmentado { width: 100%; }
-      .segmentado .nav-item { flex: 1; }
-      .segmentado .nav-link { justify-content: center; width: 100%; --bs-nav-link-padding-x: 8px; }
-      .btn-grande { width: 100%; }
-      .tarjeta.list-group { --bs-list-group-item-padding-x: 16px; }
-      .juego-info { flex: 1 1 calc(100% - 64px); }
-    }
-  </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="../assets/user_profile.css"></style>
 </head>
+
 <body>
 
-  <header>
-    <nav class="navbar navbar-expand-md topbar" aria-label="Principal">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="catalogo.html">SteamPirata</a>
+    <header>
+        <nav class="navbar navbar-expand-md topbar" aria-label="Principal">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="catalogo.html">SteamPirata</a>
 
-        <div class="d-flex align-items-center gap-3 order-md-last">
-          <a class="btn btn-link px-0" href="index.html">Cerrar sesión</a>
-          <a class="usuario-nav" href="perfil.html" title="Mi perfil">
-            <span class="d-none d-lg-inline">PixelStudio</span>
-            <span class="avatar avatar-sm" aria-hidden="true">PS</span>
-            <span class="visually-hidden">Ir a mi perfil</span>
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
-                  aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+                <div class="d-flex align-items-center gap-3 order-md-last">
+                    <a class="btn btn-link px-0" href="index.html">Cerrar sesión</a>
+                    <a class="usuario-nav" href="perfil.html" title="Mi perfil">
+                        <span class="d-none d-lg-inline">PixelStudio</span>
+                        <span class="avatar avatar-sm" aria-hidden="true">PS</span>
+                        <span class="visually-hidden">Ir a mi perfil</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false"
+                        aria-label="Abrir menú">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse justify-content-center" id="menuPrincipal">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="panel.html">Panel</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="perfil.html">Perfil</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="banner-wrap">
+        <div class="banner" aria-hidden="true">
+            <span class="banner-marca">PixelStudio</span>
         </div>
-
-        <div class="collapse navbar-collapse justify-content-center" id="menuPrincipal">
-          <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="panel.html">Panel</a></li>
-            <li class="nav-item"><a class="nav-link" href="perfil.html">Perfil</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-
-  <div class="banner-wrap">
-    <div class="banner" aria-hidden="true">
-      <span class="banner-marca">PixelStudio</span>
-    </div>
-  </div>
-
-  <main class="contenido">
-
-    <section class="d-flex flex-column align-items-center text-center gap-2">
-      <div class="avatar avatar-lg" aria-hidden="true">PS</div>
-      <h1 class="titulo-perfil mt-1">Panel del desarrollador</h1>
-      <p class="perfil-meta d-flex flex-wrap justify-content-center align-items-center gap-2 mb-0">
-        <span>PixelStudio</span>
-        <span aria-hidden="true">·</span>
-        <strong>3 publicados · 3 DLC</strong>
-      </p>
-    </section>
-
-    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
-      <ul class="nav nav-pills segmentado" role="tablist" aria-label="Secciones del panel">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tabPublicados" type="button" role="tab"
-                  data-bs-toggle="pill" data-bs-target="#panelPublicados" aria-controls="panelPublicados" aria-selected="true">Publicados</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tabDLC" type="button" role="tab"
-                  data-bs-toggle="pill" data-bs-target="#panelDLC" aria-controls="panelDLC" aria-selected="false">DLC</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tabRetirados" type="button" role="tab"
-                  data-bs-toggle="pill" data-bs-target="#panelRetirados" aria-controls="panelRetirados" aria-selected="false">Retirados</button>
-        </li>
-      </ul>
-      <button class="btn btn-primary btn-grande" type="button" data-bs-toggle="modal" data-bs-target="#modalPublicar">+ Publicar videojuego</button>
     </div>
 
-    <div class="tab-content">
+    <main class="contenido">
 
-      <section class="tab-pane fade show active" id="panelPublicados" role="tabpanel" aria-labelledby="tabPublicados" tabindex="0">
+        <section class="d-flex flex-column align-items-center text-center gap-2">
+            <div class="avatar avatar-lg" aria-hidden="true">PS</div>
+            <h1 class="titulo-perfil mt-1">Panel del desarrollador</h1>
+            <p class="perfil-meta d-flex flex-wrap justify-content-center align-items-center gap-2 mb-0">
+                <span>PixelStudio</span>
+                <span aria-hidden="true">·</span>
+                <strong>3 publicados · 3 DLC</strong>
+            </p>
+        </section>
 
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-          "Hollow Keep" se actualizó correctamente.
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+            <ul class="nav nav-pills segmentado" role="tablist" aria-label="Secciones del panel">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tabPublicados" type="button" role="tab" data-bs-toggle="pill"
+                        data-bs-target="#panelPublicados" aria-controls="panelPublicados"
+                        aria-selected="true">Publicados</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tabDLC" type="button" role="tab" data-bs-toggle="pill"
+                        data-bs-target="#panelDLC" aria-controls="panelDLC" aria-selected="false">DLC</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tabRetirados" type="button" role="tab" data-bs-toggle="pill"
+                        data-bs-target="#panelRetirados" aria-controls="panelRetirados"
+                        aria-selected="false">Retirados</button>
+                </li>
+            </ul>
+            <button class="btn btn-primary btn-grande" type="button" data-bs-toggle="modal"
+                data-bs-target="#modalPublicar">+
+                Publicar videojuego</button>
         </div>
-
-        <div class="list-group tarjeta">
-
-          <div class="list-group-item">
-            <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
-              <div class="portada portada-1" aria-hidden="true">ND</div>
-              <div class="juego-info d-flex flex-column">
-                <span class="juego-titulo">Nebula Drift</span>
-                <span class="fila-meta">Carreras · E · 2 DLC</span>
-              </div>
-              <span class="juego-precio">40 créditos</span>
-              <div class="d-flex gap-2 ms-auto ms-md-0">
-                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalDetalle1">Ver</button>
-                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego1"
-                        aria-expanded="false" aria-controls="editarJuego1">Editar</button>
-              </div>
-            </div>
-
-            <div class="collapse" id="editarJuego1">
-              <form class="form-edicion d-flex flex-column gap-3" novalidate>
-                <div class="d-flex align-items-center gap-3">
-                  <div class="portada portada-1" aria-hidden="true">ND</div>
-                  <div class="juego-info d-flex flex-column">
-                    <span class="fila-label">Editando</span>
-                    <strong>Nebula Drift</strong>
-                  </div>
-                  <label class="btn btn-outline-secondary boton-archivo">
-                    Cambiar portada
-                    <input class="visually-hidden" type="file" accept="image/png, image/jpeg, image/webp">
-                  </label>
-                </div>
-                <div class="row g-3">
-                  <div class="col-12">
-                    <label class="form-label" for="titulo1">Título</label>
-                    <input class="form-control" type="text" id="titulo1" value="Nebula Drift" maxlength="60">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="genero1">Género</label>
-                    <select class="form-select" id="genero1">
-                      <option>Acción</option>
-                      <option>Aventura</option>
-                      <option selected>Carreras</option>
-                      <option>Deportes</option>
-                      <option>Estrategia</option>
-                      <option>RPG</option>
-                      <option>Simulación</option>
-                      <option>Terror</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="clasificacion1">Clasificación de edad</label>
-                    <select class="form-select" id="clasificacion1">
-                      <option selected>E · Todos</option>
-                      <option>T · +13</option>
-                      <option>M · +17</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="precio1">Precio en créditos</label>
-                    <input class="form-control" type="number" id="precio1" value="40" min="1" step="1">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="specs1">Especificaciones</label>
-                    <input class="form-control" type="text" id="specs1" value="Windows 10 · Intel i5 · 8 GB RAM · 20 GB">
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label" for="descripcion1">Descripción</label>
-                    <textarea class="form-control" id="descripcion1" rows="2">Carreras antigravedad a través de cinturones de asteroides.</textarea>
-                  </div>
-                </div>
-                <div class="d-flex flex-column gap-2">
-                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                    <span class="fila-label">DLC de este juego</span>
-                    <span class="fila-meta">Se administran en la pestaña DLC</span>
-                  </div>
-                  <div class="mini-item"><span>Cinturón de Orión</span><span class="fila-meta">Expansión</span></div>
-                  <div class="mini-item"><span>Pack de naves clásicas</span><span class="fila-meta">Vehículos</span></div>
-                </div>
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                  <button class="btn btn-link text-danger px-0" type="button" data-bs-toggle="modal" data-bs-target="#modalRetirar">Retirar del catálogo</button>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego1">Cancelar</button>
-                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego1">Guardar</button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <div class="list-group-item">
-            <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
-              <div class="portada portada-2" aria-hidden="true">HK</div>
-              <div class="juego-info d-flex flex-column">
-                <span class="juego-titulo">Hollow Keep</span>
-                <span class="fila-meta">Aventura · T · 1 DLC</span>
-              </div>
-              <span class="juego-precio">60 créditos</span>
-              <div class="d-flex gap-2 ms-auto ms-md-0">
-                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalDetalle2">Ver</button>
-                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego2"
-                        aria-expanded="false" aria-controls="editarJuego2">Editar</button>
-              </div>
-            </div>
-
-            <div class="collapse" id="editarJuego2">
-              <form class="form-edicion d-flex flex-column gap-3" novalidate>
-                <div class="d-flex align-items-center gap-3">
-                  <div class="portada portada-2" aria-hidden="true">HK</div>
-                  <div class="juego-info d-flex flex-column">
-                    <span class="fila-label">Editando</span>
-                    <strong>Hollow Keep</strong>
-                  </div>
-                  <label class="btn btn-outline-secondary boton-archivo">
-                    Cambiar portada
-                    <input class="visually-hidden" type="file" accept="image/png, image/jpeg, image/webp">
-                  </label>
-                </div>
-                <div class="row g-3">
-                  <div class="col-12">
-                    <label class="form-label" for="titulo2">Título</label>
-                    <input class="form-control" type="text" id="titulo2" value="Hollow Keep" maxlength="60">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="genero2">Género</label>
-                    <select class="form-select" id="genero2">
-                      <option>Acción</option>
-                      <option selected>Aventura</option>
-                      <option>Carreras</option>
-                      <option>Deportes</option>
-                      <option>Estrategia</option>
-                      <option>RPG</option>
-                      <option>Simulación</option>
-                      <option>Terror</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="clasificacion2">Clasificación de edad</label>
-                    <select class="form-select" id="clasificacion2">
-                      <option>E · Todos</option>
-                      <option selected>T · +13</option>
-                      <option>M · +17</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="precio2">Precio en créditos</label>
-                    <input class="form-control" type="number" id="precio2" value="60" min="1" step="1">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="specs2">Especificaciones</label>
-                    <input class="form-control" type="text" id="specs2" value="Windows 10 · 8 GB RAM · 15 GB">
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label" for="descripcion2">Descripción</label>
-                    <textarea class="form-control" id="descripcion2" rows="2">Explora un castillo en ruinas lleno de secretos.</textarea>
-                  </div>
-                </div>
-                <div class="d-flex flex-column gap-2">
-                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                    <span class="fila-label">DLC de este juego</span>
-                    <span class="fila-meta">Se administran en la pestaña DLC</span>
-                  </div>
-                  <div class="mini-item"><span>Las criptas olvidadas</span><span class="fila-meta">Expansión</span></div>
-                </div>
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                  <button class="btn btn-link text-danger px-0" type="button" data-bs-toggle="modal" data-bs-target="#modalRetirar">Retirar del catálogo</button>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego2">Cancelar</button>
-                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego2">Guardar</button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <div class="list-group-item">
-            <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
-              <div class="portada portada-3" aria-hidden="true">PH</div>
-              <div class="juego-info d-flex flex-column">
-                <span class="juego-titulo">Pixel Harvest</span>
-                <span class="fila-meta">Simulación · E · Sin DLC</span>
-              </div>
-              <span class="juego-precio">25 créditos</span>
-              <div class="d-flex gap-2 ms-auto ms-md-0">
-                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalDetalle3">Ver</button>
-                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego3"
-                        aria-expanded="false" aria-controls="editarJuego3">Editar</button>
-              </div>
-            </div>
-
-            <div class="collapse" id="editarJuego3">
-              <form class="form-edicion d-flex flex-column gap-3" novalidate>
-                <div class="d-flex align-items-center gap-3">
-                  <div class="portada portada-3" aria-hidden="true">PH</div>
-                  <div class="juego-info d-flex flex-column">
-                    <span class="fila-label">Editando</span>
-                    <strong>Pixel Harvest</strong>
-                  </div>
-                  <label class="btn btn-outline-secondary boton-archivo">
-                    Cambiar portada
-                    <input class="visually-hidden" type="file" accept="image/png, image/jpeg, image/webp">
-                  </label>
-                </div>
-                <div class="row g-3">
-                  <div class="col-12">
-                    <label class="form-label" for="titulo3">Título</label>
-                    <input class="form-control" type="text" id="titulo3" value="Pixel Harvest" maxlength="60">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="genero3">Género</label>
-                    <select class="form-select" id="genero3">
-                      <option>Acción</option>
-                      <option>Aventura</option>
-                      <option>Carreras</option>
-                      <option>Deportes</option>
-                      <option>Estrategia</option>
-                      <option>RPG</option>
-                      <option selected>Simulación</option>
-                      <option>Terror</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="clasificacion3">Clasificación de edad</label>
-                    <select class="form-select" id="clasificacion3">
-                      <option selected>E · Todos</option>
-                      <option>T · +13</option>
-                      <option>M · +17</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="precio3">Precio en créditos</label>
-                    <input class="form-control" type="number" id="precio3" value="25" min="1" step="1">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="specs3">Especificaciones</label>
-                    <input class="form-control" type="text" id="specs3" value="Windows 10 · 4 GB RAM · 2 GB">
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label" for="descripcion3">Descripción</label>
-                    <textarea class="form-control" id="descripcion3" rows="2">Cultiva, cosecha y construye tu granja pixelada.</textarea>
-                  </div>
-                </div>
-                <div class="d-flex flex-column gap-2">
-                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                    <span class="fila-label">DLC de este juego</span>
-                    <span class="fila-meta">Se administran en la pestaña DLC</span>
-                  </div>
-                  <div class="mini-item"><span class="fila-meta">Sin DLC todavía</span></div>
-                </div>
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                  <button class="btn btn-link text-danger px-0" type="button" data-bs-toggle="modal" data-bs-target="#modalRetirar">Retirar del catálogo</button>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego3">Cancelar</button>
-                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editarJuego3">Guardar</button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        <p class="nota-centro">Usa <strong>Ver</strong> para consultar un juego o <strong>Editar</strong> para modificarlo.</p>
-      </section>
-
-      <section class="tab-pane fade" id="panelDLC" role="tabpanel" aria-labelledby="tabDLC" tabindex="0">
-
-        <ul class="nav nav-pills chips flex-wrap mb-3" role="tablist" aria-label="Elegir videojuego">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="chipJuego1" type="button" role="tab"
-                    data-bs-toggle="pill" data-bs-target="#dlcJuego1" aria-controls="dlcJuego1" aria-selected="true">
-              <span class="portada portada-1" aria-hidden="true">ND</span>Nebula Drift · 2
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="chipJuego2" type="button" role="tab"
-                    data-bs-toggle="pill" data-bs-target="#dlcJuego2" aria-controls="dlcJuego2" aria-selected="false">
-              <span class="portada portada-2" aria-hidden="true">HK</span>Hollow Keep · 1
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="chipJuego3" type="button" role="tab"
-                    data-bs-toggle="pill" data-bs-target="#dlcJuego3" aria-controls="dlcJuego3" aria-selected="false">
-              <span class="portada portada-3" aria-hidden="true">PH</span>Pixel Harvest · 0
-            </button>
-          </li>
-        </ul>
 
         <div class="tab-content">
 
-          <div class="tab-pane fade show active" id="dlcJuego1" role="tabpanel" aria-labelledby="chipJuego1" tabindex="0">
-            <div class="list-group tarjeta">
+            <section class="tab-pane fade show active" id="panelPublicados" role="tabpanel"
+                aria-labelledby="tabPublicados" tabindex="0">
 
-              <div class="list-group-item">
-                <div class="d-flex align-items-center justify-content-between gap-3">
-                  <div class="d-flex flex-column">
-                    <span class="fila-label">Expansión</span>
-                    <span class="fila-valor">Cinturón de Orión</span>
-                    <span class="fila-meta">3 pistas nuevas en un cinturón de asteroides.</span>
-                  </div>
-                  <div class="d-flex gap-1 flex-shrink-0">
-                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc1"
-                            aria-expanded="false" aria-controls="editarDlc1">Editar</button>
-                    <button class="btn btn-link text-danger" type="button" data-bs-toggle="modal" data-bs-target="#modalEliminarDlc">Eliminar</button>
-                  </div>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    "Hollow Keep" se actualizó correctamente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
-                <div class="collapse" id="editarDlc1">
-                  <form class="form-edicion d-flex flex-column gap-3" novalidate>
+
+                <div class="list-group tarjeta">
+
+                    <div class="list-group-item">
+                        <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
+                            <div class="portada portada-1" aria-hidden="true">ND</div>
+                            <div class="juego-info d-flex flex-column">
+                                <span class="juego-titulo">Nebula Drift</span>
+                                <span class="fila-meta">Carreras · E · 2 DLC</span>
+                            </div>
+                            <span class="juego-precio">40 créditos</span>
+                            <div class="d-flex gap-2 ms-auto ms-md-0">
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalle1">Ver</button>
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#editarJuego1" aria-expanded="false"
+                                    aria-controls="editarJuego1">Editar</button>
+                            </div>
+                        </div>
+
+                        <div class="collapse" id="editarJuego1">
+                            <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="portada portada-1" aria-hidden="true">ND</div>
+                                    <div class="juego-info d-flex flex-column">
+                                        <span class="fila-label">Editando</span>
+                                        <strong>Nebula Drift</strong>
+                                    </div>
+                                    <label class="btn btn-outline-secondary boton-archivo">
+                                        Cambiar portada
+                                        <input class="visually-hidden" type="file"
+                                            accept="image/png, image/jpeg, image/webp">
+                                    </label>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label" for="titulo1">Título</label>
+                                        <input class="form-control" type="text" id="titulo1" value="Nebula Drift"
+                                            maxlength="60">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="genero1">Género</label>
+                                        <select class="form-select" id="genero1">
+                                            <option>Acción</option>
+                                            <option>Aventura</option>
+                                            <option selected>Carreras</option>
+                                            <option>Deportes</option>
+                                            <option>Estrategia</option>
+                                            <option>RPG</option>
+                                            <option>Simulación</option>
+                                            <option>Terror</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="clasificacion1">Clasificación de edad</label>
+                                        <select class="form-select" id="clasificacion1">
+                                            <option selected>E · Todos</option>
+                                            <option>T · +13</option>
+                                            <option>M · +17</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="precio1">Precio en créditos</label>
+                                        <input class="form-control" type="number" id="precio1" value="40" min="1"
+                                            step="1">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="specs1">Especificaciones</label>
+                                        <input class="form-control" type="text" id="specs1"
+                                            value="Windows 10 · Intel i5 · 8 GB RAM · 20 GB">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label" for="descripcion1">Descripción</label>
+                                        <textarea class="form-control" id="descripcion1"
+                                            rows="2">Carreras antigravedad a través de cinturones de asteroides.</textarea>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                        <span class="fila-label">DLC de este juego</span>
+                                        <span class="fila-meta">Se administran en la pestaña DLC</span>
+                                    </div>
+                                    <div class="mini-item"><span>Cinturón de Orión</span><span
+                                            class="fila-meta">Expansión</span></div>
+                                    <div class="mini-item"><span>Pack de naves clásicas</span><span
+                                            class="fila-meta">Vehículos</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <button class="btn btn-link text-danger px-0" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#modalRetirar">Retirar del catálogo</button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#editarJuego1">Cancelar</button>
+                                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#editarJuego1">Guardar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
+                            <div class="portada portada-2" aria-hidden="true">HK</div>
+                            <div class="juego-info d-flex flex-column">
+                                <span class="juego-titulo">Hollow Keep</span>
+                                <span class="fila-meta">Aventura · T · 1 DLC</span>
+                            </div>
+                            <span class="juego-precio">60 créditos</span>
+                            <div class="d-flex gap-2 ms-auto ms-md-0">
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalle2">Ver</button>
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#editarJuego2" aria-expanded="false"
+                                    aria-controls="editarJuego2">Editar</button>
+                            </div>
+                        </div>
+
+                        <div class="collapse" id="editarJuego2">
+                            <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="portada portada-2" aria-hidden="true">HK</div>
+                                    <div class="juego-info d-flex flex-column">
+                                        <span class="fila-label">Editando</span>
+                                        <strong>Hollow Keep</strong>
+                                    </div>
+                                    <label class="btn btn-outline-secondary boton-archivo">
+                                        Cambiar portada
+                                        <input class="visually-hidden" type="file"
+                                            accept="image/png, image/jpeg, image/webp">
+                                    </label>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label" for="titulo2">Título</label>
+                                        <input class="form-control" type="text" id="titulo2" value="Hollow Keep"
+                                            maxlength="60">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="genero2">Género</label>
+                                        <select class="form-select" id="genero2">
+                                            <option>Acción</option>
+                                            <option selected>Aventura</option>
+                                            <option>Carreras</option>
+                                            <option>Deportes</option>
+                                            <option>Estrategia</option>
+                                            <option>RPG</option>
+                                            <option>Simulación</option>
+                                            <option>Terror</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="clasificacion2">Clasificación de edad</label>
+                                        <select class="form-select" id="clasificacion2">
+                                            <option>E · Todos</option>
+                                            <option selected>T · +13</option>
+                                            <option>M · +17</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="precio2">Precio en créditos</label>
+                                        <input class="form-control" type="number" id="precio2" value="60" min="1"
+                                            step="1">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="specs2">Especificaciones</label>
+                                        <input class="form-control" type="text" id="specs2"
+                                            value="Windows 10 · 8 GB RAM · 15 GB">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label" for="descripcion2">Descripción</label>
+                                        <textarea class="form-control" id="descripcion2"
+                                            rows="2">Explora un castillo en ruinas lleno de secretos.</textarea>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                        <span class="fila-label">DLC de este juego</span>
+                                        <span class="fila-meta">Se administran en la pestaña DLC</span>
+                                    </div>
+                                    <div class="mini-item"><span>Las criptas olvidadas</span><span
+                                            class="fila-meta">Expansión</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <button class="btn btn-link text-danger px-0" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#modalRetirar">Retirar del catálogo</button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#editarJuego2">Cancelar</button>
+                                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#editarJuego2">Guardar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="list-group-item">
+                        <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
+                            <div class="portada portada-3" aria-hidden="true">PH</div>
+                            <div class="juego-info d-flex flex-column">
+                                <span class="juego-titulo">Pixel Harvest</span>
+                                <span class="fila-meta">Simulación · E · Sin DLC</span>
+                            </div>
+                            <span class="juego-precio">25 créditos</span>
+                            <div class="d-flex gap-2 ms-auto ms-md-0">
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalle3">Ver</button>
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#editarJuego3" aria-expanded="false"
+                                    aria-controls="editarJuego3">Editar</button>
+                            </div>
+                        </div>
+
+                        <div class="collapse" id="editarJuego3">
+                            <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="portada portada-3" aria-hidden="true">PH</div>
+                                    <div class="juego-info d-flex flex-column">
+                                        <span class="fila-label">Editando</span>
+                                        <strong>Pixel Harvest</strong>
+                                    </div>
+                                    <label class="btn btn-outline-secondary boton-archivo">
+                                        Cambiar portada
+                                        <input class="visually-hidden" type="file"
+                                            accept="image/png, image/jpeg, image/webp">
+                                    </label>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label" for="titulo3">Título</label>
+                                        <input class="form-control" type="text" id="titulo3" value="Pixel Harvest"
+                                            maxlength="60">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="genero3">Género</label>
+                                        <select class="form-select" id="genero3">
+                                            <option>Acción</option>
+                                            <option>Aventura</option>
+                                            <option>Carreras</option>
+                                            <option>Deportes</option>
+                                            <option>Estrategia</option>
+                                            <option>RPG</option>
+                                            <option selected>Simulación</option>
+                                            <option>Terror</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="clasificacion3">Clasificación de edad</label>
+                                        <select class="form-select" id="clasificacion3">
+                                            <option selected>E · Todos</option>
+                                            <option>T · +13</option>
+                                            <option>M · +17</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="precio3">Precio en créditos</label>
+                                        <input class="form-control" type="number" id="precio3" value="25" min="1"
+                                            step="1">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="specs3">Especificaciones</label>
+                                        <input class="form-control" type="text" id="specs3"
+                                            value="Windows 10 · 4 GB RAM · 2 GB">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label" for="descripcion3">Descripción</label>
+                                        <textarea class="form-control" id="descripcion3"
+                                            rows="2">Cultiva, cosecha y construye tu granja pixelada.</textarea>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                        <span class="fila-label">DLC de este juego</span>
+                                        <span class="fila-meta">Se administran en la pestaña DLC</span>
+                                    </div>
+                                    <div class="mini-item"><span class="fila-meta">Sin DLC todavía</span></div>
+                                </div>
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <button class="btn btn-link text-danger px-0" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#modalRetirar">Retirar del catálogo</button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#editarJuego3">Cancelar</button>
+                                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#editarJuego3">Guardar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <p class="nota-centro">Usa <strong>Ver</strong> para consultar un juego o <strong>Editar</strong> para
+                    modificarlo.</p>
+            </section>
+
+            <section class="tab-pane fade" id="panelDLC" role="tabpanel" aria-labelledby="tabDLC" tabindex="0">
+
+                <ul class="nav nav-pills chips flex-wrap mb-3" role="tablist" aria-label="Elegir videojuego">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="chipJuego1" type="button" role="tab" data-bs-toggle="pill"
+                            data-bs-target="#dlcJuego1" aria-controls="dlcJuego1" aria-selected="true">
+                            <span class="portada portada-1" aria-hidden="true">ND</span>Nebula Drift · 2
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="chipJuego2" type="button" role="tab" data-bs-toggle="pill"
+                            data-bs-target="#dlcJuego2" aria-controls="dlcJuego2" aria-selected="false">
+                            <span class="portada portada-2" aria-hidden="true">HK</span>Hollow Keep · 1
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="chipJuego3" type="button" role="tab" data-bs-toggle="pill"
+                            data-bs-target="#dlcJuego3" aria-controls="dlcJuego3" aria-selected="false">
+                            <span class="portada portada-3" aria-hidden="true">PH</span>Pixel Harvest · 0
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+
+                    <div class="tab-pane fade show active" id="dlcJuego1" role="tabpanel" aria-labelledby="chipJuego1"
+                        tabindex="0">
+                        <div class="list-group tarjeta">
+
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center justify-content-between gap-3">
+                                    <div class="d-flex flex-column">
+                                        <span class="fila-label">Expansión</span>
+                                        <span class="fila-valor">Cinturón de Orión</span>
+                                        <span class="fila-meta">3 pistas nuevas en un cinturón de asteroides.</span>
+                                    </div>
+                                    <div class="d-flex gap-1 flex-shrink-0">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#editarDlc1" aria-expanded="false"
+                                            aria-controls="editarDlc1">Editar</button>
+                                        <button class="btn btn-link text-danger" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#modalEliminarDlc">Eliminar</button>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="editarDlc1">
+                                    <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="nombreDlc1">Nombre del DLC</label>
+                                                <input class="form-control" type="text" id="nombreDlc1"
+                                                    value="Cinturón de Orión" maxlength="60">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="tipoDlc1">Tipo de contenido</label>
+                                                <select class="form-select" id="tipoDlc1">
+                                                    <option selected>Expansión</option>
+                                                    <option>Vehículos</option>
+                                                    <option>Personajes</option>
+                                                    <option>Cosméticos</option>
+                                                    <option>Niveles</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="descDlc1">Descripción</label>
+                                                <textarea class="form-control" id="descDlc1"
+                                                    rows="2">3 pistas nuevas en un cinturón de asteroides.</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#editarDlc1">Cancelar</button>
+                                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#editarDlc1">Guardar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center justify-content-between gap-3">
+                                    <div class="d-flex flex-column">
+                                        <span class="fila-label">Vehículos</span>
+                                        <span class="fila-valor">Pack de naves clásicas</span>
+                                        <span class="fila-meta">5 vehículos con diseño retro.</span>
+                                    </div>
+                                    <div class="d-flex gap-1 flex-shrink-0">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#editarDlc2" aria-expanded="false"
+                                            aria-controls="editarDlc2">Editar</button>
+                                        <button class="btn btn-link text-danger" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#modalEliminarDlc">Eliminar</button>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="editarDlc2">
+                                    <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="nombreDlc2">Nombre del DLC</label>
+                                                <input class="form-control" type="text" id="nombreDlc2"
+                                                    value="Pack de naves clásicas" maxlength="60">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="tipoDlc2">Tipo de contenido</label>
+                                                <select class="form-select" id="tipoDlc2">
+                                                    <option>Expansión</option>
+                                                    <option selected>Vehículos</option>
+                                                    <option>Personajes</option>
+                                                    <option>Cosméticos</option>
+                                                    <option>Niveles</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="descDlc2">Descripción</label>
+                                                <textarea class="form-control" id="descDlc2"
+                                                    rows="2">5 vehículos con diseño retro.</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#editarDlc2">Cancelar</button>
+                                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#editarDlc2">Guardar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item p-0">
+                                <button class="btn btn-link dlc-agregar" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#agregarDlc1" aria-expanded="false" aria-controls="agregarDlc1">
+                                    <span class="mas" aria-hidden="true">+</span>Agregar DLC a Nebula Drift
+                                </button>
+                                <div class="collapse px-3 pb-3" id="agregarDlc1">
+                                    <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="nombreNuevoDlc1">Nombre del DLC</label>
+                                                <input class="form-control is-invalid" type="text" id="nombreNuevoDlc1"
+                                                    value="" maxlength="60" aria-describedby="errorNuevoDlc1">
+                                                <div class="invalid-feedback" id="errorNuevoDlc1">El nombre del DLC es
+                                                    obligatorio.</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="tipoNuevoDlc1">Tipo de contenido</label>
+                                                <select class="form-select" id="tipoNuevoDlc1">
+                                                    <option selected>Expansión</option>
+                                                    <option>Vehículos</option>
+                                                    <option>Personajes</option>
+                                                    <option>Cosméticos</option>
+                                                    <option>Niveles</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="descNuevoDlc1">Descripción</label>
+                                                <textarea class="form-control" id="descNuevoDlc1" rows="2"
+                                                    placeholder="Qué incluye este contenido"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#agregarDlc1">Cancelar</button>
+                                            <button class="btn btn-primary" type="button">Agregar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="dlcJuego2" role="tabpanel" aria-labelledby="chipJuego2" tabindex="0">
+                        <div class="list-group tarjeta">
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center justify-content-between gap-3">
+                                    <div class="d-flex flex-column">
+                                        <span class="fila-label">Expansión</span>
+                                        <span class="fila-valor">Las criptas olvidadas</span>
+                                        <span class="fila-meta">Una nueva zona subterránea con jefes inéditos.</span>
+                                    </div>
+                                    <div class="d-flex gap-1 flex-shrink-0">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#editarDlc3" aria-expanded="false"
+                                            aria-controls="editarDlc3">Editar</button>
+                                        <button class="btn btn-link text-danger" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#modalEliminarDlc">Eliminar</button>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="editarDlc3">
+                                    <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="nombreDlc3">Nombre del DLC</label>
+                                                <input class="form-control" type="text" id="nombreDlc3"
+                                                    value="Las criptas olvidadas" maxlength="60">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="tipoDlc3">Tipo de contenido</label>
+                                                <select class="form-select" id="tipoDlc3">
+                                                    <option selected>Expansión</option>
+                                                    <option>Vehículos</option>
+                                                    <option>Personajes</option>
+                                                    <option>Cosméticos</option>
+                                                    <option>Niveles</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="descDlc3">Descripción</label>
+                                                <textarea class="form-control" id="descDlc3"
+                                                    rows="2">Una nueva zona subterránea con jefes inéditos.</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#editarDlc3">Cancelar</button>
+                                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#editarDlc3">Guardar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="list-group-item p-0">
+                                <button class="btn btn-link dlc-agregar" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#agregarDlc2" aria-expanded="false" aria-controls="agregarDlc2">
+                                    <span class="mas" aria-hidden="true">+</span>Agregar DLC a Hollow Keep
+                                </button>
+                                <div class="collapse px-3 pb-3" id="agregarDlc2">
+                                    <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="nombreNuevoDlc2">Nombre del DLC</label>
+                                                <input class="form-control" type="text" id="nombreNuevoDlc2"
+                                                    maxlength="60">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="tipoNuevoDlc2">Tipo de contenido</label>
+                                                <select class="form-select" id="tipoNuevoDlc2">
+                                                    <option selected>Expansión</option>
+                                                    <option>Vehículos</option>
+                                                    <option>Personajes</option>
+                                                    <option>Cosméticos</option>
+                                                    <option>Niveles</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="descNuevoDlc2">Descripción</label>
+                                                <textarea class="form-control" id="descNuevoDlc2" rows="2"
+                                                    placeholder="Qué incluye este contenido"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#agregarDlc2">Cancelar</button>
+                                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#agregarDlc2">Agregar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="dlcJuego3" role="tabpanel" aria-labelledby="chipJuego3" tabindex="0">
+                        <div class="list-group tarjeta">
+                            <div class="list-group-item vacio">Pixel Harvest todavía no tiene DLC.</div>
+                            <div class="list-group-item p-0">
+                                <button class="btn btn-link dlc-agregar" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#agregarDlc3" aria-expanded="false" aria-controls="agregarDlc3">
+                                    <span class="mas" aria-hidden="true">+</span>Agregar DLC a Pixel Harvest
+                                </button>
+                                <div class="collapse px-3 pb-3" id="agregarDlc3">
+                                    <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="nombreNuevoDlc3">Nombre del DLC</label>
+                                                <input class="form-control" type="text" id="nombreNuevoDlc3"
+                                                    maxlength="60">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label" for="tipoNuevoDlc3">Tipo de contenido</label>
+                                                <select class="form-select" id="tipoNuevoDlc3">
+                                                    <option selected>Expansión</option>
+                                                    <option>Vehículos</option>
+                                                    <option>Personajes</option>
+                                                    <option>Cosméticos</option>
+                                                    <option>Niveles</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label" for="descNuevoDlc3">Descripción</label>
+                                                <textarea class="form-control" id="descNuevoDlc3" rows="2"
+                                                    placeholder="Qué incluye este contenido"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#agregarDlc3">Cancelar</button>
+                                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#agregarDlc3">Agregar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="nota-centro">Los DLC se incluyen con el juego; no se venden por separado.</p>
+            </section>
+
+            <section class="tab-pane fade" id="panelRetirados" role="tabpanel" aria-labelledby="tabRetirados"
+                tabindex="0">
+                <div class="list-group tarjeta">
+                    <div class="list-group-item retirado">
+                        <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
+                            <div class="portada portada-4" aria-hidden="true">IT</div>
+                            <div class="juego-info d-flex flex-column">
+                                <span class="juego-titulo">Iron Tide</span>
+                                <span class="fila-meta">Estrategia · T · Sin DLC</span>
+                            </div>
+                            <span class="juego-precio">50 créditos</span>
+                            <div class="d-flex gap-2 ms-auto ms-md-0">
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#modalDetalle4">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="nota-centro">Los juegos retirados ya no se pueden adquirir, pero siguen en las bibliotecas de
+                    quienes
+                    los compraron.</p>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal fade" id="modalPublicar" tabindex="-1" aria-labelledby="modalPublicarTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
+            <form class="modal-content" novalidate>
+                <div class="modal-header align-items-center gap-3">
+                    <label class="boton-archivo" title="Subir portada">
+                        <span class="portada-preview">+ Portada</span>
+                        <input class="visually-hidden" type="file" accept="image/png, image/jpeg, image/webp">
+                    </label>
+                    <div class="me-auto">
+                        <h2 class="modal-title" id="modalPublicarTitulo">Publicar videojuego</h2>
+                        <p class="small text-body-secondary mb-0 mt-1">Aparecerá en el catálogo al guardar.</p>
+                    </div>
+                    <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
                     <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label" for="nombreDlc1">Nombre del DLC</label>
-                        <input class="form-control" type="text" id="nombreDlc1" value="Cinturón de Orión" maxlength="60">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" for="tipoDlc1">Tipo de contenido</label>
-                        <select class="form-select" id="tipoDlc1">
-                          <option selected>Expansión</option>
-                          <option>Vehículos</option>
-                          <option>Personajes</option>
-                          <option>Cosméticos</option>
-                          <option>Niveles</option>
-                        </select>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label" for="descDlc1">Descripción</label>
-                        <textarea class="form-control" id="descDlc1" rows="2">3 pistas nuevas en un cinturón de asteroides.</textarea>
-                      </div>
+                        <div class="col-12">
+                            <label class="form-label" for="nuevoTitulo">Título</label>
+                            <input class="form-control" type="text" id="nuevoTitulo" value="Starlight Forge"
+                                maxlength="60">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="nuevoDescripcion">Descripción</label>
+                            <textarea class="form-control" id="nuevoDescripcion"
+                                rows="3">Forja armas estelares y defiende tu estación espacial.</textarea>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label" for="nuevoGenero">Género</label>
+                            <select class="form-select" id="nuevoGenero">
+                                <option>Acción</option>
+                                <option>Aventura</option>
+                                <option>Carreras</option>
+                                <option>Deportes</option>
+                                <option>Estrategia</option>
+                                <option selected>RPG</option>
+                                <option>Simulación</option>
+                                <option>Terror</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label" for="nuevoClasificacion">Clasificación</label>
+                            <select class="form-select" id="nuevoClasificacion">
+                                <option>E · Todos</option>
+                                <option selected>T · +13</option>
+                                <option>M · +17</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label" for="nuevoPrecio">Precio (créditos)</label>
+                            <input class="form-control is-invalid" type="number" id="nuevoPrecio" value="0" min="1"
+                                step="1" aria-describedby="errorPrecio">
+                        </div>
+                        <div class="col-12 mt-1">
+                            <div class="small text-danger" id="errorPrecio">El precio debe ser un número entero mayor a
+                                0.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="nuevoSpecs">Especificaciones</label>
+                            <input class="form-control" type="text" id="nuevoSpecs"
+                                placeholder="SO, procesador, memoria, almacenamiento…">
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-end gap-2">
-                      <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc1">Cancelar</button>
-                      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc1">Guardar</button>
-                    </div>
-                  </form>
                 </div>
-              </div>
-
-              <div class="list-group-item">
-                <div class="d-flex align-items-center justify-content-between gap-3">
-                  <div class="d-flex flex-column">
-                    <span class="fila-label">Vehículos</span>
-                    <span class="fila-valor">Pack de naves clásicas</span>
-                    <span class="fila-meta">5 vehículos con diseño retro.</span>
-                  </div>
-                  <div class="d-flex gap-1 flex-shrink-0">
-                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc2"
-                            aria-expanded="false" aria-controls="editarDlc2">Editar</button>
-                    <button class="btn btn-link text-danger" type="button" data-bs-toggle="modal" data-bs-target="#modalEliminarDlc">Eliminar</button>
-                  </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Publicar</button>
                 </div>
-                <div class="collapse" id="editarDlc2">
-                  <form class="form-edicion d-flex flex-column gap-3" novalidate>
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label" for="nombreDlc2">Nombre del DLC</label>
-                        <input class="form-control" type="text" id="nombreDlc2" value="Pack de naves clásicas" maxlength="60">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" for="tipoDlc2">Tipo de contenido</label>
-                        <select class="form-select" id="tipoDlc2">
-                          <option>Expansión</option>
-                          <option selected>Vehículos</option>
-                          <option>Personajes</option>
-                          <option>Cosméticos</option>
-                          <option>Niveles</option>
-                        </select>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label" for="descDlc2">Descripción</label>
-                        <textarea class="form-control" id="descDlc2" rows="2">5 vehículos con diseño retro.</textarea>
-                      </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDetalle1" tabindex="-1" aria-labelledby="detalleTitulo1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
+            <div class="modal-content">
+                <div class="modal-header gap-3">
+                    <div class="portada portada-lg portada-1" aria-hidden="true">ND</div>
+                    <div class="d-flex flex-column gap-1 me-auto">
+                        <span class="estado-publicado small">Publicado</span>
+                        <h2 class="modal-title" id="detalleTitulo1">Nebula Drift</h2>
+                        <span class="fila-meta">Carreras · 40 créditos</span>
                     </div>
-                    <div class="d-flex justify-content-end gap-2">
-                      <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc2">Cancelar</button>
-                      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc2">Guardar</button>
-                    </div>
-                  </form>
+                    <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
                 </div>
-              </div>
-
-              <div class="list-group-item p-0">
-                <button class="btn btn-link dlc-agregar" type="button" data-bs-toggle="collapse" data-bs-target="#agregarDlc1"
-                        aria-expanded="false" aria-controls="agregarDlc1">
-                  <span class="mas" aria-hidden="true">+</span>Agregar DLC a Nebula Drift
-                </button>
-                <div class="collapse px-3 pb-3" id="agregarDlc1">
-                  <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label" for="nombreNuevoDlc1">Nombre del DLC</label>
-                        <input class="form-control is-invalid" type="text" id="nombreNuevoDlc1" value="" maxlength="60" aria-describedby="errorNuevoDlc1">
-                        <div class="invalid-feedback" id="errorNuevoDlc1">El nombre del DLC es obligatorio.</div>
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" for="tipoNuevoDlc1">Tipo de contenido</label>
-                        <select class="form-select" id="tipoNuevoDlc1">
-                          <option selected>Expansión</option>
-                          <option>Vehículos</option>
-                          <option>Personajes</option>
-                          <option>Cosméticos</option>
-                          <option>Niveles</option>
-                        </select>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label" for="descNuevoDlc1">Descripción</label>
-                        <textarea class="form-control" id="descNuevoDlc1" rows="2" placeholder="Qué incluye este contenido"></textarea>
-                      </div>
+                <div class="modal-body">
+                    <div class="list-group tarjeta">
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Descripción</span><span
+                                class="fila-valor">Carreras antigravedad a través de cinturones de asteroides.</span>
+                        </div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Clasificación de
+                                edad</span><span class="fila-valor">E · Todos</span></div>
+                        <div class="list-group-item d-flex flex-column"><span
+                                class="fila-label">Especificaciones</span><span class="fila-valor">Windows 10 · Intel i5
+                                · 8 GB RAM · 20 GB</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Contenido
+                                descargable</span><span class="fila-valor">Cinturón de Orión · Pack de naves
+                                clásicas</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Calificación
+                                promedio</span><span class="fila-valor">4.5 de 5 · 12 reseñas</span></div>
                     </div>
-                    <div class="d-flex justify-content-end gap-2">
-                      <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#agregarDlc1">Cancelar</button>
-                      <button class="btn btn-primary" type="button">Agregar</button>
-                    </div>
-                  </form>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="tab-pane fade" id="dlcJuego2" role="tabpanel" aria-labelledby="chipJuego2" tabindex="0">
-            <div class="list-group tarjeta">
-              <div class="list-group-item">
-                <div class="d-flex align-items-center justify-content-between gap-3">
-                  <div class="d-flex flex-column">
-                    <span class="fila-label">Expansión</span>
-                    <span class="fila-valor">Las criptas olvidadas</span>
-                    <span class="fila-meta">Una nueva zona subterránea con jefes inéditos.</span>
-                  </div>
-                  <div class="d-flex gap-1 flex-shrink-0">
-                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc3"
-                            aria-expanded="false" aria-controls="editarDlc3">Editar</button>
-                    <button class="btn btn-link text-danger" type="button" data-bs-toggle="modal" data-bs-target="#modalEliminarDlc">Eliminar</button>
-                  </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-link text-danger px-0" data-bs-target="#modalRetirar"
+                        data-bs-toggle="modal">Retirar del catálogo</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
-                <div class="collapse" id="editarDlc3">
-                  <form class="form-edicion d-flex flex-column gap-3" novalidate>
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label" for="nombreDlc3">Nombre del DLC</label>
-                        <input class="form-control" type="text" id="nombreDlc3" value="Las criptas olvidadas" maxlength="60">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" for="tipoDlc3">Tipo de contenido</label>
-                        <select class="form-select" id="tipoDlc3">
-                          <option selected>Expansión</option>
-                          <option>Vehículos</option>
-                          <option>Personajes</option>
-                          <option>Cosméticos</option>
-                          <option>Niveles</option>
-                        </select>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label" for="descDlc3">Descripción</label>
-                        <textarea class="form-control" id="descDlc3" rows="2">Una nueva zona subterránea con jefes inéditos.</textarea>
-                      </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDetalle2" tabindex="-1" aria-labelledby="detalleTitulo2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
+            <div class="modal-content">
+                <div class="modal-header gap-3">
+                    <div class="portada portada-lg portada-2" aria-hidden="true">HK</div>
+                    <div class="d-flex flex-column gap-1 me-auto">
+                        <span class="estado-publicado small">Publicado</span>
+                        <h2 class="modal-title" id="detalleTitulo2">Hollow Keep</h2>
+                        <span class="fila-meta">Aventura · 60 créditos</span>
                     </div>
-                    <div class="d-flex justify-content-end gap-2">
-                      <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc3">Cancelar</button>
-                      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editarDlc3">Guardar</button>
-                    </div>
-                  </form>
+                    <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
                 </div>
-              </div>
-
-              <div class="list-group-item p-0">
-                <button class="btn btn-link dlc-agregar" type="button" data-bs-toggle="collapse" data-bs-target="#agregarDlc2"
-                        aria-expanded="false" aria-controls="agregarDlc2">
-                  <span class="mas" aria-hidden="true">+</span>Agregar DLC a Hollow Keep
-                </button>
-                <div class="collapse px-3 pb-3" id="agregarDlc2">
-                  <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label" for="nombreNuevoDlc2">Nombre del DLC</label>
-                        <input class="form-control" type="text" id="nombreNuevoDlc2" maxlength="60">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" for="tipoNuevoDlc2">Tipo de contenido</label>
-                        <select class="form-select" id="tipoNuevoDlc2">
-                          <option selected>Expansión</option>
-                          <option>Vehículos</option>
-                          <option>Personajes</option>
-                          <option>Cosméticos</option>
-                          <option>Niveles</option>
-                        </select>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label" for="descNuevoDlc2">Descripción</label>
-                        <textarea class="form-control" id="descNuevoDlc2" rows="2" placeholder="Qué incluye este contenido"></textarea>
-                      </div>
+                <div class="modal-body">
+                    <div class="list-group tarjeta">
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Descripción</span><span
+                                class="fila-valor">Explora un castillo en ruinas lleno de secretos.</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Clasificación de
+                                edad</span><span class="fila-valor">T · +13</span></div>
+                        <div class="list-group-item d-flex flex-column"><span
+                                class="fila-label">Especificaciones</span><span class="fila-valor">Windows 10 · 8 GB RAM
+                                · 15 GB</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Contenido
+                                descargable</span><span class="fila-valor">Las criptas olvidadas</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Calificación
+                                promedio</span><span class="fila-valor">4.2 de 5 · 8 reseñas</span></div>
                     </div>
-                    <div class="d-flex justify-content-end gap-2">
-                      <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#agregarDlc2">Cancelar</button>
-                      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#agregarDlc2">Agregar</button>
-                    </div>
-                  </form>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="tab-pane fade" id="dlcJuego3" role="tabpanel" aria-labelledby="chipJuego3" tabindex="0">
-            <div class="list-group tarjeta">
-              <div class="list-group-item vacio">Pixel Harvest todavía no tiene DLC.</div>
-              <div class="list-group-item p-0">
-                <button class="btn btn-link dlc-agregar" type="button" data-bs-toggle="collapse" data-bs-target="#agregarDlc3"
-                        aria-expanded="false" aria-controls="agregarDlc3">
-                  <span class="mas" aria-hidden="true">+</span>Agregar DLC a Pixel Harvest
-                </button>
-                <div class="collapse px-3 pb-3" id="agregarDlc3">
-                  <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label" for="nombreNuevoDlc3">Nombre del DLC</label>
-                        <input class="form-control" type="text" id="nombreNuevoDlc3" maxlength="60">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" for="tipoNuevoDlc3">Tipo de contenido</label>
-                        <select class="form-select" id="tipoNuevoDlc3">
-                          <option selected>Expansión</option>
-                          <option>Vehículos</option>
-                          <option>Personajes</option>
-                          <option>Cosméticos</option>
-                          <option>Niveles</option>
-                        </select>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label" for="descNuevoDlc3">Descripción</label>
-                        <textarea class="form-control" id="descNuevoDlc3" rows="2" placeholder="Qué incluye este contenido"></textarea>
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end gap-2">
-                      <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#agregarDlc3">Cancelar</button>
-                      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#agregarDlc3">Agregar</button>
-                    </div>
-                  </form>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-link text-danger px-0" data-bs-target="#modalRetirar"
+                        data-bs-toggle="modal">Retirar del catálogo</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-        <p class="nota-centro">Los DLC se incluyen con el juego; no se venden por separado.</p>
-      </section>
-
-      <section class="tab-pane fade" id="panelRetirados" role="tabpanel" aria-labelledby="tabRetirados" tabindex="0">
-        <div class="list-group tarjeta">
-          <div class="list-group-item retirado">
-            <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
-              <div class="portada portada-4" aria-hidden="true">IT</div>
-              <div class="juego-info d-flex flex-column">
-                <span class="juego-titulo">Iron Tide</span>
-                <span class="fila-meta">Estrategia · T · Sin DLC</span>
-              </div>
-              <span class="juego-precio">50 créditos</span>
-              <div class="d-flex gap-2 ms-auto ms-md-0">
-                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalDetalle4">Ver</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p class="nota-centro">Los juegos retirados ya no se pueden adquirir, pero siguen en las bibliotecas de quienes los compraron.</p>
-      </section>
     </div>
-  </main>
 
-  <div class="modal fade" id="modalPublicar" tabindex="-1" aria-labelledby="modalPublicarTitulo" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
-      <form class="modal-content" novalidate>
-        <div class="modal-header align-items-center gap-3">
-          <label class="boton-archivo" title="Subir portada">
-            <span class="portada-preview">+ Portada</span>
-            <input class="visually-hidden" type="file" accept="image/png, image/jpeg, image/webp">
-          </label>
-          <div class="me-auto">
-            <h2 class="modal-title" id="modalPublicarTitulo">Publicar videojuego</h2>
-            <p class="small text-body-secondary mb-0 mt-1">Aparecerá en el catálogo al guardar.</p>
-          </div>
-          <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label" for="nuevoTitulo">Título</label>
-              <input class="form-control" type="text" id="nuevoTitulo" value="Starlight Forge" maxlength="60">
+    <div class="modal fade" id="modalDetalle3" tabindex="-1" aria-labelledby="detalleTitulo3" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
+            <div class="modal-content">
+                <div class="modal-header gap-3">
+                    <div class="portada portada-lg portada-3" aria-hidden="true">PH</div>
+                    <div class="d-flex flex-column gap-1 me-auto">
+                        <span class="estado-publicado small">Publicado</span>
+                        <h2 class="modal-title" id="detalleTitulo3">Pixel Harvest</h2>
+                        <span class="fila-meta">Simulación · 25 créditos</span>
+                    </div>
+                    <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group tarjeta">
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Descripción</span><span
+                                class="fila-valor">Cultiva, cosecha y construye tu granja pixelada.</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Clasificación de
+                                edad</span><span class="fila-valor">E · Todos</span></div>
+                        <div class="list-group-item d-flex flex-column"><span
+                                class="fila-label">Especificaciones</span><span class="fila-valor">Windows 10 · 4 GB RAM
+                                · 2 GB</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Contenido
+                                descargable</span><span class="fila-valor">Sin DLC</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Calificación
+                                promedio</span><span class="fila-valor">Sin reseñas todavía</span></div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-link text-danger px-0" data-bs-target="#modalRetirar"
+                        data-bs-toggle="modal">Retirar del catálogo</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
             </div>
-            <div class="col-12">
-              <label class="form-label" for="nuevoDescripcion">Descripción</label>
-              <textarea class="form-control" id="nuevoDescripcion" rows="3">Forja armas estelares y defiende tu estación espacial.</textarea>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDetalle4" tabindex="-1" aria-labelledby="detalleTitulo4" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
+            <div class="modal-content">
+                <div class="modal-header gap-3">
+                    <div class="portada portada-lg portada-4 portada-retirada" aria-hidden="true">IT</div>
+                    <div class="d-flex flex-column gap-1 me-auto">
+                        <span class="estado-retirado small">Retirado</span>
+                        <h2 class="modal-title" id="detalleTitulo4">Iron Tide</h2>
+                        <span class="fila-meta">Estrategia · 50 créditos</span>
+                    </div>
+                    <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group tarjeta">
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Descripción</span><span
+                                class="fila-valor">Estrategia naval por turnos.</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Clasificación de
+                                edad</span><span class="fila-valor">T · +13</span></div>
+                        <div class="list-group-item d-flex flex-column"><span
+                                class="fila-label">Especificaciones</span><span class="fila-valor">Windows 10 · 8 GB RAM
+                                · 10 GB</span></div>
+                        <div class="list-group-item d-flex flex-column"><span class="fila-label">Estado</span><span
+                                class="fila-valor">Ya no se puede adquirir; sigue en las bibliotecas de 5
+                                jugadores.</span></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
             </div>
-            <div class="col-sm-4">
-              <label class="form-label" for="nuevoGenero">Género</label>
-              <select class="form-select" id="nuevoGenero">
-                <option>Acción</option>
-                <option>Aventura</option>
-                <option>Carreras</option>
-                <option>Deportes</option>
-                <option>Estrategia</option>
-                <option selected>RPG</option>
-                <option>Simulación</option>
-                <option>Terror</option>
-              </select>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRetirar" tabindex="-1" aria-labelledby="modalRetirarTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-angosto">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalRetirarTitulo">¿Retirar este videojuego del catálogo?</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary mb-0">Ya no se podrá adquirir. Los jugadores que ya lo tienen lo
+                        conservarán en
+                        su biblioteca.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Sí, retirar</button>
+                </div>
             </div>
-            <div class="col-sm-4">
-              <label class="form-label" for="nuevoClasificacion">Clasificación</label>
-              <select class="form-select" id="nuevoClasificacion">
-                <option>E · Todos</option>
-                <option selected>T · +13</option>
-                <option>M · +17</option>
-              </select>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEliminarDlc" tabindex="-1" aria-labelledby="modalEliminarDlcTitulo"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-angosto">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalEliminarDlcTitulo">¿Eliminar este DLC?</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary mb-0">Se quitará del videojuego. Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Sí, eliminar</button>
+                </div>
             </div>
-            <div class="col-sm-4">
-              <label class="form-label" for="nuevoPrecio">Precio (créditos)</label>
-              <input class="form-control is-invalid" type="number" id="nuevoPrecio" value="0" min="1" step="1" aria-describedby="errorPrecio">
-            </div>
-            <div class="col-12 mt-1">
-              <div class="small text-danger" id="errorPrecio">El precio debe ser un número entero mayor a 0.</div>
-            </div>
-            <div class="col-12">
-              <label class="form-label" for="nuevoSpecs">Especificaciones</label>
-              <input class="form-control" type="text" id="nuevoSpecs" placeholder="SO, procesador, memoria, almacenamiento…">
-            </div>
-          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-link" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary">Publicar</button>
-        </div>
-      </form>
     </div>
-  </div>
 
-  <div class="modal fade" id="modalDetalle1" tabindex="-1" aria-labelledby="detalleTitulo1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
-      <div class="modal-content">
-        <div class="modal-header gap-3">
-          <div class="portada portada-lg portada-1" aria-hidden="true">ND</div>
-          <div class="d-flex flex-column gap-1 me-auto">
-            <span class="estado-publicado small">Publicado</span>
-            <h2 class="modal-title" id="detalleTitulo1">Nebula Drift</h2>
-            <span class="fila-meta">Carreras · 40 créditos</span>
-          </div>
-          <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="list-group tarjeta">
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Descripción</span><span class="fila-valor">Carreras antigravedad a través de cinturones de asteroides.</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Clasificación de edad</span><span class="fila-valor">E · Todos</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Especificaciones</span><span class="fila-valor">Windows 10 · Intel i5 · 8 GB RAM · 20 GB</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Contenido descargable</span><span class="fila-valor">Cinturón de Orión · Pack de naves clásicas</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Calificación promedio</span><span class="fila-valor">4.5 de 5 · 12 reseñas</span></div>
-          </div>
-        </div>
-        <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-link text-danger px-0" data-bs-target="#modalRetirar" data-bs-toggle="modal">Retirar del catálogo</button>
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="modalDetalle2" tabindex="-1" aria-labelledby="detalleTitulo2" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
-      <div class="modal-content">
-        <div class="modal-header gap-3">
-          <div class="portada portada-lg portada-2" aria-hidden="true">HK</div>
-          <div class="d-flex flex-column gap-1 me-auto">
-            <span class="estado-publicado small">Publicado</span>
-            <h2 class="modal-title" id="detalleTitulo2">Hollow Keep</h2>
-            <span class="fila-meta">Aventura · 60 créditos</span>
-          </div>
-          <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="list-group tarjeta">
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Descripción</span><span class="fila-valor">Explora un castillo en ruinas lleno de secretos.</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Clasificación de edad</span><span class="fila-valor">T · +13</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Especificaciones</span><span class="fila-valor">Windows 10 · 8 GB RAM · 15 GB</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Contenido descargable</span><span class="fila-valor">Las criptas olvidadas</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Calificación promedio</span><span class="fila-valor">4.2 de 5 · 8 reseñas</span></div>
-          </div>
-        </div>
-        <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-link text-danger px-0" data-bs-target="#modalRetirar" data-bs-toggle="modal">Retirar del catálogo</button>
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="modalDetalle3" tabindex="-1" aria-labelledby="detalleTitulo3" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
-      <div class="modal-content">
-        <div class="modal-header gap-3">
-          <div class="portada portada-lg portada-3" aria-hidden="true">PH</div>
-          <div class="d-flex flex-column gap-1 me-auto">
-            <span class="estado-publicado small">Publicado</span>
-            <h2 class="modal-title" id="detalleTitulo3">Pixel Harvest</h2>
-            <span class="fila-meta">Simulación · 25 créditos</span>
-          </div>
-          <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="list-group tarjeta">
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Descripción</span><span class="fila-valor">Cultiva, cosecha y construye tu granja pixelada.</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Clasificación de edad</span><span class="fila-valor">E · Todos</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Especificaciones</span><span class="fila-valor">Windows 10 · 4 GB RAM · 2 GB</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Contenido descargable</span><span class="fila-valor">Sin DLC</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Calificación promedio</span><span class="fila-valor">Sin reseñas todavía</span></div>
-          </div>
-        </div>
-        <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-link text-danger px-0" data-bs-target="#modalRetirar" data-bs-toggle="modal">Retirar del catálogo</button>
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="modalDetalle4" tabindex="-1" aria-labelledby="detalleTitulo4" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
-      <div class="modal-content">
-        <div class="modal-header gap-3">
-          <div class="portada portada-lg portada-4 portada-retirada" aria-hidden="true">IT</div>
-          <div class="d-flex flex-column gap-1 me-auto">
-            <span class="estado-retirado small">Retirado</span>
-            <h2 class="modal-title" id="detalleTitulo4">Iron Tide</h2>
-            <span class="fila-meta">Estrategia · 50 créditos</span>
-          </div>
-          <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="list-group tarjeta">
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Descripción</span><span class="fila-valor">Estrategia naval por turnos.</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Clasificación de edad</span><span class="fila-valor">T · +13</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Especificaciones</span><span class="fila-valor">Windows 10 · 8 GB RAM · 10 GB</span></div>
-            <div class="list-group-item d-flex flex-column"><span class="fila-label">Estado</span><span class="fila-valor">Ya no se puede adquirir; sigue en las bibliotecas de 5 jugadores.</span></div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="modalRetirar" tabindex="-1" aria-labelledby="modalRetirarTitulo" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-angosto">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title" id="modalRetirarTitulo">¿Retirar este videojuego del catálogo?</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p class="text-body-secondary mb-0">Ya no se podrá adquirir. Los jugadores que ya lo tienen lo conservarán en su biblioteca.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Sí, retirar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="modalEliminarDlc" tabindex="-1" aria-labelledby="modalEliminarDlcTitulo" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-angosto">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title" id="modalEliminarDlcTitulo">¿Eliminar este DLC?</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p class="text-body-secondary mb-0">Se quitará del videojuego. Esta acción no se puede deshacer.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Sí, eliminar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
