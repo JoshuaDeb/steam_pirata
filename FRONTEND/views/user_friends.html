@@ -118,7 +118,7 @@
                 </li>
 
                 <li class="nav-item" role="presentation">
-                    <button aria-controls="panelRecibidos" aria-selected="false" class="nav-link"
+                    <button aria-controls="panelRecibidas" aria-selected="false" class="nav-link"
                         data-bs-target="#panelRecibidas" data-bs-toggle="pill" id="tabRecibidas" role="tab"
                         type="button">
                         Recibidas
@@ -128,7 +128,7 @@
 
                 <li class="nav-item" role="presentation">
                     <button aria-label="panelEnviadas" aria-selected="false" class="nav-link"
-                        data-bs-target="#panleEnviadas" data-bs-toggle="pill" id="tabEnviadas" role="tab" type="button">
+                        data-bs-target="#panelEnviadas" data-bs-toggle="pill" id="tabEnviadas" role="tab" type="button">
                         Enviadas
                         <span class="cuenta-tab" id="cuentaEnviadas">1</span>
                     </button>
@@ -256,15 +256,448 @@
                 <div class="paginacion-area" id="paginacionAmigos">
                     <span class="fila-meta" id="paginaInfoAmigos">Página 1 de 1</span>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-secondary" disabled="" id="anteriorAmigos" type="button">Anterior</button>
-                        <button class="btn btn-outline-secondary" disabled="" id="siguienteAmigos" type="button">Siguiente</button>
+                        <button class="btn btn-outline-secondary" disabled="" id="anteriorAmigos"
+                            type="button">Anterior</button>
+                        <button class="btn btn-outline-secondary" disabled="" id="siguienteAmigos"
+                            type="button">Siguiente</button>
                     </div>
                 </div>
             </section>
+
+            <!-- Contenido de la sección de recibidos -->
+            <section aria-labelledby="tabRecibidas" class="tab-pane fade" id="panelRecibidas" role="tabpanel"
+                tabindex="0">
+                <h2 class="titulo-seccion">
+                    Solicitudes que recibiste
+                </h2>
+                <p class="descripcion-seccion">
+                    Acepta una solicitud para agregar a esa persona a tus amigos, o recházala si lo prefieres.
+                </p>
+                <div class="vstack gap-3 listado-personas" id="listaRecibidas">
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-rosa">
+                            ZS
+                        </div>
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">
+                                ZeroShift
+                            </h3>
+                            <p class="persona-info">
+                                Solicitud recibida el 9 nov 2026
+                            </p>
+                        </div>
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-primary btn-aceptar" data-bs-target="#modalAceptar"
+                                data-bs-toggle="modal" type="button">
+                                Aceptar
+                            </button>
+                            <button class="btn btn-link text-danger btn-rechazar" data-bs-target="#modalRechazar"
+                                data-bs-toggle="modal" type="button">
+                                Rechazar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-dorado">
+                            AF
+                        </div>
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">
+                                AtlasFox
+                            </h3>
+                            <p class="persona-info">
+                                Solicitud recibida el 7 nov 2026
+                            </p>
+                        </div>
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-primary btn-aceptar" data-bs-target="#modalAceptar"
+                                data-bs-toggle="modal" type="button">
+                                Aceptar
+                            </button>
+                            <button class="btn btn-link text-danger btn-rechazar" data-bs-target="#modalRechazar"
+                                data-bs-toggle="modal" type="button">
+                                Rechazar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="vacio" hidden="" id="vacioRecibidas">
+                    <span aria-hidden="true" class="signo">
+                        ↓
+                    </span>
+                    <strong>
+                        No tienes solicitudes recibidas
+                    </strong>
+                    <p class="mb-0">
+                        Cuando alguien quiera agregarte, su solicitud aparecerá aquí.
+                    </p>
+                </div>
+            </section>
+
+            <!--Contenido de la sección de Enviadas -->
+            <section aria-labelledby="tabEnviadas" class="tab-pane fade" id="panelEnviadas" role="tabpanel"
+                tabindex="0">
+                <h2 class="titulo-seccion">
+                    Solicitudes enviadas
+                </h2>
+                <p class="descripcion-seccion">
+                    Consulta las solicitudes pendientes y cancélalas si cambias de opinión.
+                </p>
+                <div class="vstack gap-3 listado-personas" id="listaEnviadas">
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-celeste">
+                            DK
+                        </div>
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">
+                                DriftKing
+                            </h3>
+                            <p class="persona-info">
+                                Solicitud enviada el 8 nov 2026
+                            </p>
+                        </div>
+                        <span class="etiqueta etiqueta-espera">
+                            Pendiente
+                        </span>
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-link text-danger btn-cancelar" data-bs-target="#modalCancelar"
+                                data-bs-toggle="modal" type="button">
+                                Cancelar solicitud
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="vacio" hidden="" id="vacioEnviadas">
+                    <span aria-hidden="true" class="signo">
+                        ↑
+                    </span>
+                    <strong>
+                        Sin solicitudes pendientes
+                    </strong>
+                    <p class="mb-0">
+                        Busca otros jugadores para enviar una solicitud de amistad.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Contenido de buscar jufadores-->
+            <section aria-labelledby="tabBuscar" class="tab-pane fade" id="panelBuscar" role="tabpanel" tabindex="0">
+                <h2 class="titulo-seccion">
+                    Descubre jugadores
+                </h2>
+                <p class="descripcion-seccion">
+                    Busca por nombre de usuario y envía una solicitud a quienes quieras agregar.
+                </p>
+                <div class="herramientas">
+                    <div class="campo-buscar">
+                        <label class="form-label" for="buscarJugadores">
+                            Nombre del jugador
+                        </label>
+                        <input autocomplete="off" class="form-control" id="buscarJugadores" maxlength="30"
+                            placeholder="Ej. PixelNova" type="search" />
+                    </div>
+                    <div class="campo-orden">
+                        <label class="form-label" for="ordenJugadores">
+                            Ordenar por
+                        </label>
+                        <select class="form-select" id="ordenJugadores">
+                            <option value="nombre">
+                                Nombre A-Z
+                            </option>
+                            <option value="reciente">
+                                Más recientes
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="panel-sugerencia">
+                    Puedes enviar solicitudes a jugadores que aún no sean tus amigos y con quienes no tengas una
+                    solicitud pendiente.
+                </div>
+                <div class="vstack gap-3 listado-personas" id="listaJugadores">
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-violeta">
+                            PN
+                        </div>
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">
+                                PixelNova
+                            </h3>
+                            <p class="persona-info">
+                                Jugador - Le gustan las simulaciones
+                            </p>
+                        </div>
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
+                                data-bs-toggle="modal" type="button">
+                                + Enviar solicitud
+                            </button>
+                        </div>
+                    </div>
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-azul">
+                            RP
+                        </div>
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">
+                                RunePilot
+                            </h3>
+                            <p class="persona-info">
+                                Jugador - Le interesan las aventuras
+                            </p>
+                        </div>
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
+                                data-bs-toggle="modal" type="button">
+                                + Enviar solicitud
+                            </button>
+                        </div>
+                    </div>
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-verde">
+                            CN
+                        </div>
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">
+                                CloudNinja
+                            </h3>
+                            <p class="persona-info">
+                                Jugador - Le gustan los juegos de estrategia
+                            </p>
+                        </div>
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
+                                data-bs-toggle="modal" type="button">
+                                + Enviar solicitud
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="vacio" hidden="" id="vacioJugadores">
+                    <strong>
+                        No se encontraron jugadores
+                    </strong>
+                    <p class="mb-0">
+                        Revisa el nombre de usuario e inténtalo de nuevo.
+                    </p>
+                </div>
+            </section>
         </div>
-
-
     </main>
+
+    <!-- Consulta de un perfil público: no se muestran correos ni información privada. -->
+    <div aria-hidden="true" aria-labelledby="tituloPerfilPublico" class="modal fade" id="modalPerfilPublico"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloPerfilPublico">
+                        Perfil de jugador
+                    </h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <span aria-hidden="true" class="avatar-persona avatar-violeta" id="avatarPerfilPublico">
+                            SP
+                        </span>
+                        <div>
+                            <h3 class="persona-nombre" id="nombrePerfilPublico">
+                                Perfil público
+                            </h3>
+                            <p class="persona-info">
+                                Cuenta de jugador
+                            </p>
+                        </div>
+                    </div>
+                    <div class="detalle-perfil">
+                        <span class="fila-label">
+                            Sobre este jugador
+                        </span>
+                        <p class="mb-0 mt-2" id="infoPerfilPublico">
+                            Consulta la información pública de otros jugadores y los videojuegos que
+                            tienen en común contigo.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-dismiss="modal" type="button">
+                        Cerrar perfil
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para eliminar amistad-->
+    <div aria-hidden="true" aria-labelledby="tituloEliminarAmigo" class="modal fade" id="modalEliminarAmigo"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloEliminarAmigo">
+                        ¿Eliminar esta amistad?
+                    </h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary mb-0">
+                        Esta persona dejará de aparecer en tu lista de amigos. Puedes volver a enviarle una
+                        solicitud más adelante.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Conservar amistad
+                    </button>
+                    <button class="btn btn-danger" data-bs-dismiss="modal" id="confirmarEliminarAmigo" type="button">
+                        Eliminar amistad
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para rechar solicitud de amistad -->
+    <div aria-hidden="true" aria-labelledby="tituloRechazar" class="modal fade" id="modalRechazar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloRechazar">
+                        ¿Rechazar solicitud?
+                    </h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary mb-0">
+                        La solicitud de amistad será rechazada y dejará de aparecer entre tus solicitudes
+                        recibidas.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Volver
+                    </button>
+                    <button class="btn btn-danger" data-bs-dismiss="modal" id="confirmarRechazar" type="button">
+                        Rechazar solicitud
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para cancelar el envío de una solicitud de amistad -->
+    <div aria-hidden="true" aria-labelledby="tituloCancelar" class="modal fade" id="modalCancelar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloCancelar">
+                        ¿Cancelar solicitud?
+                    </h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary mb-0">
+                        La solicitud de amistad que enviaste dejará de estar pendiente.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Volver
+                    </button>
+                    <button class="btn btn-danger" data-bs-dismiss="modal" id="confirmarCancelar" type="button">
+                        Cancelar solicitud
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para aceptar una solicitud de amistad -->
+    <div aria-hidden="true" aria-labelledby="modalAceptarTitle" class="modal fade" id="modalAceptar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalAceptarTitle">
+                        Aceptar solicitud
+                    </h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary mb-0">
+                        ¿Quieres aceptar esta solicitud? El jugador se agregará a tu lista de amigos.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Volver
+                    </button>
+                    <button class="btn btn-primary" data-bs-dismiss="modal" type="button">
+                        Aceptar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para el envio de soliciutd de amistad -->
+    <div aria-hidden="true" aria-labelledby="modalEnviarTitle" class="modal fade" id="modalEnviar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalEnviarTitle">
+                        Enviar solicitud
+                    </h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary mb-0">
+                        ¿Quieres enviar una solicitud a este jugador? Podrás consultar su estado en
+                        Solicitudes enviadas.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Volver
+                    </button>
+                    <button class="btn btn-primary" data-bs-dismiss="modal" type="button">
+                        Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <!-- place footer here -->
     </footer>
