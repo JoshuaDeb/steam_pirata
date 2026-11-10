@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo · SteamPirata</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
+    <link rel="stylesheet" href="../assets/store.css">
+</head>
+
+<body>
+
+    <!--
+        Vista de jugador con sesión iniciada. Lo que cambia según el rol:
+        - Barra superior: el desarrollador ve Catálogo · Panel (dev_profile.html) · Perfil (user_profile.html).
+        - Texto del banner: el saldo de créditos solo se muestra a jugadores.
+        - Botón de favoritos de cada tarjeta: solo para jugadores.
+    -->
+    <header>
+        <nav class="navbar navbar-expand-md topbar" aria-label="Principal">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="store.html">SteamPirata</a>
+
+                <div class="d-flex align-items-center gap-3 order-md-last">
+                    <a class="btn btn-link px-0" href="login.html">Cerrar sesión</a>
+                    <a class="usuario-nav" href="user_profile.html" title="Mi perfil">
+                        <span class="d-none d-lg-inline">LuisDCG</span>
+                        <span class="avatar avatar-sm" aria-hidden="true">LD</span>
+                        <span class="visually-hidden">Ir a mi perfil</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false"
+                        aria-label="Abrir menú">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse justify-content-center" id="menuPrincipal">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page"
+                                href="store.html">Catálogo</a></li>
+                        <li class="nav-item"><a class="nav-link" href="user_library.html">Biblioteca</a></li>
+                        <li class="nav-item"><a class="nav-link" href="user_friends.html">Amigos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="user_profile.html">Perfil</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="banner-wrap">
+        <div class="banner">
+            <h1 class="titulo-catalogo">Catálogo</h1>
+            <p class="banner-texto">Explora los juegos publicados y adquiérelos con tus <strong>110 créditos</strong>
+                virtuales.</p>
+            <span class="banner-marca" aria-hidden="true">Juegos</span>
+        </div>
+    </div>
+
+    <main class="contenido">
+
+        <form class="d-flex flex-column gap-3" action="store.html" method="get" role="search">
+
+            <div class="buscador">
+                <label class="visually-hidden" for="busqueda">Buscar videojuegos por nombre</label>
+                <input class="form-control" type="search" id="busqueda" name="q" placeholder="Buscar por nombre"
+                    autocomplete="off">
+                <button class="btn btn-primary btn-grande" type="submit">Buscar</button>
+            </div>
+
+            <button class="btn btn-outline-secondary d-md-none align-self-center" type="button"
+                data-bs-toggle="collapse" data-bs-target="#filtros" aria-expanded="false"
+                aria-controls="filtros">Filtros</button>
+
+            <div class="collapse d-md-block" id="filtros">
+                <div class="filtros-panel d-flex flex-column gap-4">
+
+                    <fieldset>
+                        <legend class="visually-hidden">Género</legend>
+                        <div class="chips-genero">
+                            <input class="btn-check" type="radio" name="genero" id="genTodos" value="" checked>
+                            <label class="chip" for="genTodos">Todos</label>
+                            <input class="btn-check" type="radio" name="genero" id="genAccion" value="Acción">
+                            <label class="chip" for="genAccion">Acción</label>
+                            <input class="btn-check" type="radio" name="genero" id="genAventura" value="Aventura">
+                            <label class="chip" for="genAventura">Aventura</label>
+                            <input class="btn-check" type="radio" name="genero" id="genCarreras" value="Carreras">
+                            <label class="chip" for="genCarreras">Carreras</label>
+                            <input class="btn-check" type="radio" name="genero" id="genDeportes" value="Deportes">
+                            <label class="chip" for="genDeportes">Deportes</label>
+                            <input class="btn-check" type="radio" name="genero" id="genEstrategia" value="Estrategia">
+                            <label class="chip" for="genEstrategia">Estrategia</label>
+                            <input class="btn-check" type="radio" name="genero" id="genRPG" value="RPG">
+                            <label class="chip" for="genRPG">RPG</label>
+                            <input class="btn-check" type="radio" name="genero" id="genSimulacion" value="Simulación">
+                            <label class="chip" for="genSimulacion">Simulación</label>
+                            <input class="btn-check" type="radio" name="genero" id="genTerror" value="Terror">
+                            <label class="chip" for="genTerror">Terror</label>
+                        </div>
+                    </fieldset>
+
+                    <div class="row g-3">
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="filtroClasificacion">Clasificación de edad</label>
+                            <select class="form-select" id="filtroClasificacion" name="clasificacion">
+                                <option value="" selected>Todas</option>
+                                <option value="E">E · Todos</option>
+                                <option value="T">T · +13</option>
+                                <option value="M">M · +17</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="filtroPrecio">Precio máximo (créditos)</label>
+                            <input class="form-control" type="number" id="filtroPrecio" name="precio_max" min="1"
+                                step="1" placeholder="Sin límite" inputmode="numeric">
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="filtroCalificacion">Calificación mínima</label>
+                            <select class="form-select" id="filtroCalificacion" name="calificacion_min">
+                                <option value="" selected>Cualquiera</option>
+                                <option value="4">4 estrellas o más</option>
+                                <option value="3">3 estrellas o más</option>
+                                <option value="2">2 estrellas o más</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="filtroOrden">Ordenar por</label>
+                            <select class="form-select" id="filtroOrden" name="orden">
+                                <option value="nombre" selected>Nombre (A–Z)</option>
+                                <option value="precio_asc">Precio: menor a mayor</option>
+                                <option value="precio_desc">Precio: mayor a menor</option>
+                                <option value="calificacion">Mejor calificados</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center gap-2">
+                        <a class="btn btn-link" href="store.html">Limpiar</a>
+                        <button class="btn btn-primary" type="submit">Aplicar filtros</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <section aria-labelledby="tituloResultados" class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column gap-1">
+                <h2 class="resultados-titulo" id="tituloResultados">Todos los videojuegos</h2>
+                <p class="fila-meta mb-0">Mostrando 1–12 de 27 videojuegos</p>
+            </div>
+
+            <ul class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4 list-unstyled mb-0">
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-1">
+                            <span class="juego-marca" aria-hidden="true">ND</span>
+                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Nebula Drift a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Nebula Drift</a></h3>
+                            <p class="juego-genero">Carreras</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.5 <span class="fila-meta">(12)</span></span>
+                                <span class="juego-precio">40 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-2">
+                            <span class="juego-marca" aria-hidden="true">HK</span>
+                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
+                            <button class="favorito" type="button" aria-pressed="true"
+                                aria-label="Quitar Hollow Keep de favoritos"><span aria-hidden="true">&#9829;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Hollow Keep</a></h3>
+                            <p class="juego-genero">Aventura</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.2 <span class="fila-meta">(8)</span></span>
+                                <span class="juego-precio">60 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-3">
+                            <span class="juego-marca" aria-hidden="true">PH</span>
+                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Pixel Harvest a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Pixel Harvest</a></h3>
+                            <p class="juego-genero">Simulación</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif fila-meta">Sin reseñas</span>
+                                <span class="juego-precio">25 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-4">
+                            <span class="juego-marca" aria-hidden="true">EV</span>
+                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
+                            <button class="favorito" type="button" aria-pressed="true"
+                                aria-label="Quitar Ember Vale de favoritos"><span aria-hidden="true">&#9829;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Ember Vale</a></h3>
+                            <p class="juego-genero">RPG</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.8 <span class="fila-meta">(31)</span></span>
+                                <span class="juego-precio">80 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-5">
+                            <span class="juego-marca" aria-hidden="true">LS</span>
+                            <span class="juego-edad" title="Mayores de 17 años">M · +17</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Last Signal a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Last Signal</a></h3>
+                            <p class="juego-genero">Terror</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.0 <span class="fila-meta">(17)</span></span>
+                                <span class="juego-precio">45 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-6">
+                            <span class="juego-marca" aria-hidden="true">KR</span>
+                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Kickline Rush a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Kickline Rush</a></h3>
+                            <p class="juego-genero">Deportes</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 3.9 <span class="fila-meta">(9)</span></span>
+                                <span class="juego-precio">30 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-7">
+                            <span class="juego-marca" aria-hidden="true">CA</span>
+                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Crown of Ash a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Crown of Ash</a></h3>
+                            <p class="juego-genero">Estrategia</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.6 <span class="fila-meta">(22)</span></span>
+                                <span class="juego-precio">55 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-8">
+                            <span class="juego-marca" aria-hidden="true">NA</span>
+                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Neon Alley a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Neon Alley</a></h3>
+                            <p class="juego-genero">Acción</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.1 <span class="fila-meta">(14)</span></span>
+                                <span class="juego-precio">35 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-9">
+                            <span class="juego-marca" aria-hidden="true">SA</span>
+                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Saltwater Atlas a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Saltwater Atlas</a></h3>
+                            <p class="juego-genero">Aventura</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.7 <span class="fila-meta">(6)</span></span>
+                                <span class="juego-precio">20 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-10">
+                            <span class="juego-marca" aria-hidden="true">RR</span>
+                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Rustbelt Rally a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Rustbelt Rally</a></h3>
+                            <p class="juego-genero">Carreras</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 3.8 <span class="fila-meta">(5)</span></span>
+                                <span class="juego-precio">50 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-11">
+                            <span class="juego-marca" aria-hidden="true">DW</span>
+                            <span class="juego-edad" title="Mayores de 17 años">M · +17</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Deepwatch a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Deepwatch</a></h3>
+                            <p class="juego-genero">Terror</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.3 <span class="fila-meta">(19)</span></span>
+                                <span class="juego-precio">65 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative">
+                        <div class="juego-portada portada-12">
+                            <span class="juego-marca" aria-hidden="true">TT</span>
+                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
+                            <button class="favorito" type="button" aria-pressed="false"
+                                aria-label="Agregar Tiny Tavern a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Tiny Tavern</a></h3>
+                            <p class="juego-genero">Simulación</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.4 <span class="fila-meta">(11)</span></span>
+                                <span class="juego-precio">15 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+            </ul>
+        </section>
+
+        <nav aria-label="Paginación del catálogo">
+            <ul class="pagination justify-content-center flex-wrap mb-0">
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                <li class="page-item active" aria-current="page"><span class="page-link">1</span></li>
+                <li class="page-item"><a class="page-link" href="store.html?pagina=2">2</a></li>
+                <li class="page-item"><a class="page-link" href="store.html?pagina=3">3</a></li>
+                <li class="page-item"><a class="page-link" href="store.html?pagina=2">Siguiente</a></li>
+            </ul>
+        </nav>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

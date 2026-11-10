@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión · SteamPirata</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
+    <link rel="stylesheet" href="../assets/login.css">
+</head>
+
+<body>
+
+    <main class="acceso">
+
+        <section class="acceso-marca" aria-labelledby="titularAcceso">
+            <a class="acceso-logo" href="login.html">SteamPirata</a>
+
+            <div class="acceso-mensaje">
+                <h1 class="acceso-titular" id="titularAcceso">Descubre, guarda y comenta videojuegos.</h1>
+                <p>Una comunidad para jugadores y desarrolladores. Los créditos son virtuales: aquí no se paga con
+                    dinero real.</p>
+            </div>
+
+            <span class="banner-marca" aria-hidden="true">SP</span>
+        </section>
+
+        <section class="acceso-formulario" aria-label="Acceso a la plataforma">
+            <div class="acceso-caja">
+
+                <ul class="nav nav-pills segmentado" role="tablist" aria-label="Acceso">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tabEntrar" type="button" role="tab" data-bs-toggle="pill"
+                            data-bs-target="#panelEntrar" aria-controls="panelEntrar" aria-selected="true">Iniciar
+                            sesión</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tabRegistro" type="button" role="tab" data-bs-toggle="pill"
+                            data-bs-target="#panelRegistro" aria-controls="panelRegistro" aria-selected="false">Crear
+                            cuenta</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+
+                    <!-- Inicio de sesión -->
+                    <div class="tab-pane fade show active" id="panelEntrar" role="tabpanel" aria-labelledby="tabEntrar"
+                        tabindex="0">
+                        <h2 class="panel-titulo">Te estábamos esperando</h2>
+                        <p class="panel-subtitulo">Entra con el correo y la contraseña de tu cuenta.</p>
+
+                        <form class="d-flex flex-column gap-3" novalidate>
+                            <div>
+                                <label class="form-label" for="correoEntrar">Correo electrónico</label>
+                                <input class="form-control" type="email" id="correoEntrar" autocomplete="email"
+                                    placeholder="nombre@dominio.com">
+                            </div>
+                            <div>
+                                <label class="form-label" for="passEntrar">Contraseña</label>
+                                <input class="form-control" type="password" id="passEntrar"
+                                    autocomplete="current-password">
+                            </div>
+                            <a class="btn btn-primary btn-grande w-100 mt-2" href="store.html">Iniciar sesión</a>
+                        </form>
+                    </div>
+
+                    <!-- Registro -->
+                    <div class="tab-pane fade" id="panelRegistro" role="tabpanel" aria-labelledby="tabRegistro"
+                        tabindex="0">
+                        <h2 class="panel-titulo">Crea tu cuenta</h2>
+                        <p class="panel-subtitulo">Solo necesitas un nombre, un correo y elegir cómo vas a usar la
+                            plataforma.</p>
+
+                        <form class="d-flex flex-column gap-3" novalidate>
+                            <div>
+                                <label class="form-label" for="nombreRegistro">Nombre de usuario</label>
+                                <input class="form-control" type="text" id="nombreRegistro" maxlength="20"
+                                    autocomplete="username" aria-describedby="ayudaNombre">
+                                <div class="form-text" id="ayudaNombre">De 3 a 20 caracteres: letras, números o guion
+                                    bajo.</div>
+                            </div>
+                            <div>
+                                <label class="form-label" for="correoRegistro">Correo electrónico</label>
+                                <input class="form-control" type="email" id="correoRegistro" autocomplete="email"
+                                    placeholder="nombre@dominio.com">
+                            </div>
+                            <div>
+                                <label class="form-label" for="passRegistro">Contraseña</label>
+                                <input class="form-control is-invalid" type="password" id="passRegistro"
+                                    value="abc123" autocomplete="new-password" aria-describedby="errorPassRegistro">
+                                <div class="invalid-feedback" id="errorPassRegistro">La contraseña debe tener al menos
+                                    8 caracteres.</div>
+                            </div>
+
+                            <fieldset>
+                                <legend class="form-label leyenda-tipo">Tipo de cuenta</legend>
+                                <div class="row g-2">
+                                    <div class="col-sm-6">
+                                        <input class="btn-check" type="radio" name="tipoCuenta" id="tipoJugador"
+                                            value="jugador" checked>
+                                        <label class="tipo-cuenta" for="tipoJugador">
+                                            <strong>Jugador</strong>
+                                            <span>Explora el catálogo, reseña juegos y haz amigos. Empiezas con 100
+                                                créditos.</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input class="btn-check" type="radio" name="tipoCuenta" id="tipoDesarrollador"
+                                            value="desarrollador">
+                                        <label class="tipo-cuenta" for="tipoDesarrollador">
+                                            <strong>Desarrollador</strong>
+                                            <span>Publica tus videojuegos y DLC, y responde a las reseñas.</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <a class="btn btn-primary btn-grande w-100 mt-2" href="store.html">Crear cuenta</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

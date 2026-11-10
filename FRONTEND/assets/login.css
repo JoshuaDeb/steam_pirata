@@ -1,0 +1,313 @@
+:root,
+[data-bs-theme="dark"] {
+    --sp-fondo: #0A0D16;
+    --sp-superficie: #111626;
+    --sp-superficie-2: #141B30;
+    --sp-segmentado: #141A2A;
+    --sp-borde: #1D2438;
+    --sp-borde-fuerte: #262E46;
+    --sp-texto: #E8EBF3;
+    --sp-texto-2: #B5BDD2;
+    --sp-tenue: #8E97AF;
+    --sp-acento: #3F6BFF;
+    --sp-acento-hover: #5A80FF;
+    --sp-banner: #1A2C6E;
+    --sp-banner-marca: #22388A;
+    --sp-peligro: #FF9494;
+    --sp-peligro-fuerte: #C2285A;
+    --sp-exito: #7EE2B8;
+    --bs-body-bg: var(--sp-fondo);
+    --bs-body-color: var(--sp-texto);
+    --bs-body-font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --bs-secondary-color: var(--sp-tenue);
+    --bs-border-color: var(--sp-borde-fuerte);
+    --bs-link-color: #93B1FF;
+    --bs-link-color-rgb: 147, 177, 255;
+    --bs-link-hover-color: #CEDBFF;
+    --bs-link-hover-color-rgb: 206, 219, 255;
+    --bs-primary: var(--sp-acento);
+    --bs-primary-rgb: 63, 107, 255;
+    --bs-danger: var(--sp-peligro);
+    --bs-danger-rgb: 255, 148, 148;
+    --bs-form-invalid-color: var(--sp-peligro);
+    --bs-form-invalid-border-color: var(--sp-peligro);
+    color-scheme: dark;
+}
+
+body {
+    background: var(--sp-fondo);
+    color: var(--sp-texto);
+    min-height: 100vh;
+}
+
+.btn {
+    --bs-btn-font-size: 14px;
+    --bs-btn-font-weight: 600;
+    --bs-btn-border-radius: 10px;
+    --bs-btn-padding-x: 16px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--sp-acento);
+    --bs-btn-border-color: var(--sp-acento);
+    --bs-btn-hover-bg: var(--sp-acento-hover);
+    --bs-btn-hover-border-color: var(--sp-acento-hover);
+    --bs-btn-active-bg: #3358D9;
+    --bs-btn-active-border-color: #3358D9;
+    --bs-btn-font-weight: 700;
+    background-image: none;
+}
+
+.btn-grande {
+    min-height: 48px;
+    border-radius: 14px;
+    padding-inline: 18px;
+}
+
+.acceso {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+}
+
+.acceso-marca {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - 32px);
+    padding: 40px;
+    border-radius: 24px;
+    background: var(--sp-banner);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 48px;
+}
+
+.banner-marca {
+    position: absolute;
+    right: -60px;
+    top: -130px;
+    font-size: 520px;
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    color: var(--sp-banner-marca);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.acceso-logo {
+    position: relative;
+    z-index: 1;
+    align-self: flex-start;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--sp-texto);
+    text-decoration: none;
+}
+
+.acceso-logo:hover {
+    color: #FFFFFF;
+}
+
+.acceso-mensaje {
+    position: relative;
+    z-index: 1;
+    max-width: 440px;
+}
+
+.acceso-titular {
+    margin: 0 0 16px;
+    font-size: clamp(34px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+}
+
+.acceso-mensaje p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #D3DBF8;
+}
+
+.acceso-formulario {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 12vh 24px 24px;
+}
+
+.acceso-caja {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.panel-titulo {
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.panel-subtitulo {
+    margin: 0 0 24px;
+    font-size: 14px;
+    color: var(--sp-tenue);
+}
+
+.segmentado {
+    --bs-nav-pills-border-radius: 10px;
+    --bs-nav-pills-link-active-bg: var(--sp-texto);
+    --bs-nav-pills-link-active-color: var(--sp-fondo);
+    --bs-nav-link-color: var(--sp-tenue);
+    --bs-nav-link-hover-color: var(--sp-texto);
+    --bs-nav-link-font-weight: 600;
+    --bs-nav-link-padding-x: 18px;
+    --bs-nav-link-padding-y: 0;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--sp-segmentado);
+    flex-wrap: nowrap;
+}
+
+.segmentado .nav-item {
+    flex: 1;
+}
+
+.segmentado .nav-link {
+    width: 100%;
+    min-height: 40px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.segmentado .nav-link.active {
+    font-weight: 700;
+}
+
+.form-label {
+    font-size: 13px;
+    color: var(--sp-tenue);
+    margin-bottom: 6px;
+}
+
+.form-control {
+    --bs-border-radius: 10px;
+    min-height: 44px;
+    font-size: 15px;
+    color: var(--sp-texto);
+    background-color: var(--sp-fondo);
+    border-color: var(--sp-borde-fuerte);
+}
+
+.form-control:focus {
+    color: var(--sp-texto);
+    background-color: var(--sp-fondo);
+    border-color: var(--sp-acento);
+    box-shadow: 0 0 0 3px rgba(63, 107, 255, .25);
+}
+
+.form-control.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(255, 148, 148, .25);
+}
+
+.form-text {
+    color: var(--sp-tenue);
+    font-size: 12px;
+}
+
+.tipo-cuenta {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid var(--sp-borde-fuerte);
+    border-radius: 14px;
+    background: var(--sp-superficie);
+    color: var(--sp-texto-2);
+    cursor: pointer;
+}
+
+.tipo-cuenta strong {
+    font-size: 15px;
+    color: var(--sp-texto);
+}
+
+.tipo-cuenta span {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--sp-tenue);
+}
+
+.tipo-cuenta:hover {
+    border-color: var(--sp-tenue);
+}
+
+.btn-check:checked+.tipo-cuenta {
+    border-color: var(--sp-acento);
+    background: var(--sp-superficie-2);
+    box-shadow: inset 0 0 0 1px var(--sp-acento);
+}
+
+.btn-check:focus-visible+.tipo-cuenta {
+    outline: 3px solid rgba(63, 107, 255, .45);
+    outline-offset: 2px;
+}
+
+.leyenda-tipo {
+    float: none;
+    width: auto;
+    padding: 0;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--sp-tenue);
+}
+
+@media (max-width: 991.98px) {
+    .acceso {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .acceso-marca {
+        min-height: 0;
+        padding: 24px;
+        gap: 28px;
+    }
+
+    .acceso-titular {
+        font-size: 30px;
+        margin-bottom: 0;
+    }
+
+    .acceso-mensaje p {
+        display: none;
+    }
+
+    .banner-marca {
+        font-size: 260px;
+        top: -60px;
+        right: -20px;
+    }
+
+    .acceso-formulario {
+        padding: 24px 4px 32px;
+    }
+}
