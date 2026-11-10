@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="es" data-bs-theme="dark">
 
 <head>
     <title>Amigos y Solicitudes</title>
@@ -11,10 +11,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link href="../assets/user_profile.css" rel="stylesheet" />
     <link href="../assets/user_friends.css" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/2d2e856ce3.js" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
@@ -51,7 +53,7 @@
         </nav>
     </header>
     <main class="pagina">
-        <nav aria-label="Ruta de navegacion" class="ruta">
+        <nav aria-label="Ruta de navegación" class="ruta">
             <a href="user_profile.html">Mi cuenta</a>
             / Amigos
         </nav>
@@ -61,12 +63,15 @@
                 <span class="eyebrow">
                     Comunidad
                 </span>
-                <h1 class="titulo-vista" id="tituloAmigos">Jugar tambien es conectar.</h1>
+                <h1 class="titulo-vista" id="tituloAmigos">Jugar también es conectar.</h1>
                 <p class="intro">
                     Encuentra jugadores, organiza tus amistades y administra tus solicitudes desde un solo lugar.
                 </p>
             </div>
-            <a id="" class="btn btn-primary btn-hero" href="#tabBuscar">+ Buscar jugadores</a>
+            <a class="btn btn-primary btn-hero" href="#tabsAmigos">
+                <i class="fa-solid fa-plus"></i>
+                Administrar amistades
+            </a>
         </section>
 
         <section aria-label="Resumen de amistades" class="row g-3 resumen">
@@ -78,8 +83,9 @@
                         </span>
                         <strong id="totalAmigos">3</strong>
                     </div>
-                    <span aria-hidden="true" class="resumen-icon">♧</span>
-                    <!-- Cambiar icono a uno más relacionado -->
+                    <span aria-hidden="true" class="resumen-icon">
+                        <i class="fa-solid fa-user-group"></i>
+                    </span>
                 </div>
             </div>
 
@@ -91,23 +97,27 @@
                         </span>
                         <strong id="totalRecibidas">2</strong>
                     </div>
-                    <span aria-hidden="true" class="resumen-icon">↓</span>
+                    <span aria-hidden="true" class="resumen-icon">
+                        <i class="fa-regular fa-envelope"></i>
+                    </span>
                 </div>
             </div>
             <div class="col-12 col-md-4">
                 <div class="resumen-item h-100">
                     <div>
                         <span class="fila-label">Solicitudes enviadas</span>
-                        <strong id="totalEnivadas">1</strong>
+                        <strong id="totalEnviadas">1</strong>
                     </div>
-                    <span aria-hidden="true" class="resumen-icon">↑</span>
+                    <span aria-hidden="true" class="resumen-icon">
+                        <i class="fa-solid fa-envelope"></i>
+                    </span>
                 </div>
             </div>
         </section>
 
         <!-- Menu para visualizar amigos, solicitudes o buscar jugadores -->
         <div class="panel-superior">
-            <ul aria-label="Adminsitrar amigos y solicitudes" class="nav nav-pills segmentado" id="tabsAmigos"
+            <ul aria-label="Administrar amigos y solicitudes" class="nav nav-pills segmentado" id="tabsAmigos"
                 role="tablist">
                 <li class="nav-item" role="presentation">
                     <button aria-controls="panelAmigos" aria-selected="true" class="nav-link active"
@@ -127,7 +137,7 @@
                 </li>
 
                 <li class="nav-item" role="presentation">
-                    <button aria-label="panelEnviadas" aria-selected="false" class="nav-link"
+                    <button aria-controls="panelEnviadas" aria-selected="false" class="nav-link"
                         data-bs-target="#panelEnviadas" data-bs-toggle="pill" id="tabEnviadas" role="tab" type="button">
                         Enviadas
                         <span class="cuenta-tab" id="cuentaEnviadas">1</span>
@@ -145,11 +155,11 @@
 
         <!-- Barra de búsqueda para los amigos del usuario -->
         <div class="tab-content">
-            <section aria-labelledby="tabAmigos" class="tab-pane fane show active" id="panelAmigos" role="tabpanel"
+            <section aria-labelledby="tabAmigos" class="tab-pane fade show active" id="panelAmigos" role="tabpanel"
                 tabindex="0">
                 <h2 class="titulo-seccion">Tu lista de amigos</h2>
                 <p class="descripcion-seccion">
-                    Consulta perfiles públicos o elimine una amistad cuando lo necesites.
+                    Consulta perfiles públicos o elimina una amistad cuando lo necesites.
                 </p>
                 <div class="herramientas">
                     <div class="campo-buscar">
@@ -200,7 +210,7 @@
                         <div class="persona-datos">
                             <h3 class="persona-nombre">LunaByte</h3>
                             <p class="persona-info">
-                                1 juegos en común - Amigos desde 2 nov 2026
+                                1 juego en común - Amigos desde 2 nov 2026
                             </p>
                         </div>
 
@@ -241,7 +251,7 @@
                     </div>
                 </div>
 
-                <!-- Codigo realizado en caso de que el usuario no tenga aún amigos, no utilizado en las vistas harcodeadas -->
+                <!-- Estado vacío de la lista de amigos -->
                 <div class="vacio" hidden="" id="vacioAmigos">
                     <span aria-hidden="true" class="signo">
                         :/
@@ -392,7 +402,7 @@
                 </div>
             </section>
 
-            <!-- Contenido de buscar jufadores-->
+            <!-- Contenido de buscar jugadores-->
             <section aria-labelledby="tabBuscar" class="tab-pane fade" id="panelBuscar" role="tabpanel" tabindex="0">
                 <h2 class="titulo-seccion">
                     Descubre jugadores
@@ -509,7 +519,7 @@
         </div>
     </main>
 
-    <!-- Consulta de un perfil público: no se muestran correos ni información privada. -->
+    <!-- Estado vacío de la lista de amigos -->
     <div aria-hidden="true" aria-labelledby="tituloPerfilPublico" class="modal fade" id="modalPerfilPublico"
         tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -584,7 +594,7 @@
         </div>
     </div>
 
-    <!-- Modal para rechar solicitud de amistad -->
+    <!-- Modal para rechazar solicitud de amistad -->
     <div aria-hidden="true" aria-labelledby="tituloRechazar" class="modal fade" id="modalRechazar" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -669,7 +679,7 @@
         </div>
     </div>
 
-    <!-- Modal para el envio de soliciutd de amistad -->
+    <!-- Modal para el envío de soliciutd de amistad -->
     <div aria-hidden="true" aria-labelledby="modalEnviarTitle" class="modal fade" id="modalEnviar" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

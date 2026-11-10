@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="es" data-bs-theme="dark">
+
+<head>
+    <title>Biblioteca y Favoritos</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS v5.3.8 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="../assets/user_profile.css" rel="stylesheet" />
+    <link href="../assets/user_library.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/2d2e856ce3.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header>
+        <!-- place navbar here -->
+        <nav class="navbar navbar-expand-md topbar" aria-label="Principal">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="store.html">SteamPirata</a>
+
+                <div class="d-flex align-items-center gap-3 order-md-last">
+                    <a class="btn btn-link px-0" href="login.html">Cerrar sesión</a>
+                    <a class="usuario-nav" href="user_profile.html" title="Mi perfil">
+                        <span class="d-none d-lg-inline">LuisDCG</span>
+                        <span class="avatar avatar-sm" aria-hidden="true">LD</span>
+                        <span class="visually-hidden">Ir a mi perfil</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false"
+                        aria-label="Abrir menú">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse justify-content-center" id="menuPrincipal">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="store.html">Catálogo</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page"
+                                href="user_library.html">Biblioteca</a></li>
+                        <li class="nav-item"><a class="nav-link" href="user_friends.html">Amigos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="user_profile.html">Perfil</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pagina">
+        <nav aria-label="Ruta de navegación" class="ruta">
+            <a href="user_profile.html">
+                Mi cuenta
+            </a>
+            / Biblioteca personal
+        </nav>
+        <section aria-labelledby="tituloBiblioteca" class="encabezado">
+            <div>
+                <span class="eyebrow">Colección de LuisDCG</span>
+                <h1 class="titulo-vista" id="tituloBiblioteca">Tu biblioteca, a tu manera.</h1>
+                <p class="intro">
+                    Encuentra tus videojuegos adquiridos, consulta sus detalles y guarda tus próximos
+                    descubrimientos en favoritos.
+                </p>
+            </div>
+            <a class="btn btn-primary boton-hero" href="store.html">
+                Explorar catálogo
+                <span aria-hidden="true">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </span>
+            </a>
+        </section>
+
+        <section aria-label="Resumen de mi colección" class="row g-3 resumen">
+            <div class="col-6 col-md-4">
+                <div class="resumen-item h-100">
+                    <div>
+                        <span class="fila-label">
+                            Juegos adquiridos
+                        </span>
+                        <strong id="totalAdquiridos">
+                            3
+                        </strong>
+                    </div>
+                    <span aria-hidden="true" class="marca">
+                        <i class="fa-solid fa-chess-board"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="resumen-item h-100">
+                    <div>
+                        <span class="fila-label">
+                            En favoritos
+                        </span>
+                        <strong id="totalFavoritos">
+                            3
+                        </strong>
+                    </div>
+                    <span aria-hidden="true" class="marca">
+                        <i class="fa-regular fa-heart"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="resumen-item h-100">
+                    <div>
+                        <span class="fila-label">
+                            Créditos disponibles
+                        </span>
+                        <strong>
+                            110
+                        </strong>
+                    </div>
+                    <span aria-hidden="true" class="marca">
+                        <i class="fa-solid fa-wallet"></i>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <div class="seccion-top">
+            <ul aria-label="Secciones de mi colección" class="nav nav-pills segmentado" id="tabsColeccion"
+                role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="panelBiblioteca" aria-selected="true" class="nav-link active"
+                        data-bs-target="#panelBiblioteca" data-bs-toggle="pill" id="tabBiblioteca" role="tab"
+                        type="button">
+                        Mi biblioteca
+                        <span class="contador-tab" id="contadorBiblioteca">
+                            3
+                        </span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="panelFavoritos" aria-selected="false" class="nav-link"
+                        data-bs-target="#panelFavoritos" data-bs-toggle="pill" id="tabFavoritos" role="tab"
+                        type="button">
+                        Favoritos
+                        <span class="contador-tab" id="contadorFavoritos">
+                            3
+                        </span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!--  -->
+        <div class="tab-content">
+            <section aria-labelledby="tabBiblioteca" class="tab-pane fade show active" id="panelBiblioteca"
+                role="tabpanel" tabindex="0">
+                <div class="controles">
+                    <div class="control-buscar">
+                        <label class="form-label" for="buscarBiblioteca">Buscar en mi biblioteca</label>
+                        <input autocomplete="off" class="form-control" id="buscarBiblioteca"
+                            placeholder="Nombre del videojuego..." type="search" />
+                    </div>
+                    <div class="control-select">
+                        <label class="form-label" for="filtrarBiblioteca">Estado</label>
+                        <select class="form-select" id="filtrarBiblioteca">
+                            <option value="todos">Todos los juegos</option>
+                            <option value="disponible">En catálogo</option>
+                            <option value="retirado">Retirados</option>
+                        </select>
+                    </div>
+                    <div class="control-select">
+                        <label class="form-label" for="ordenBiblioteca">Ordenar por</label>
+                        <select class="form-select" id="ordenBiblioteca">
+                            <option value="reciente">Adquisición reciente</option>
+                            <option value="nombre">Nombre A-Z</option>
+                            <option value="antiguo">Adquisición antigua</option>
+                        </select>
+                    </div>
+                </div>
+                <p aria-live="polite" class="cuenta-resultados" id="resultadosBiblioteca">
+                    Mostrando 3 de 3 videojuegos
+                </p>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 grilla-juegos" id="listaBiblioteca">
+                    <div class="col">
+                        <div class="juego-card h-100">
+                            <div class="cubierta arte-nebula">
+                                <strong>Nebula<br />Drift</strong>
+                                <span aria-hidden="true" class="letra">ND</span>
+                            </div>
+                            <div class="tarjeta-cuerpo">
+                                <span class="tipo-etiqueta">Carreras</span>
+                                <h2 class="juego-nombre">Nebula Drift</h2>
+                                <p class="metadatos mb-2">
+                                    Adquirido el 7 nov 2026 - 2 DLC informativos
+                                </p>
+                                <span class="chip">En mi biblioteca</span>
+
+                                <div class="tarjeta-acciones">
+                                    <button class="btn btn-primary flex-grow-1 btn-detalle"
+                                        data-bs-target="#modalDetalleNebula" data-bs-toggle="modal" type="button">
+                                        Ver detalles
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-resena" data-bs-target="#modalResena"
+                                        data-bs-toggle="modal" type="button">
+                                        Reseñar
+                                    </button>
+                                    <input aria-label="Guardar Nebula Drift en favoritos" autocomplete="off" checked=""
+                                        class="btn-check check-favorito" id="favorito-nebula-drift-1" type="checkbox" />
+                                    <label class="btn btn-outline-secondary boton-corazon" for="favorito-nebula-drift-1"
+                                        title="Agregar o quitar favorito">
+                                        <span aria-hidden="true" class="corazon-vacio">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </span>
+                                        <span aria-hidden="true" class="corazon-lleno">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="juego-card h-100">
+                            <div class="cubierta arte-pixel">
+                                <strong>Pixel<br />Harvest</strong>
+                                <span aria-hidden="true" class="letra">PH</span>
+                            </div>
+                            <div class="tarjeta-cuerpo">
+                                <span class="tipo-etiqueta">Simulación</span>
+                                <h2 class="juego-nombre">Pixel Harvest</h2>
+                                <p class="metadatos mb-2">
+                                    Adquirido el 3 nov 2026 - Sin DLC
+                                </p>
+                                <span class="chip">En mi biblioteca</span>
+                                <div class="tarjeta-acciones">
+                                    <button class="btn btn-primary flex-grow-1 btn-detalle"
+                                        data-bs-target="#modalDetallePixel" data-bs-toggle="modal" type="button">
+                                        Ver detalles
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-resena" data-bs-target="#modalResena"
+                                        data-bs-toggle="modal" type="button">
+                                        Reseñar
+                                    </button>
+                                    <input aria-label="Guardar Pixel Harvest en favoritos" autocomplete="off" checked=""
+                                        class="btn-check check-favorito" id="favorito-pixel-harvest-2"
+                                        type="checkbox" />
+                                    <label class="btn btn-outline-secondary boton-corazon"
+                                        for="favorito-pixel-harvest-2" title="Agregar o quitar favorito">
+                                        <span aria-hidden="true" class="corazon-vacio">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </span>
+                                        <span aria-hidden="true" class="corazon-lleno">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="juego-card h-100">
+                            <div class="cubierta arte-aurora">
+                                <strong>Aurora<br />Protocol</strong>
+                                <span aria-hidden="true" class="letra">AP</span>
+                            </div>
+                            <div class="tarjeta-cuerpo">
+                                <span class="tipo-etiqueta">Estrategia</span>
+                                <h2 class="juego-nombre">Aurora Protocol</h2>
+                                <p class="metadatos mb-2">
+                                    Adquirido el 28 oct 2026 - Sigue en tu biblioteca
+                                </p>
+                                <span class="chip chip-retiro">Retirado del catálogo</span>
+                                <div class="tarjeta-acciones">
+                                    <button class="btn btn-primary flex-grow-1 btn-detalle"
+                                        data-bs-target="#modalDetalleAurora" data-bs-toggle="modal" type="button">
+                                        Ver detalles
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-resena" data-bs-target="#modalResena"
+                                        data-bs-toggle="modal" type="button">
+                                        Reseñar
+                                    </button>
+                                    <input aria-label="Guardar Aurora Protocol en favoritos" autocomplete="off"
+                                        class="btn-check check-favorito" id="favorito-aurora-protocol-3"
+                                        type="checkbox" />
+                                    <label class="btn btn-outline-secondary boton-corazon"
+                                        for="favorito-aurora-protocol-3" title="Agregar o quitar favorito">
+                                        <span aria-hidden="true" class="corazon-vacio">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </span>
+                                        <span aria-hidden="true" class="corazon-lleno">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="vacio" hidden="" id="sinBiblioteca">
+                    <span aria-hidden="true" class="icono-vacio">
+                        :/
+                    </span>
+                    <strong>
+                        No encontramos videojuegos
+                    </strong>
+                    <p class="mb-0">
+                        Prueba otro término o cambia el filtro seleccionado.
+                    </p>
+                </div>
+                <div class="paginacion-area" id="paginacionBiblioteca">
+                    <span class="fila-meta" id="paginaInfoBiblioteca">Página 1 de 1</span>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary" disabled="" id="anteriorBiblioteca" type="button">
+                            Anterior
+                        </button>
+                        <button class="btn btn-outline-secondary" disabled="" id="siguienteBiblioteca" type="button">
+                            Siguiente
+                        </button>
+                    </div>
+                </div>
+                <p class="nota-fondo">
+                    Los videojuegos retirados del catálogo permanecen en tu biblioteca.
+                </p>
+            </section>
+            <section aria-labelledby="tabFavoritos" class="tab-pane fade" id="panelFavoritos" role="tabpanel"
+                tabindex="0">
+                <div class="controles">
+                    <div class="control-buscar">
+                        <label class="form-label" for="buscarFavoritos">Buscar en favoritos</label>
+                        <input autocomplete="off" class="form-control" id="buscarFavoritos"
+                            placeholder="¿Qué juego guardaste?" type="search" />
+                    </div>
+                    <div class="control-select">
+                        <label class="form-label" for="filtrarFavoritos">Disponibilidad</label>
+                        <select class="form-select" id="filtrarFavoritos">
+                            <option value="todos">Todos</option>
+                            <option value="adquirido">Ya adquiridos</option>
+                            <option value="pendiente">Por adquirir</option>
+                        </select>
+                    </div>
+                    <div class="control-select">
+                        <label class="form-label" for="ordenFavoritos">Ordenar por</label>
+                        <select class="form-select" id="ordenFavoritos">
+                            <option value="reciente">Agregado recientemente</option>
+                            <option value="nombre">Nombre A-Z</option>
+                        </select>
+                    </div>
+                </div>
+                <p aria-live="polite" class="cuenta-resultados" id="resultadosFavoritos">
+                    3 videojuegos en favoritos
+                </p>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 grilla-juegos" id="listaFavoritos">
+                    <div class="col">
+                        <div class="juego-card h-100">
+                            <div class="cubierta arte-nebula">
+                                <strong>Nebula<br />Drift</strong>
+                                <span aria-hidden="true" class="letra">ND</span>
+                            </div>
+                            <div class="tarjeta-cuerpo">
+                                <span class="tipo-etiqueta">Carreras</span>
+                                <h2 class="juego-nombre">Nebula Drift</h2>
+                                <p class="metadatos mb-2">
+                                    PixelStudio - 40 créditos
+                                </p>
+                                <span class="chip">Ya adquirido</span>
+
+                                <div class="tarjeta-acciones">
+                                    <button class="btn btn-primary flex-grow-1 btn-detalle"
+                                        data-bs-target="#modalDetalleNebula" data-bs-toggle="modal" type="button">
+                                        Ver detalles
+                                    </button>
+                                    <input aria-label="Guardar Nebula Drift en favoritos" autocomplete="off" checked=""
+                                        class="btn-check check-favorito" id="favorito-nebula-drift-4" type="checkbox" />
+                                    <label class="btn btn-outline-secondary boton-corazon" for="favorito-nebula-drift-4"
+                                        title="Agregar o quitar favorito">
+                                        <span aria-hidden="true" class="corazon-vacio">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </span>
+                                        <span aria-hidden="true" class="corazon-lleno">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="juego-card h-100">
+                            <div class="cubierta arte-cinder">
+                                <strong>Cinder<br />Vale</strong>
+                                <span aria-hidden="true" class="letra">CV</span>
+                            </div>
+                            <div class="tarjeta-cuerpo">
+                                <span class="tipo-etiqueta">Rol / aventura</span>
+                                <h2 class="juego-nombre">Cinder Vale</h2>
+                                <p class="metadatos mb-2">EmberWorks - 55 créditos</p>
+                                <span class="chip">Por adquirir</span>
+
+                                <div class="tarjeta-acciones">
+                                    <button class="btn btn-primary flex-grow-1 btn-detalle"
+                                        data-bs-target="#modalDetalleCinder" data-bs-toggle="modal" type="button">
+                                        Ver detalles
+                                    </button>
+                                    <input aria-label="Guardar Cinder Vale en favoritos" autocomplete="off" checked=""
+                                        class="btn-check check-favorito" id="favorito-cinder-vale-5" type="checkbox" />
+                                    <label class="btn btn-outline-secondary boton-corazon" for="favorito-cinder-vale-5"
+                                        title="Agregar o quitar favorito">
+                                        <span aria-hidden="true" class="corazon-vacio">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </span>
+                                        <span aria-hidden="true" class="corazon-lleno">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="juego-card h-100">
+                            <div class="cubierta arte-pixel">
+                                <strong>Pixel<br />Harvest</strong>
+                                <span aria-hidden="true" class="letra">PH</span>
+                            </div>
+                            <div class="tarjeta-cuerpo">
+                                <span class="tipo-etiqueta">Simulación</span>
+                                <h2 class="juego-nombre">Pixel Harvest</h2>
+                                <p class="metadatos mb-2">
+                                    PixelStudio - 25 créditos
+                                </p>
+                                <span class="chip">Ya adquirido</span>
+                                <div class="tarjeta-acciones">
+                                    <button class="btn btn-primary flex-grow-1 btn-detalle"
+                                        data-bs-target="#modalDetallePixel" data-bs-toggle="modal" type="button">
+                                        Ver detalles
+                                    </button>
+                                    <input aria-label="Guardar Pixel Harvest en favoritos" autocomplete="off" checked=""
+                                        class="btn-check check-favorito" id="favorito-pixel-harvest-6"
+                                        type="checkbox" />
+                                    <label class="btn btn-outline-secondary boton-corazon"
+                                        for="favorito-pixel-harvest-6" title="Agregar o quitar favorito">
+                                        <span aria-hidden="true" class="corazon-vacio">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </span>
+                                        <span aria-hidden="true" class="corazon-lleno">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="vacio" hidden="" id="sinFavoritos">
+                    <span aria-hidden="true" class="icono-vacio">
+                        ♡
+                    </span>
+                    <strong>No hay favoritos que mostrar</strong>
+                    <p class="mb-3">
+                        Guarda juegos desde el catálogo para encontrarlos aquí.
+                    </p>
+                    <a class="btn btn-outline-secondary" href="store.html">Explorar catálogo</a>
+                </div>
+                <div class="paginacion-area" id="paginacionFavoritos">
+                    <span class="fila-meta" id="paginaInfoFavoritos">Página 1 de 1</span>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary" disabled="" id="anteriorFavoritos" type="button">
+                            Anterior
+                        </button>
+                        <button class="btn btn-outline-secondary" disabled="" id="siguienteFavoritos" type="button">
+                            Siguiente
+                        </button>
+                    </div>
+                </div>
+                <p class="nota-fondo">
+                    Añadir un juego a favoritos no lo adquiere. Los juegos que aún no tienes se obtienen
+                    desde el catálogo utilizando créditos virtuales.
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal dejar reseña -->
+    <div aria-hidden="true" aria-labelledby="tituloResena" class="modal fade" id="modalResena" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloResena">
+                        Escribir reseña
+                    </h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+
+                <form id="formResena">
+                    <div class="modal-body d-flex flex-column gap-3">
+                        <p class="fila-meta mb-0" id="nombreJuegoResena">
+                            Comparte tu experiencia con un videojuego adquirido.
+                        </p>
+                        <div>
+                            <fieldset class="border-0 p-0 m-0">
+                                <legend class="form-label fs-6">Calificación</legend>
+                                <div class="calificacion-estrellas">
+
+                                    <input type="radio" class="btn-check" name="calificacion" id="estrella5" value="5"
+                                        required>
+                                    <label for="estrella5" title="5 estrellas">
+                                        <i class="fa-solid fa-star"></i>
+                                        <span class="visually-hidden">5 estrellas</span>
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="calificacion" id="estrella4" value="4">
+                                    <label for="estrella4" title="4 estrellas">
+                                        <i class="fa-solid fa-star"></i>
+                                        <span class="visually-hidden">4 estrellas</span>
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="calificacion" id="estrella3" value="3">
+                                    <label for="estrella3" title="3 estrellas">
+                                        <i class="fa-solid fa-star"></i>
+                                        <span class="visually-hidden">3 estrellas</span>
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="calificacion" id="estrella2" value="2">
+                                    <label for="estrella2" title="2 estrellas">
+                                        <i class="fa-solid fa-star"></i>
+                                        <span class="visually-hidden">2 estrellas</span>
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="calificacion" id="estrella1" value="1">
+                                    <label for="estrella1" title="1 estrella">
+                                        <i class="fa-solid fa-star"></i>
+                                        <span class="visually-hidden">1 estrella</span>
+                                    </label>
+
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div>
+                            <label class="form-label" for="comentarioResena">
+                                Tu opinión
+                            </label>
+                            <textarea class="form-control" id="comentarioResena" maxlength="600" minlength="10"
+                                placeholder="&iquest;Qu&eacute; te pareci&oacute; el videojuego? (m&iacute;nimo 10 caracteres)"
+                                required="" rows="4"></textarea>
+                            <span class="form-text">
+                                La primera reseña válida por videojuego adquirido otorga 10
+                                créditos, una sola vez.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                            Cancelar
+                        </button>
+                        <button class="btn btn-primary" type="button">Publicar reseña</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLES -->
+    <div aria-hidden="true" aria-labelledby="tituloDetalleNebula" class="modal fade" id="modalDetalleNebula"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloDetalleNebula">Nebula Drift</h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3">
+                    <p class="info-modal mb-0">
+                        Carreras futuristas en pistas espaciales con desafíos de velocidad.
+                    </p>
+                    <div>
+                        <span class="fila-label">Desarrollador</span>
+                        <div class="fila-valor">PixelStudio</div>
+                    </div>
+                    <div>
+                        <span class="fila-label">Categoría y clasificación</span>
+                        <div class="fila-valor">Carreras - E</div>
+                    </div>
+                    <div>
+                        <span class="fila-label">Contenido adicional</span>
+                        <div class="fila-valor">2 DLC informativos</div>
+                    </div>
+                    <p class="fila-meta mb-0">
+                        Adquirido - Disponible en el catálogo
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Cerrar
+                    </button>
+                    <a class="btn btn-primary" href="store.html">Ir al catálogo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div aria-hidden="true" aria-labelledby="tituloDetallePixel" class="modal fade" id="modalDetallePixel"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloDetallePixel">
+                        Pixel Harvest
+                    </h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3">
+                    <p class="info-modal mb-0">
+                        Construye y cuida tu propia granja pixelada a tu ritmo.
+                    </p>
+                    <div>
+                        <span class="fila-label">Desarrollador</span>
+                        <div class="fila-valor">
+                            PixelStudio
+                        </div>
+                    </div>
+                    <div>
+                        <span class="fila-label">Categoría y clasificación</span>
+                        <div class="fila-valor">
+                            Simulación - E
+                        </div>
+                    </div>
+                    <div>
+                        <span class="fila-label">Contenido adicional</span>
+                        <div class="fila-valor">
+                            Sin DLC
+                        </div>
+                    </div>
+                    <p class="fila-meta mb-0">
+                        Adquirido - Disponible en el catálogo
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Cerrar
+                    </button>
+                    <a class="btn btn-primary" href="store.html">Ir al catálogo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div aria-hidden="true" aria-labelledby="tituloDetalleAurora" class="modal fade" id="modalDetalleAurora"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloDetalleAurora">Aurora Protocol</h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3">
+                    <p class="info-modal mb-0">
+                        Toma decisiones tácticas para dirigir una colonia distante.
+                    </p>
+                    <div>
+                        <span class="fila-label">Desarrollador</span>
+                        <div class="fila-valor">
+                            Northwind Games
+                        </div>
+                    </div>
+                    <div>
+                        <span class="fila-label">Categoría y clasificación</span>
+                        <div class="fila-valor">
+                            Estrategia - T
+                        </div>
+                    </div>
+                    <div>
+                        <span class="fila-label">Contenido adicional</span>
+                        <div class="fila-valor">
+                            Sin DLC
+                        </div>
+                    </div>
+                    <p class="fila-meta mb-0">
+                        Adquirido - Retirado del catálogo; permanece en tu biblioteca
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Cerrar
+                    </button>
+                    <a class="btn btn-primary" href="store.html">
+                        Ir al catálogo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="tituloDetalleCinder" class="modal fade" id="modalDetalleCinder"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloDetalleCinder">Cinder Vale</h2>
+                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
+                    </button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3">
+                    <p class="info-modal mb-0">
+                        Un viaje de rol por aldeas, cuevas y territorios olvidados.
+                    </p>
+                    <div>
+                        <span class="fila-label">Desarrollador</span>
+                        <div class="fila-valor">
+                            EmberWorks
+                        </div>
+                    </div>
+                    <div>
+                        <span class="fila-label">Categoría y clasificación</span>
+                        <div class="fila-valor">
+                            Rol / aventura - T
+                        </div>
+                    </div>
+                    <div>
+                        <span class="fila-label">Contenido adicional</span>
+                        <div class="fila-valor">Sin DLC</div>
+                    </div>
+                    <p class="fila-meta mb-0">
+                        Pendiente de adquirir - 55 créditos
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
+                        Cerrar
+                    </button>
+                    <a class="btn btn-primary" href="store.html">Ir al catálogo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <!-- place footer here -->
+    </footer>
+    <!-- Bootstrap JavaScript Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
