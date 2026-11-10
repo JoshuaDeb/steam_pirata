@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <title>Amigos y Solicitudes</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS v5.3.8 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="../assets/user_profile.css" rel="stylesheet" />
+    <link href="../assets/user_friends.css" rel="stylesheet" />
+</head>
+
+<body>
+    <header>
+        <!-- place navbar here -->
+        <nav class="navbar navbar-expand-md topbar" aria-label="Principal">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="store.html">SteamPirata</a>
+
+                <div class="d-flex align-items-center gap-3 order-md-last">
+                    <a class="btn btn-link px-0" href="login.html">Cerrar sesión</a>
+                    <a class="usuario-nav" href="user_profile.html" title="Mi perfil">
+                        <span class="d-none d-lg-inline">LuisDCG</span>
+                        <span class="avatar avatar-sm" aria-hidden="true">LD</span>
+                        <span class="visually-hidden">Ir a mi perfil</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false"
+                        aria-label="Abrir menú">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse justify-content-center" id="menuPrincipal">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="store.html">Catálogo</a></li>
+                        <li class="nav-item"><a class="nav-link" href="user_library.html">Biblioteca</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page"
+                                href="user_friends.html">Amigos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="user_profile.html">Perfil</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="pagina">
+        <nav aria-label="Ruta de navegacion" class="ruta">
+            <a href="user_profile.html">Mi cuenta</a>
+            / Amigos
+        </nav>
+
+        <section aria-labelledby="tituloAmigos" class="encabezado">
+            <div>
+                <span class="eyebrow">
+                    Comunidad
+                </span>
+                <h1 class="titulo-vista" id="tituloAmigos">Jugar tambien es conectar.</h1>
+                <p class="intro">
+                    Encuentra jugadores, organiza tus amistades y administra tus solicitudes desde un solo lugar.
+                </p>
+            </div>
+            <a id="" class="btn btn-primary btn-hero" href="#tabBuscar">+ Buscar jugadores</a>
+        </section>
+
+        <section aria-label="Resumen de amistades" class="row g-3 resumen">
+            <div class="col-6 col-md-4">
+                <div class="resumen-item h-100">
+                    <div>
+                        <span class="fila-label">
+                            Mis amigos
+                        </span>
+                        <strong id="totalAmigos">3</strong>
+                    </div>
+                    <span aria-hidden="true" class="resumen-icon">♧</span>
+                    <!-- Cambiar icono a uno más relacionado -->
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <div class="resumen-item h-100">
+                    <div>
+                        <span class="fila-label">
+                            Solicitudes Recibidas
+                        </span>
+                        <strong id="totalRecibidas">2</strong>
+                    </div>
+                    <span aria-hidden="true" class="resumen-icon">↓</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="resumen-item h-100">
+                    <div>
+                        <span class="fila-label">Solicitudes enviadas</span>
+                        <strong id="totalEnivadas">1</strong>
+                    </div>
+                    <span aria-hidden="true" class="resumen-icon">↑</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu para visualizar amigos, solicitudes o buscar jugadores -->
+        <div class="panel-superior">
+            <ul aria-label="Adminsitrar amigos y solicitudes" class="nav nav-pills segmentado" id="tabsAmigos"
+                role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="panelAmigos" aria-selected="true" class="nav-link active"
+                        data-bs-target="#panelAmigos" data-bs-toggle="pill" id="tabAmigos" role="tab" type="button">
+                        Mis amigos
+                        <span class="cuenta-tab" id="cuentaAmigos">3</span>
+                    </button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="panelRecibidos" aria-selected="false" class="nav-link"
+                        data-bs-target="#panelRecibidas" data-bs-toggle="pill" id="tabRecibidas" role="tab"
+                        type="button">
+                        Recibidas
+                        <span class="cuenta-tab" id="cuentaRecibidas">2</span>
+                    </button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                    <button aria-label="panelEnviadas" aria-selected="false" class="nav-link"
+                        data-bs-target="#panleEnviadas" data-bs-toggle="pill" id="tabEnviadas" role="tab" type="button">
+                        Enviadas
+                        <span class="cuenta-tab" id="cuentaEnviadas">1</span>
+                    </button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="panelBuscar" aria-selected="false" class="nav-link"
+                        data-bs-target="#panelBuscar" data-bs-toggle="pill" id="tabBuscar" role="tab" type="button">
+                        Buscar jugadores
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Barra de búsqueda para los amigos del usuario -->
+        <div class="tab-content">
+            <section aria-labelledby="tabAmigos" class="tab-pane fane show active" id="panelAmigos" role="tabpanel"
+                tabindex="0">
+                <h2 class="titulo-seccion">Tu lista de amigos</h2>
+                <p class="descripcion-seccion">
+                    Consulta perfiles públicos o elimine una amistad cuando lo necesites.
+                </p>
+                <div class="herramientas">
+                    <div class="campo-buscar">
+                        <label for="buscarAmigos" class="form-label">Buscar amigo</label>
+                        <input type="search" autocomplete="off" class="form-control" id="buscarAmigos"
+                            placeholder="Buscar por nombre de usuario...">
+                    </div>
+
+                    <div class="campo-orden">
+                        <label for="ordenAmigos" class="form-label">Ordenar por</label>
+                        <select class="form-select" id="ordenAmigos">
+                            <option value="nombre">Nombre A-Z</option>
+                            <option value="reciente">Amistad más reciente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="vstack gap-3 listado-personas" id="listaAmigos">
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-violeta">
+                            NR
+                        </div>
+
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">NovaRider</h3>
+                            <p class="persona-info">
+                                2 juegos en común - Amigos desde 8 nov 2026
+                            </p>
+                        </div>
+
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-link text-danger btn-eliminar-amigo"
+                                data-bs-target="#modalEliminarAmigo" data-bs-toggle="modal" type="button">
+                                Eliminar amigo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-azul">
+                            LB
+                        </div>
+
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">LunaByte</h3>
+                            <p class="persona-info">
+                                1 juegos en común - Amigos desde 2 nov 2026
+                            </p>
+                        </div>
+
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-link text-danger btn-eliminar-amigo"
+                                data-bs-target="#modalEliminarAmigo" data-bs-toggle="modal" type="button">
+                                Eliminar amigo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="persona-card">
+                        <div aria-hidden="true" class="avatar-persona avatar-verde">
+                            CM
+                        </div>
+
+                        <div class="persona-datos">
+                            <h3 class="persona-nombre">CraftMage</h3>
+                            <p class="persona-info">
+                                3 juegos en común - Amigos desde 28 oct 2026
+                            </p>
+                        </div>
+
+                        <div class="persona-acciones">
+                            <button class="btn btn-outline-secondary btn-ver-perfil"
+                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                Ver perfil
+                            </button>
+                            <button class="btn btn-link text-danger btn-eliminar-amigo"
+                                data-bs-target="#modalEliminarAmigo" data-bs-toggle="modal" type="button">
+                                Eliminar amigo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Codigo realizado en caso de que el usuario no tenga aún amigos, no utilizado en las vistas harcodeadas -->
+                <div class="vacio" hidden="" id="vacioAmigos">
+                    <span aria-hidden="true" class="signo">
+                        :/
+                    </span>
+                    <strong>No se encontraron amigos</strong>
+                    <p class="mb-0">
+                        Prueba con otro nombre o busca jugadores para conectar
+                    </p>
+                </div>
+
+                <!-- botones y pie de pagina -->
+                <div class="paginacion-area" id="paginacionAmigos">
+                    <span class="fila-meta" id="paginaInfoAmigos">Página 1 de 1</span>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary" disabled="" id="anteriorAmigos" type="button">Anterior</button>
+                        <button class="btn btn-outline-secondary" disabled="" id="siguienteAmigos" type="button">Siguiente</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+
+    </main>
+    <footer>
+        <!-- place footer here -->
+    </footer>
+    <!-- Bootstrap JavaScript Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
