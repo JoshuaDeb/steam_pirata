@@ -12,6 +12,7 @@
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
     <link rel="stylesheet" href="../assets/store.css">
+    <script src="https://kit.fontawesome.com/1eb4fd1ec9.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -23,7 +24,7 @@
         - Botón de favoritos de cada tarjeta: solo para jugadores.
     -->
     <header>
-        <nav class="navbar navbar-expand-md topbar" aria-label="Principal">
+        <nav class="navbar navbar-expand-md topbar" >
             <div class="container-fluid">
                 <a class="navbar-brand" href="store.html">SteamPirata</a>
 
@@ -35,8 +36,7 @@
                         <span class="visually-hidden">Ir a mi perfil</span>
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false"
-                        aria-label="Abrir menú">
+                        data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                 </div>
@@ -158,16 +158,20 @@
                 <li class="col">
                     <article class="juego position-relative">
                         <div class="juego-portada portada-1">
-                            <span class="juego-marca" aria-hidden="true">ND</span>
+                                <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/n64_diddykongracing_label_thumb.jpg" alt="Nebula Drift">
                             <span class="juego-edad" title="Apto para todo público">E · Todos</span>
                             <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Nebula Drift a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                                aria-label="Agregar Nebula Drift a favoritos"><span
+                                    aria-hidden="true"><i class="fa-regular fa-heart"></i></span></button>
                         </div>
                         <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Nebula Drift</a></h3>
+                            <h3 class="juego-titulo"><a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego">Nebula Drift</a>
+                            </h3>
                             <p class="juego-genero">Carreras</p>
                             <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.5 <span class="fila-meta">(12)</span></span>
+                                <span class="juego-calif"><span aria-hidden="true"><i class="fa-solid fa-star"></i></span> 4.5 <span
+                                        class="fila-meta">(12)</span></span>
                                 <span class="juego-precio">40 créditos</span>
                             </div>
                         </div>
@@ -176,16 +180,20 @@
                 <li class="col">
                     <article class="juego position-relative">
                         <div class="juego-portada portada-2">
-                            <span class="juego-marca" aria-hidden="true">HK</span>
+                            <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/hollow-knight-thumb.jpg" alt="Hollow Keep">
                             <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
                             <button class="favorito" type="button" aria-pressed="true"
-                                aria-label="Quitar Hollow Keep de favoritos"><span aria-hidden="true">&#9829;&#xFE0E;</span></button>
+                                aria-label="Quitar Hollow Keep de favoritos"><span
+                                    aria-hidden="true"><i class="fa-solid fa-heart"></i></span></button>
                         </div>
                         <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Hollow Keep</a></h3>
+                            <h3 class="juego-titulo"><a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego">Hollow Keep</a>
+                            </h3>
                             <p class="juego-genero">Aventura</p>
                             <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.2 <span class="fila-meta">(8)</span></span>
+                                <span class="juego-calif"><span aria-hidden="true"><i class="fa-solid fa-star"></i></span> 4.2 <span
+                                        class="fila-meta">(8)</span></span>
                                 <span class="juego-precio">60 créditos</span>
                             </div>
                         </div>
@@ -194,13 +202,16 @@
                 <li class="col">
                     <article class="juego position-relative">
                         <div class="juego-portada portada-3">
-                            <span class="juego-marca" aria-hidden="true">PH</span>
+                            <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/Logo_of_Stardew_Valley.png" alt="Pixel Harvest">
                             <span class="juego-edad" title="Apto para todo público">E · Todos</span>
                             <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Pixel Harvest a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
+                                aria-label="Agregar Pixel Harvest a favoritos"><span
+                                    aria-hidden="true"><i class="fa-regular fa-heart"></i></span></button>
                         </div>
                         <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Pixel Harvest</a></h3>
+                            <h3 class="juego-titulo"><a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego">Pixel Harvest</a>
+                            </h3>
                             <p class="juego-genero">Simulación</p>
                             <div class="juego-pie">
                                 <span class="juego-calif fila-meta">Sin reseñas</span>
@@ -212,179 +223,180 @@
                 <li class="col">
                     <article class="juego position-relative">
                         <div class="juego-portada portada-4">
-                            <span class="juego-marca" aria-hidden="true">EV</span>
+                            <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/fire-emblem-warriors-cover_cover_small.jpg" alt="">
                             <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
                             <button class="favorito" type="button" aria-pressed="true"
-                                aria-label="Quitar Ember Vale de favoritos"><span aria-hidden="true">&#9829;&#xFE0E;</span></button>
+                                aria-label="Quitar Ember Vale de favoritos"><span
+                                    aria-hidden="true"><i class="fa-solid fa-heart"></i></span></button>
                         </div>
                         <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Ember Vale</a></h3>
+                            <h3 class="juego-titulo"><a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego"">Ember Vale</a>
+                            </h3>
                             <p class="juego-genero">RPG</p>
                             <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.8 <span class="fila-meta">(31)</span></span>
+                                <span class="juego-calif"><span aria-hidden="true"><i class="fa-solid fa-star"></i></span> 4.8 <span
+                                        class="fila-meta">(31)</span></span>
                                 <span class="juego-precio">80 créditos</span>
                             </div>
                         </div>
                     </article>
                 </li>
-                <li class="col">
-                    <article class="juego position-relative">
-                        <div class="juego-portada portada-5">
-                            <span class="juego-marca" aria-hidden="true">LS</span>
-                            <span class="juego-edad" title="Mayores de 17 años">M · +17</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Last Signal a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
-                        </div>
-                        <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Last Signal</a></h3>
-                            <p class="juego-genero">Terror</p>
-                            <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.0 <span class="fila-meta">(17)</span></span>
-                                <span class="juego-precio">45 créditos</span>
-                            </div>
-                        </div>
-                    </article>
-                </li>
-                <li class="col">
-                    <article class="juego position-relative">
-                        <div class="juego-portada portada-6">
-                            <span class="juego-marca" aria-hidden="true">KR</span>
-                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Kickline Rush a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
-                        </div>
-                        <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Kickline Rush</a></h3>
-                            <p class="juego-genero">Deportes</p>
-                            <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 3.9 <span class="fila-meta">(9)</span></span>
-                                <span class="juego-precio">30 créditos</span>
-                            </div>
-                        </div>
-                    </article>
-                </li>
-                <li class="col">
-                    <article class="juego position-relative">
-                        <div class="juego-portada portada-7">
-                            <span class="juego-marca" aria-hidden="true">CA</span>
-                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Crown of Ash a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
-                        </div>
-                        <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Crown of Ash</a></h3>
-                            <p class="juego-genero">Estrategia</p>
-                            <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.6 <span class="fila-meta">(22)</span></span>
-                                <span class="juego-precio">55 créditos</span>
-                            </div>
-                        </div>
-                    </article>
-                </li>
-                <li class="col">
-                    <article class="juego position-relative">
-                        <div class="juego-portada portada-8">
-                            <span class="juego-marca" aria-hidden="true">NA</span>
-                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Neon Alley a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
-                        </div>
-                        <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Neon Alley</a></h3>
-                            <p class="juego-genero">Acción</p>
-                            <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.1 <span class="fila-meta">(14)</span></span>
-                                <span class="juego-precio">35 créditos</span>
-                            </div>
-                        </div>
-                    </article>
-                </li>
-                <li class="col">
-                    <article class="juego position-relative">
-                        <div class="juego-portada portada-9">
-                            <span class="juego-marca" aria-hidden="true">SA</span>
-                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Saltwater Atlas a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
-                        </div>
-                        <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Saltwater Atlas</a></h3>
-                            <p class="juego-genero">Aventura</p>
-                            <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.7 <span class="fila-meta">(6)</span></span>
-                                <span class="juego-precio">20 créditos</span>
-                            </div>
-                        </div>
-                    </article>
-                </li>
-                <li class="col">
-                    <article class="juego position-relative">
-                        <div class="juego-portada portada-10">
-                            <span class="juego-marca" aria-hidden="true">RR</span>
-                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Rustbelt Rally a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
-                        </div>
-                        <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Rustbelt Rally</a></h3>
-                            <p class="juego-genero">Carreras</p>
-                            <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 3.8 <span class="fila-meta">(5)</span></span>
-                                <span class="juego-precio">50 créditos</span>
-                            </div>
-                        </div>
-                    </article>
-                </li>
-                <li class="col">
-                    <article class="juego position-relative">
-                        <div class="juego-portada portada-11">
-                            <span class="juego-marca" aria-hidden="true">DW</span>
-                            <span class="juego-edad" title="Mayores de 17 años">M · +17</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Deepwatch a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
-                        </div>
-                        <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Deepwatch</a></h3>
-                            <p class="juego-genero">Terror</p>
-                            <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.3 <span class="fila-meta">(19)</span></span>
-                                <span class="juego-precio">65 créditos</span>
-                            </div>
-                        </div>
-                    </article>
-                </li>
-                <li class="col">
-                    <article class="juego position-relative">
-                        <div class="juego-portada portada-12">
-                            <span class="juego-marca" aria-hidden="true">TT</span>
-                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Tiny Tavern a favoritos"><span aria-hidden="true">&#9825;&#xFE0E;</span></button>
-                        </div>
-                        <div class="juego-cuerpo">
-                            <h3 class="juego-titulo"><a class="stretched-link" href="game_detail.html">Tiny Tavern</a></h3>
-                            <p class="juego-genero">Simulación</p>
-                            <div class="juego-pie">
-                                <span class="juego-calif"><span aria-hidden="true">&#9733;</span> 4.4 <span class="fila-meta">(11)</span></span>
-                                <span class="juego-precio">15 créditos</span>
-                            </div>
-                        </div>
-                    </article>
-                </li>
+
             </ul>
         </section>
 
         <nav aria-label="Paginación del catálogo">
             <ul class="pagination justify-content-center flex-wrap mb-0">
-                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
                 <li class="page-item active" aria-current="page"><span class="page-link">1</span></li>
-                <li class="page-item"><a class="page-link" href="store.html?pagina=2">2</a></li>
-                <li class="page-item"><a class="page-link" href="store.html?pagina=3">3</a></li>
-                <li class="page-item"><a class="page-link" href="store.html?pagina=2">Siguiente</a></li>
             </ul>
         </nav>
     </main>
 
+    <div class="modal fade" id="modalJuego" tabindex="-1" aria-labelledby="juegoTitulo1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-juego">
+            <div class="modal-content">
+
+                <button type="button" class="btn-close cerrar-modal" data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
+
+                <div class="modal-body d-flex flex-column gap-4">
+
+                    <div class="d-flex align-items-start gap-3 pe-5">
+                        <div class="portada-modal portada-1" aria-hidden="true">
+                            <img src="../assets/images/Wallpaper.png">
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            <span class="fila-meta">Carreras · E · Todos</span>
+                            <h2 class="modal-title" id="juegoTitulo1">Nebula Drift</h2>
+                            <p class="calif-modal mb-0">
+                                <span class="estrellas" role="img" aria-label="4.5 de 5 estrellas"><i class="fa-solid fa-star"></i></span>
+                                4.5 <span class="fila-meta">· 12 reseñas</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <p class="mb-0">Carreras antigravedad a través de cinturones de asteroides.</p>
+
+                    <dl class="ficha">
+                        <div class="ficha-fila">
+                            <dt>Desarrollador</dt>
+                            <dd>PixelStudio</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>Especificaciones</dt>
+                            <dd>Windows 10 · Intel i5 · 8 GB RAM · 20 GB</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>DLC incluidos</dt>
+                            <dd>Cinturón de Orión · Pack de naves clásicas</dd>
+                        </div>
+                    </dl>
+
+                    <section aria-labelledby="resenasTitulo1">
+                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                            <h3 class="resenas-titulo" id="resenasTitulo1">Reseñas</h3>
+                            <span class="fila-meta">12 reseñas · promedio 4.5 de 5</span>
+                        </div>
+
+                        <div class="tab-content resenas-paginas">
+                            <div class="tab-pane fade show active" id="resenas1-pag1" role="tabpanel"
+                                aria-labelledby="resenas1-tab1" tabindex="0">
+                                <ul class="resenas">
+                                    <li class="resena">
+                                        <article>
+                                            <header class="resena-cabecera">
+                                                <span class="avatar avatar-sm" aria-hidden="true">MG</span>
+                                                <div class="d-flex flex-column">
+                                                    <strong>MarianaGC</strong>
+                                                    <span class="fila-meta">7 nov 2026</span>
+                                                </div>
+                                                <span class="estrellas" role="img"
+                                                    aria-label="5 de 5 estrellas"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+                                            </header>
+                                            <p class="resena-texto">Las pistas del cinturón de asteroides son una
+                                                locura. La sensación de velocidad se siente muy bien, tanto con control
+                                                como con teclado.</p>
+                                            <div class="respuesta">
+                                                <div class="respuesta-cab">
+                                                    <strong>Respuesta de PixelStudio</strong>
+                                                    <span class="etiqueta-dev">Desarrollador</span>
+                                                </div>
+                                                <p>¡Gracias, Mariana! Las pistas de asteroides fueron lo que más
+                                                    pulimos.</p>
+                                            </div>
+                                        </article>
+                                    </li>
+                                    <li class="resena">
+                                        <article>
+                                            <header class="resena-cabecera">
+                                                <span class="avatar avatar-sm" aria-hidden="true">TP</span>
+                                                <div class="d-flex flex-column">
+                                                    <strong>TeoPlay</strong>
+                                                    <span class="fila-meta">6 nov 2026</span>
+                                                </div>
+                                                <span class="estrellas" role="img"
+                                                    aria-label="5 de 5 estrellas"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+                                            </header>
+                                            <p class="resena-texto">Perfecto para partidas cortas. Cada carrera dura
+                                                unos tres minutos y siempre quieres una más.</p>
+                                        </article>
+                                    </li>
+                                    <li class="resena">
+                                        <article>
+                                            <header class="resena-cabecera">
+                                                <span class="avatar avatar-sm" aria-hidden="true">RV</span>
+                                                <div class="d-flex flex-column">
+                                                    <strong>RodriV</strong>
+                                                    <span class="fila-meta">5 nov 2026</span>
+                                                </div>
+                                                <span class="estrellas" role="img"
+                                                    aria-label="4 de 5 estrellas"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span
+                                                        class="vacia"><i class="fa-solid fa-star"></i></span></span>
+                                            </header>
+                                            <p class="resena-texto">Muy buen juego, aunque la dificultad sube de golpe
+                                                en la tercera copa. Me faltó un modo de práctica.</p>
+                                            <div class="respuesta">
+                                                <div class="respuesta-cab">
+                                                    <strong>Respuesta de PixelStudio</strong>
+                                                    <span class="etiqueta-dev">Desarrollador</span>
+                                                </div>
+                                                <p>Tomamos nota, Rodrigo: un modo de práctica libre está en nuestra
+                                                    lista de pendientes.</p>
+                                            </div>
+                                        </article>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        <nav class="mt-3" aria-label="Páginas de reseñas">
+                            <ul class="pagination justify-content-center mb-0" role="tablist">
+                                <li role="presentation">
+                                    <button class="page-link active" id="resenas1-tab1" type="button" role="tab"
+                                        data-bs-toggle="pill" data-bs-target="#resenas1-pag1"
+                                        aria-controls="resenas1-pag1" aria-selected="true"
+                                        aria-label="Página 1 de reseñas">1</button>
+                                </li>
+
+                            </ul>
+                        </nav>
+                    </section>
+                </div>
+
+                <div class="modal-footer justify-content-between">
+                    <div class="d-flex flex-column">
+                        <span class="precio-modal">40 créditos</span>
+                        <span class="fila-meta">Tu saldo: 110 créditos</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary btn-grande" data-bs-toggle="modal"
+                            data-bs-target="#modalAdquirir1">Adquirir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

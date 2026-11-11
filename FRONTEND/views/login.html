@@ -49,52 +49,46 @@
                 <div class="tab-content">
 
                     <!-- Inicio de sesión -->
-                    <div class="tab-pane fade show active" id="panelEntrar" role="tabpanel" aria-labelledby="tabEntrar"
-                        tabindex="0">
+                    <div class="tab-pane fade show active" id="panelEntrar">
                         <h2 class="panel-titulo">Te estábamos esperando</h2>
                         <p class="panel-subtitulo">Entra con el correo y la contraseña de tu cuenta.</p>
 
-                        <form class="d-flex flex-column gap-3" novalidate>
+                        <form class="d-flex flex-column gap-3" action="./user_library.html">
                             <div>
                                 <label class="form-label" for="correoEntrar">Correo electrónico</label>
-                                <input class="form-control" type="email" id="correoEntrar" autocomplete="email"
-                                    placeholder="nombre@dominio.com">
+                                <input class="form-control" type="email" id="correoEntrar" autocomplete="off"
+                                    placeholder="nombre@dominio.com" required>
                             </div>
                             <div>
                                 <label class="form-label" for="passEntrar">Contraseña</label>
                                 <input class="form-control" type="password" id="passEntrar"
-                                    autocomplete="current-password">
+                                    autocomplete="off" required>
                             </div>
-                            <a class="btn btn-primary btn-grande w-100 mt-2" href="store.html">Iniciar sesión</a>
+                            <button type="submit" class="btn btn-primary btn-grande w-100 mt-2">Iniciar sesión</button>
                         </form>
                     </div>
 
                     <!-- Registro -->
-                    <div class="tab-pane fade" id="panelRegistro" role="tabpanel" aria-labelledby="tabRegistro"
-                        tabindex="0">
+                    <div class="tab-pane fade" id="panelRegistro">
                         <h2 class="panel-titulo">Crea tu cuenta</h2>
                         <p class="panel-subtitulo">Solo necesitas un nombre, un correo y elegir cómo vas a usar la
                             plataforma.</p>
 
-                        <form class="d-flex flex-column gap-3" novalidate>
+                        <form class="d-flex flex-column gap-3" action="./user_library.html">
                             <div>
                                 <label class="form-label" for="nombreRegistro">Nombre de usuario</label>
-                                <input class="form-control" type="text" id="nombreRegistro" maxlength="20"
-                                    autocomplete="username" aria-describedby="ayudaNombre">
-                                <div class="form-text" id="ayudaNombre">De 3 a 20 caracteres: letras, números o guion
-                                    bajo.</div>
+                                <input class="form-control" type="text" id="nombreRegistro"
+                                    autocomplete="off" required>
                             </div>
                             <div>
                                 <label class="form-label" for="correoRegistro">Correo electrónico</label>
-                                <input class="form-control" type="email" id="correoRegistro" autocomplete="email"
-                                    placeholder="nombre@dominio.com">
+                                <input class="form-control" type="email" id="correoRegistro" autocomplete="off"
+                                    placeholder="nombre@dominio.com" required>
                             </div>
                             <div>
                                 <label class="form-label" for="passRegistro">Contraseña</label>
                                 <input class="form-control is-invalid" type="password" id="passRegistro"
-                                    value="abc123" autocomplete="new-password" aria-describedby="errorPassRegistro">
-                                <div class="invalid-feedback" id="errorPassRegistro">La contraseña debe tener al menos
-                                    8 caracteres.</div>
+                                    value="abc123" autocomplete="off" required>
                             </div>
 
                             <fieldset>
@@ -120,7 +114,7 @@
                                 </div>
                             </fieldset>
 
-                            <a class="btn btn-primary btn-grande w-100 mt-2" href="store.html">Crear cuenta</a>
+                            <button type="submit" class="btn btn-primary btn-grande w-100 mt-2">Crear cuenta</button>
                         </form>
                     </div>
                 </div>
