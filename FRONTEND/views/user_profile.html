@@ -162,6 +162,10 @@
                             <p class="saldo">110 <small>créditos</small></p>
                             <p class="fila-meta mb-0">Los créditos son virtuales y no equivalen a dinero real. Recibes
                                 10 créditos por tu primera reseña de cada juego adquirido.</p>
+                            <div>
+                                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#modalComprar">Comprar créditos</button>
+                            </div>
                         </div>
                     </div>
 
@@ -170,7 +174,13 @@
                         <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
                             <div class="d-flex flex-column"><span class="fila-valor">Saldo inicial de la
                                     cuenta</span><span class="fila-meta">6 nov 2026</span></div>
-                            <span class="movimiento-mas">+110</span>
+                            <span class="movimiento-mas">+100</span>
+                        </div>
+
+                        <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+                            <div class="d-flex flex-column"><span class="fila-valor">Primera reseña · Nebula
+                                    Drift</span><span class="fila-meta">7 nov 2026</span></div>
+                            <span class="movimiento-mas">+10</span>
                         </div>
                     </div>
                 </div>
@@ -244,7 +254,351 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalComprar" tabindex="-1" aria-labelledby="modalComprarTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-compra">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h2 class="modal-title" id="modalComprarTitulo">Comprar créditos</h2>
+                        <p class="fila-meta mb-0 mt-1">1 crédito = $10.00 MXN</p>
+                    </div>
+                    <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body d-flex flex-column gap-4">
+
+                    <div class="aviso-simulacion">
+                        Simulación: no se realiza ningún cobro ni se guardan datos. No ingreses datos reales.
+                    </div>
+
+                    <fieldset class="d-flex flex-column gap-2">
+                        <legend class="paso-titulo">1. Elige un paquete</legend>
+
+                        <input class="btn-check" type="radio" name="paquete" id="paq10" autocomplete="off">
+                        <label class="opcion" for="paq10">
+                            <span class="opcion-nombre">10 créditos</span>
+                            <span class="opcion-precio">$100.00 MXN</span>
+                        </label>
+
+                        <input class="btn-check" type="radio" name="paquete" id="paq20" autocomplete="off">
+                        <label class="opcion" for="paq20">
+                            <span class="opcion-nombre">20 créditos</span>
+                            <span class="opcion-precio">$200.00 MXN</span>
+                        </label>
+
+                        <input class="btn-check" type="radio" name="paquete" id="paq50" autocomplete="off">
+                        <label class="opcion" for="paq50">
+                            <span class="opcion-nombre">50 créditos <span class="etiqueta-popular">Popular</span></span>
+                            <span class="opcion-precio">$500.00 MXN</span>
+                        </label>
+
+                        <input class="btn-check" type="radio" name="paquete" id="paq100" autocomplete="off">
+                        <label class="opcion" for="paq100">
+                            <span class="opcion-nombre">100 créditos</span>
+                            <span class="opcion-precio">$1,000.00 MXN</span>
+                        </label>
+
+                        <input class="btn-check" type="radio" name="paquete" id="paq200" autocomplete="off">
+                        <label class="opcion" for="paq200">
+                            <span class="opcion-nombre">200 créditos</span>
+                            <span class="opcion-precio">$2,000.00 MXN</span>
+                        </label>
+                    </fieldset>
+
+                    <p class="sin-paquete fila-meta text-center mb-0">Elige un paquete para ver el total y las formas
+                        de pago.</p>
+
+                    <div class="paso-pago d-flex flex-column gap-4">
+
+                        <div class="resumen">
+                            <div class="d-flex justify-content-between">
+                                <span class="fila-meta">Créditos</span>
+                                <span class="fila-valor cant"><span class="c10">10</span><span
+                                        class="c20">20</span><span class="c50">50</span><span
+                                        class="c100">100</span><span class="c200">200</span> créditos</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="fila-meta">Precio por crédito</span>
+                                <span class="fila-valor">$10.00 MXN</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-baseline">
+                                <span class="fila-valor">Total a pagar</span>
+                                <span class="resumen-total monto"><span class="m10">$100.00</span><span
+                                        class="m20">$200.00</span><span class="m50">$500.00</span><span
+                                        class="m100">$1,000.00</span><span class="m200">$2,000.00</span>
+                                    MXN</span>
+                            </div>
+                        </div>
+
+                        <fieldset class="d-flex flex-column gap-2">
+                            <legend class="paso-titulo">2. Forma de pago</legend>
+                            <div class="metodos">
+                                <input class="btn-check" type="radio" name="metodo" id="metTarjeta" autocomplete="off">
+                                <label class="metodo" for="metTarjeta">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" aria-hidden="true">
+                                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                                        <path d="M2 10h20"></path>
+                                    </svg>
+                                    Tarjeta
+                                </label>
+
+                                <input class="btn-check" type="radio" name="metodo" id="metPaypal" autocomplete="off">
+                                <label class="metodo" for="metPaypal">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" aria-hidden="true">
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <path d="M12 7v10M9 10h6"></path>
+                                    </svg>
+                                    PayPal
+                                </label>
+
+                                <input class="btn-check" type="radio" name="metodo" id="metOxxo" autocomplete="off">
+                                <label class="metodo" for="metOxxo">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" aria-hidden="true">
+                                        <path d="M3 9l1-5h16l1 5"></path>
+                                        <path d="M4 9v11h16V9"></path>
+                                        <path d="M9 20v-6h6v6"></path>
+                                    </svg>
+                                    OXXO
+                                </label>
+
+                                <input class="btn-check" type="radio" name="metodo" id="metSpei" autocomplete="off">
+                                <label class="metodo" for="metSpei">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" aria-hidden="true">
+                                        <path d="M3 10l9-6 9 6"></path>
+                                        <path d="M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18"></path>
+                                    </svg>
+                                    Transferencia
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <p class="sin-metodo fila-meta text-center mb-0">Elige una forma de pago.</p>
+
+                        <div class="pago pago-tarjeta d-flex flex-column gap-3">
+                            <div class="tarjeta-visual" aria-hidden="true">
+                                <div class="d-flex justify-content-between">
+                                    <span class="chip-tarjeta"></span>
+                                    <span class="fw-bold">SteamPirata</span>
+                                </div>
+                                <span class="tarjeta-numero">•••• •••• •••• ••••</span>
+                                <div class="d-flex justify-content-between small">
+                                    <span>NOMBRE DEL TITULAR</span>
+                                    <span>MM/AA</span>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label" for="numTarjeta">Número de tarjeta</label>
+                                    <input class="form-control" type="text" id="numTarjeta" inputmode="numeric"
+                                        maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="off">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="titular">Nombre del titular</label>
+                                    <input class="form-control" type="text" id="titular"
+                                        placeholder="Como aparece en la tarjeta" autocomplete="off">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label" for="vencimiento">Vencimiento</label>
+                                    <input class="form-control" type="text" id="vencimiento" inputmode="numeric"
+                                        maxlength="5" placeholder="MM/AA" autocomplete="off">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label" for="cvv">CVV</label>
+                                    <input class="form-control" type="password" id="cvv" inputmode="numeric"
+                                        maxlength="4" placeholder="123" autocomplete="off">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-pagar" type="button" data-bs-toggle="modal"
+                                data-bs-target="#modalCompraExitosa">
+                                Pagar <span class="monto"><span class="m10">$100.00</span><span
+                                        class="m20">$200.00</span><span class="m50">$500.00</span><span
+                                        class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
+                            </button>
+                        </div>
+
+                        <div class="pago pago-paypal d-flex flex-column gap-3">
+                            <div class="caja-info">
+                                <p class="fila-valor mb-1">Pago con PayPal</p>
+                                <p class="fila-meta mb-0">Al continuar se abriría la ventana de PayPal para iniciar
+                                    sesión y autorizar el pago. En esta simulación se confirma directamente.</p>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="fila-meta">Monto a autorizar</span>
+                                <span class="fila-valor monto"><span class="m10">$100.00</span><span
+                                        class="m20">$200.00</span><span class="m50">$500.00</span><span
+                                        class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
+                            </div>
+                            <button class="btn btn-primary btn-pagar" type="button" data-bs-toggle="modal"
+                                data-bs-target="#modalPaypal">Continuar con PayPal</button>
+                        </div>
+
+                        <div class="pago pago-oxxo d-flex flex-column gap-3">
+                            <div class="caja-info">
+                                <p class="fila-valor mb-1">Pago en efectivo en OXXO</p>
+                                <p class="fila-meta mb-0">Se genera una ficha con una referencia. Tienes 48 horas para
+                                    pagar en cualquier tienda. Tus créditos se agregan cuando se confirma el pago.</p>
+                            </div>
+                            <button class="btn btn-primary btn-pagar" type="button" data-bs-toggle="modal"
+                                data-bs-target="#modalOxxo">Generar ficha de pago</button>
+                        </div>
+
+                        <div class="pago pago-spei d-flex flex-column gap-3">
+                            <div class="caja-info">
+                                <p class="fila-valor mb-1">Transferencia SPEI</p>
+                                <p class="fila-meta mb-0">Haz una transferencia desde la app de tu banco con estos
+                                    datos. Los créditos se agregan al recibir el pago.</p>
+                            </div>
+                            <div class="list-group tarjeta">
+                                <div class="list-group-item d-flex justify-content-between gap-3">
+                                    <span class="fila-meta">Beneficiario</span>
+                                    <span class="fila-valor">SteamPirata (simulado)</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between gap-3">
+                                    <span class="fila-meta">CLABE</span>
+                                    <span class="fila-valor codigo">999 180 00001234567 8</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between gap-3">
+                                    <span class="fila-meta">Concepto</span>
+                                    <span class="fila-valor codigo">SP-LUISDCG-4821</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between gap-3">
+                                    <span class="fila-meta">Monto</span>
+                                    <span class="fila-valor monto"><span class="m10">$100.00</span><span
+                                            class="m20">$200.00</span><span class="m50">$500.00</span><span
+                                            class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-pagar" type="button" data-bs-toggle="modal"
+                                data-bs-target="#modalCompraExitosa">Ya hice la transferencia</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalPaypal" tabindex="-1" aria-labelledby="modalPaypalTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-compra">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalPaypalTitulo">Confirmar pago con PayPal</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3">
+                    <div class="aviso-simulacion">
+                        Simulación: en la versión real aquí se abriría la página oficial de PayPal.
+                    </div>
+                    <div class="list-group tarjeta">
+                        <div class="list-group-item d-flex justify-content-between gap-3">
+                            <span class="fila-meta">Comercio</span>
+                            <span class="fila-valor">SteamPirata</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between gap-3">
+                            <span class="fila-meta">Concepto</span>
+                            <span class="fila-valor cant"><span class="c10">10</span><span class="c20">20</span><span
+                                    class="c50">50</span><span class="c100">100</span><span class="c200">200</span>
+                                créditos</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between gap-3">
+                            <span class="fila-meta">Cuenta</span>
+                            <span class="fila-valor">l•••••@iteso.mx</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between gap-3">
+                            <span class="fila-meta">Total</span>
+                            <span class="fila-valor monto"><span class="m10">$100.00</span><span
+                                    class="m20">$200.00</span><span class="m50">$500.00</span><span
+                                    class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-target="#modalComprar"
+                        data-bs-toggle="modal">Regresar</button>
+                    <button type="button" class="btn btn-primary" data-bs-target="#modalCompraExitosa"
+                        data-bs-toggle="modal">Autorizar pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalOxxo" tabindex="-1" aria-labelledby="modalOxxoTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-compra">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h2 class="modal-title" id="modalOxxoTitulo">Ficha de pago OXXO</h2>
+                        <p class="fila-meta mb-0 mt-1">Muestra esta ficha o dicta la referencia al cajero.</p>
+                    </div>
+                    <button type="button" class="btn-close align-self-start" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-3">
+                    <div class="ficha">
+                        <div class="d-flex justify-content-between align-items-baseline">
+                            <span class="ficha-etiqueta">Monto a pagar</span>
+                            <span class="ficha-monto monto"><span class="m10">$100.00</span><span
+                                    class="m20">$200.00</span><span class="m50">$500.00</span><span
+                                    class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
+                        </div>
+                        <div class="codigo-barras" role="img" aria-label="Código de barras simulado"></div>
+                        <span class="ficha-etiqueta">Referencia</span>
+                        <span class="ficha-referencia">9300 4821 7735 0062</span>
+                        <div class="d-flex justify-content-between ficha-pie">
+                            <span>Vence: 13 nov 2026, 23:59</span>
+                            <span>Comisión de la tienda: $12.00</span>
+                        </div>
+                    </div>
+                    <ol class="lista-pasos">
+                        <li>Acude a cualquier tienda OXXO.</li>
+                        <li>Indica al cajero que quieres hacer un pago de servicio.</li>
+                        <li>Dicta la referencia o muestra el código de barras.</li>
+                        <li>Paga en efectivo y conserva tu ticket.</li>
+                    </ol>
+                    <div class="aviso-simulacion">
+                        Simulación: la referencia y el código de barras son de ejemplo y no sirven para pagar.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-target="#modalComprar"
+                        data-bs-toggle="modal">Regresar</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCompraExitosa" tabindex="-1" aria-labelledby="modalExitoTitulo"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-body d-flex flex-column align-items-center gap-3 pt-4">
+                    <div class="icono-exito" aria-hidden="true">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3">
+                            <path d="M5 12l5 5 9-10"></path>
+                        </svg>
+                    </div>
+                    <h2 class="modal-title" id="modalExitoTitulo">¡Compra realizada!</h2>
+                    <p class="text-body-secondary mb-0">
+                        Se agregaron <strong class="cant"><span class="c10">10</span><span class="c20">20</span><span
+                                class="c50">50</span><span class="c100">100</span><span class="c200">200</span>
+                            créditos</strong> a tu cuenta.
+                    </p>
+                    <div class="aviso-simulacion w-100">Simulación: no se realizó ningún cobro.</div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Volver a mi perfil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
