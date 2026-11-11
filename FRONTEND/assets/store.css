@@ -409,37 +409,56 @@ body {
     color: var(--sp-texto);
 }
 
-.favorito {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 2;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: rgba(10, 13, 22, .72);
-    color: var(--sp-texto);
-    font-size: 20px;
-    line-height: 1;
+.check-favorito:checked + .boton-corazon {
+  color: #ff9cb8;
+  border-color: #62445e;
+  background: #261b30;
+}
+.check-favorito:not(:checked) + .boton-corazon .corazon-lleno,
+.check-favorito:checked + .boton-corazon .corazon-vacio {
+  display: none;
+}
+.check-favorito:focus-visible + .boton-corazon {
+  outline: 2px solid #9bb6ff;
+  outline-offset: 3px;
 }
 
-.favorito:hover {
-    background: rgba(10, 13, 22, .92);
-    color: #FFFFFF;
+.boton-corazon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+  --bs-btn-bg: rgba(10, 13, 22, .72);   
+  --bs-btn-color: #cad2e4;              
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.favorito:focus-visible {
-    outline: 3px solid rgba(147, 177, 255, .8);
-    outline-offset: 2px;
+.boton-corazon .corazon-vacio,
+.boton-corazon .corazon-lleno {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.favorito[aria-pressed="true"] {
-    color: var(--sp-peligro);
+.boton-corazon i,
+.boton-corazon svg {
+  color: inherit;
+  font-size: 18px;
+}
+
+.boton-corazon:hover {
+  --bs-btn-hover-bg: rgba(10, 13, 22, .72);   
+}
+
+.check-favorito + .boton-corazon:hover {
+  color: #ff9cb8;
 }
 
 .juego-cuerpo {

@@ -151,7 +151,7 @@
         <section aria-labelledby="tituloResultados" class="d-flex flex-column gap-3">
             <div class="d-flex flex-column gap-1">
                 <h2 class="resultados-titulo" id="tituloResultados">Todos los videojuegos</h2>
-                <p class="fila-meta mb-0">Mostrando 1–12 de 27 videojuegos</p>
+                <p class="fila-meta mb-0">Mostrando 1-4 de 4 videojuegos</p>
             </div>
 
             <ul class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4 list-unstyled mb-0">
@@ -161,9 +161,17 @@
                                 <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
                                 src="../assets/images/n64_diddykongracing_label_thumb.jpg" alt="Nebula Drift">
                             <span class="juego-edad" title="Apto para todo público">E · Todos</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Nebula Drift a favoritos"><span
-                                    aria-hidden="true"><i class="fa-regular fa-heart"></i></span></button>
+                            <input aria-label="Guardar Nebula Drift en favoritos" autocomplete="off" checked=""
+                                class="btn-check check-favorito" id="favorito-nebula-drift" type="checkbox" />
+                            <label class="btn btn-outline-secondary boton-corazon" for="favorito-nebula-drift"
+                                title="Agregar o quitar favorito">
+                                <span aria-hidden="true" class="corazon-vacio">
+                                    <i class="fa-regular fa-heart"></i>
+                                </span>
+                                <span aria-hidden="true" class="corazon-lleno">
+                                    <i class="fa-solid fa-heart"></i>
+                                </span>
+                            </label>
                         </div>
                         <div class="juego-cuerpo">
                             <h3 class="juego-titulo"><a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego">Nebula Drift</a>
@@ -183,9 +191,17 @@
                             <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
                                 src="../assets/images/hollow-knight-thumb.jpg" alt="Hollow Keep">
                             <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
-                            <button class="favorito" type="button" aria-pressed="true"
-                                aria-label="Quitar Hollow Keep de favoritos"><span
-                                    aria-hidden="true"><i class="fa-solid fa-heart"></i></span></button>
+                            <input aria-label="Guardar Hollow Keep en favoritos" autocomplete="off" checked=""
+                                class="btn-check check-favorito" id="favorito-hollow-keep" type="checkbox" />
+                            <label class="btn btn-outline-secondary boton-corazon" for="favorito-hollow-keep"
+                                title="Agregar o quitar favorito">
+                                <span aria-hidden="true" class="corazon-vacio">
+                                    <i class="fa-regular fa-heart"></i>
+                                </span>
+                                <span aria-hidden="true" class="corazon-lleno">
+                                    <i class="fa-solid fa-heart"></i>
+                                </span>
+                            </label>
                         </div>
                         <div class="juego-cuerpo">
                             <h3 class="juego-titulo"><a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego">Hollow Keep</a>
@@ -205,9 +221,17 @@
                             <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
                                 src="../assets/images/Logo_of_Stardew_Valley.png" alt="Pixel Harvest">
                             <span class="juego-edad" title="Apto para todo público">E · Todos</span>
-                            <button class="favorito" type="button" aria-pressed="false"
-                                aria-label="Agregar Pixel Harvest a favoritos"><span
-                                    aria-hidden="true"><i class="fa-regular fa-heart"></i></span></button>
+                            <input aria-label="Guardar Hollow Keep en favoritos" autocomplete="off" checked=""
+                                class="btn-check check-favorito" id="favorito-pixel-harvest" type="checkbox" />
+                            <label class="btn btn-outline-secondary boton-corazon" for="favorito-pixel-harvest"
+                                title="Agregar o quitar favorito">
+                                <span aria-hidden="true" class="corazon-vacio">
+                                    <i class="fa-regular fa-heart"></i>
+                                </span>
+                                <span aria-hidden="true" class="corazon-lleno">
+                                    <i class="fa-solid fa-heart"></i>
+                                </span>
+                            </label>
                         </div>
                         <div class="juego-cuerpo">
                             <h3 class="juego-titulo"><a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego">Pixel Harvest</a>
@@ -226,9 +250,17 @@
                             <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
                                 src="../assets/images/fire-emblem-warriors-cover_cover_small.jpg" alt="">
                             <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
-                            <button class="favorito" type="button" aria-pressed="true"
-                                aria-label="Quitar Ember Vale de favoritos"><span
-                                    aria-hidden="true"><i class="fa-solid fa-heart"></i></span></button>
+                            <input aria-label="Guardar Ember Vale en favoritos" autocomplete="off" checked=""
+                                class="btn-check check-favorito" id="favorito-ember-vale" type="checkbox" />
+                            <label class="btn btn-outline-secondary boton-corazon" for="favorito-ember-vale"
+                                title="Agregar o quitar favorito">
+                                <span aria-hidden="true" class="corazon-vacio">
+                                    <i class="fa-regular fa-heart"></i>
+                                </span>
+                                <span aria-hidden="true" class="corazon-lleno">
+                                    <i class="fa-solid fa-heart"></i>
+                                </span>
+                            </label>
                         </div>
                         <div class="juego-cuerpo">
                             <h3 class="juego-titulo"><a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego"">Ember Vale</a>
@@ -264,7 +296,8 @@
 
                     <div class="d-flex align-items-start gap-3 pe-5">
                         <div class="portada-modal portada-1" aria-hidden="true">
-                            <img src="../assets/images/Wallpaper.png">
+                            <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                            src="../assets/images/n64_diddykongracing_label_thumb.jpg" alt="Nebula Drift">
                         </div>
                         <div class="d-flex flex-column gap-1">
                             <span class="fila-meta">Carreras · E · Todos</span>
