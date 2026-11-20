@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html data-bs-theme="dark" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Catálogo público · SteamPirata</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="../assets/store.css" rel="stylesheet" />
+    <script crossorigin="anonymous" src="https://kit.fontawesome.com/1eb4fd1ec9.js"></script>
+</head>
+
+<body>
+    <!--Catálogo público sin sesión. Los datos son de ejemplo. Los permisos y filtros se implementarán en el backend.-->
+    <header>
+        <nav class="navbar navbar-expand-md topbar topbar-publica">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="store_public.html">SteamPirata</a>
+                <div class="d-flex align-items-center gap-2 order-md-last">
+                    <a class="btn btn-link px-2" href="login.html">Iniciar sesión</a>
+                    <a class="btn btn-primary d-none d-sm-inline-flex" href="login.html">Crear cuenta</a>
+                    <button aria-controls="menuPrincipal" aria-expanded="false" aria-label="Mostrar menú"
+                        class="navbar-toggler" data-bs-target="#menuPrincipal" data-bs-toggle="collapse"
+                        type="button"><span class="navbar-toggler-icon"></span></button>
+                </div>
+                <div class="collapse navbar-collapse justify-content-center" id="menuPrincipal">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a aria-current="page" class="nav-link active" href="store_public.html">
+                                Catálogo
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="banner-wrap">
+        <div class="banner">
+            <h1 class="titulo-catalogo">Catálogo</h1>
+            <p class="banner-texto">
+                Explora videojuegos, consulta sus características y lee reseñas. Para adquirir o
+                guardar favoritos, inicia sesión.
+            </p>
+            <span aria-hidden="true" class="banner-marca">Juegos</span>
+        </div>
+    </div>
+    <main class="contenido">
+        <form action="store_public.html" class="d-flex flex-column gap-3" id="formFiltrosCatalogo" method="get"
+            role="search">
+            <div class="buscador">
+                <label class="visually-hidden" for="busqueda">Buscar videojuegos por nombre</label>
+                <input autocomplete="off" class="form-control" id="busqueda" name="q" placeholder="Buscar por nombre"
+                    type="search" />
+                <button class="btn btn-primary btn-grande" type="submit">Buscar</button>
+            </div>
+            <button aria-controls="filtros" aria-expanded="false"
+                class="btn btn-outline-secondary d-md-none align-self-center" data-bs-target="#filtros"
+                data-bs-toggle="collapse" type="button">Filtros</button>
+            <div class="collapse d-md-block" id="filtros">
+                <div class="filtros-panel d-flex flex-column gap-4">
+                    <fieldset>
+                        <legend class="visually-hidden">Género</legend>
+                        <div class="chips-genero">
+                            <input checked="" class="btn-check" id="genTodos" name="genero" type="radio" value="" />
+                            <label class="chip" for="genTodos">Todos</label>
+                            <input class="btn-check" id="genAccion" name="genero" type="radio" value="Acción" />
+                            <label class="chip" for="genAccion">Acción</label>
+                            <input class="btn-check" id="genAventura" name="genero" type="radio" value="Aventura" />
+                            <label class="chip" for="genAventura">Aventura</label>
+                            <input class="btn-check" id="genCarreras" name="genero" type="radio" value="Carreras" />
+                            <label class="chip" for="genCarreras">Carreras</label>
+                            <input class="btn-check" id="genDeportes" name="genero" type="radio" value="Deportes" />
+                            <label class="chip" for="genDeportes">Deportes</label>
+                            <input class="btn-check" id="genEstrategia" name="genero" type="radio" value="Estrategia" />
+                            <label class="chip" for="genEstrategia">Estrategia</label>
+                            <input class="btn-check" id="genRPG" name="genero" type="radio" value="RPG" />
+                            <label class="chip" for="genRPG">RPG</label>
+                            <input class="btn-check" id="genSimulacion" name="genero" type="radio" value="Simulación" />
+                            <label class="chip" for="genSimulacion">Simulación</label>
+                            <input class="btn-check" id="genTerror" name="genero" type="radio" value="Terror" />
+                            <label class="chip" for="genTerror">Terror</label>
+                        </div>
+                    </fieldset>
+                    <div class="row g-3">
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="filtroClasificacion">Clasificación de edad</label>
+                            <select class="form-select" id="filtroClasificacion" name="clasificacion">
+                                <option selected="" value="">Todas</option>
+                                <option value="E">E · Todos</option>
+                                <option value="T">T · +13</option>
+                                <option value="M">M · +17</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="filtroPrecio">Precio máximo (créditos)</label>
+                            <input class="form-control" id="filtroPrecio" inputmode="numeric" min="1" name="precio_max"
+                                placeholder="Sin límite" step="1" type="number" />
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="filtroCalificacion">Calificación mínima</label>
+                            <select class="form-select" id="filtroCalificacion" name="calificacion_min">
+                                <option selected="" value="">Cualquiera</option>
+                                <option value="4">4 estrellas o más</option>
+                                <option value="3">3 estrellas o más</option>
+                                <option value="2">2 estrellas o más</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <label class="form-label" for="filtroOrden">Ordenar por</label>
+                            <select class="form-select" id="filtroOrden" name="orden">
+                                <option selected="" value="nombre">Nombre (A–Z)</option>
+                                <option value="precio_asc">Precio: menor a mayor</option>
+                                <option value="precio_desc">Precio: mayor a menor</option>
+                                <option value="calificacion">Mejor calificados</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-center gap-2">
+                        <a class="btn btn-link" href="store_public.html">Limpiar</a>
+                        <button class="btn btn-primary" type="submit">Aplicar filtros</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <section aria-labelledby="tituloResultados" class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column gap-1">
+                <h2 class="resultados-titulo" id="tituloResultados">Todos los videojuegos</h2>
+                <p class="fila-meta mb-0">Mostrando 1-4 de 4 videojuegos</p>
+            </div>
+            <ul class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4 list-unstyled mb-0">
+                <li class="col">
+                    <article class="juego position-relative" data-juego-slug="nebula-drift">
+                        <div class="juego-portada portada-1">
+                            <img alt="Nebula Drift" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/n64_diddykongracing_label_thumb.jpg" />
+                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
+                            <button aria-label="Inicia sesión para guardar Nebula Drift en favoritos"
+                                class="btn btn-outline-secondary boton-corazon" data-bs-target="#modalAccesoRequerido"
+                                data-bs-toggle="modal" title="Inicia sesión para agregar a favoritos" type="button"><i
+                                    aria-hidden="true" class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a aria-label="Ver detalles de Nebula Drift" class="stretched-link"
+                                    data-bs-target="#modalJuego-nebula-drift" data-bs-toggle="modal">Nebula Drift</a>
+                            </h3>
+                            <p class="juego-genero">Carreras</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true"><i
+                                            class="fa-solid fa-star"></i></span> 4.5 <span
+                                        class="fila-meta">(12)</span></span>
+                                <span class="juego-precio">40 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative" data-juego-slug="hollow-keep">
+                        <div class="juego-portada portada-2">
+                            <img alt="Hollow Keep" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/hollow-knight-thumb.jpg" />
+                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
+                            <button aria-label="Inicia sesión para guardar Hollow Keep en favoritos"
+                                class="btn btn-outline-secondary boton-corazon" data-bs-target="#modalAccesoRequerido"
+                                data-bs-toggle="modal" title="Inicia sesión para agregar a favoritos" type="button"><i
+                                    aria-hidden="true" class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a aria-label="Ver detalles de Hollow Keep" class="stretched-link"
+                                    data-bs-target="#modalJuego-hollow-keep" data-bs-toggle="modal">Hollow Keep</a>
+                            </h3>
+                            <p class="juego-genero">Aventura</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true"><i
+                                            class="fa-solid fa-star"></i></span> 4.2 <span
+                                        class="fila-meta">(8)</span></span>
+                                <span class="juego-precio">60 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative" data-juego-slug="pixel-harvest">
+                        <div class="juego-portada portada-3">
+                            <img alt="Pixel Harvest"
+                                class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/Logo_of_Stardew_Valley.png" />
+                            <span class="juego-edad" title="Apto para todo público">E · Todos</span>
+                            <button aria-label="Inicia sesión para guardar Pixel Harvest en favoritos"
+                                class="btn btn-outline-secondary boton-corazon" data-bs-target="#modalAccesoRequerido"
+                                data-bs-toggle="modal" title="Inicia sesión para agregar a favoritos" type="button"><i
+                                    aria-hidden="true" class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a aria-label="Ver detalles de Pixel Harvest"
+                                    class="stretched-link" data-bs-target="#modalJuego-pixel-harvest"
+                                    data-bs-toggle="modal">Pixel Harvest</a>
+                            </h3>
+                            <p class="juego-genero">Simulación</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif fila-meta">Sin reseñas</span>
+                                <span class="juego-precio">25 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="col">
+                    <article class="juego position-relative" data-juego-slug="ember-vale">
+                        <div class="juego-portada portada-4">
+                            <img alt="Ember Vale" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/fire-emblem-warriors-cover_cover_small.jpg" />
+                            <span class="juego-edad" title="Mayores de 13 años">T · +13</span>
+                            <button aria-label="Inicia sesión para guardar Ember Vale en favoritos"
+                                class="btn btn-outline-secondary boton-corazon" data-bs-target="#modalAccesoRequerido"
+                                data-bs-toggle="modal" title="Inicia sesión para agregar a favoritos" type="button"><i
+                                    aria-hidden="true" class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="juego-cuerpo">
+                            <h3 class="juego-titulo"><a aria-label="Ver detalles de Ember Vale" class="stretched-link"
+                                    data-bs-target="#modalJuego-ember-vale" data-bs-toggle="modal">Ember Vale</a>
+                            </h3>
+                            <p class="juego-genero">RPG</p>
+                            <div class="juego-pie">
+                                <span class="juego-calif"><span aria-hidden="true"><i
+                                            class="fa-solid fa-star"></i></span> 4.8 <span
+                                        class="fila-meta">(31)</span></span>
+                                <span class="juego-precio">80 créditos</span>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+            </ul>
+        </section>
+        <nav aria-label="Paginación del catálogo">
+            <ul class="pagination justify-content-center flex-wrap mb-0">
+                <li aria-current="page" class="page-item active"><span class="page-link">1</span></li>
+            </ul>
+        </nav>
+    </main>
+    <div aria-hidden="true" aria-labelledby="tituloJuegoPublico-nebula-drift" class="modal fade"
+        id="modalJuego-nebula-drift" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-juego">
+            <div class="modal-content">
+                <button aria-label="Cerrar" class="btn-close cerrar-modal" data-bs-dismiss="modal"
+                    type="button"></button>
+                <div class="modal-body d-flex flex-column gap-4">
+                    <div class="d-flex align-items-start gap-3 pe-5">
+                        <div aria-hidden="true" class="portada-modal portada-1">
+                            <img alt="Nebula Drift" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/n64_diddykongracing_label_thumb.jpg" />
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            <span class="fila-meta">Carreras · E · Todos</span>
+                            <h2 class="modal-title" id="tituloJuegoPublico-nebula-drift">Nebula Drift</h2>
+                            <p class="calif-modal mb-0">
+                                <span aria-label="4.5 de 5 estrellas" class="estrellas" role="img"><i
+                                        class="fa-solid fa-star"></i></span>
+                                4.5 <span class="fila-meta">· 12 reseñas</span>
+                            </p>
+                        </div>
+                    </div>
+                    <p class="mb-0">Carreras antigravedad a través de cinturones de asteroides.</p>
+                    <dl class="ficha">
+                        <div class="ficha-fila">
+                            <dt>Desarrollador</dt>
+                            <dd>PixelStudio</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>Especificaciones</dt>
+                            <dd>Windows 10 · Intel i5 · 8 GB RAM · 20 GB</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>DLC incluidos</dt>
+                            <dd>Cinturón de Orión · Pack de naves clásicas</dd>
+                        </div>
+                    </dl>
+                    <section aria-labelledby="resenasTitulo1">
+                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                            <h3 class="resenas-titulo" id="resenasTitulo1">Reseñas</h3>
+                            <span class="fila-meta">12 reseñas · promedio 4.5 de 5</span>
+                        </div>
+                        <div class="tab-content resenas-paginas">
+                            <div aria-labelledby="resenas1-tab1" class="tab-pane fade show active" id="resenas1-pag1"
+                                role="tabpanel" tabindex="0">
+                                <ul class="resenas">
+                                    <li class="resena">
+                                        <article>
+                                            <header class="resena-cabecera">
+                                                <span aria-hidden="true" class="avatar avatar-sm">MG</span>
+                                                <div class="d-flex flex-column">
+                                                    <strong>MarianaGC</strong>
+                                                    <span class="fila-meta">7 nov 2026</span>
+                                                </div>
+                                                <span aria-label="5 de 5 estrellas" class="estrellas" role="img"><i
+                                                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                        class="fa-solid fa-star"></i></span>
+                                            </header>
+                                            <p class="resena-texto">Las pistas del cinturón de asteroides son una
+                                                locura. La sensación de velocidad se siente muy bien, tanto con control
+                                                como con teclado.</p>
+                                            <div class="respuesta">
+                                                <div class="respuesta-cab">
+                                                    <strong>Respuesta de PixelStudio</strong>
+                                                    <span class="etiqueta-dev">Desarrollador</span>
+                                                </div>
+                                                <p>¡Gracias, Mariana! Las pistas de asteroides fueron lo que más
+                                                    pulimos.</p>
+                                            </div>
+                                        </article>
+                                    </li>
+                                    <li class="resena">
+                                        <article>
+                                            <header class="resena-cabecera">
+                                                <span aria-hidden="true" class="avatar avatar-sm">TP</span>
+                                                <div class="d-flex flex-column">
+                                                    <strong>TeoPlay</strong>
+                                                    <span class="fila-meta">6 nov 2026</span>
+                                                </div>
+                                                <span aria-label="5 de 5 estrellas" class="estrellas" role="img"><i
+                                                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                        class="fa-solid fa-star"></i></span>
+                                            </header>
+                                            <p class="resena-texto">Perfecto para partidas cortas. Cada carrera dura
+                                                unos tres minutos y siempre quieres una más.</p>
+                                        </article>
+                                    </li>
+                                    <li class="resena">
+                                        <article>
+                                            <header class="resena-cabecera">
+                                                <span aria-hidden="true" class="avatar avatar-sm">RV</span>
+                                                <div class="d-flex flex-column">
+                                                    <strong>RodriV</strong>
+                                                    <span class="fila-meta">5 nov 2026</span>
+                                                </div>
+                                                <span aria-label="4 de 5 estrellas" class="estrellas" role="img"><i
+                                                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                        class="fa-solid fa-star"></i><i
+                                                        class="fa-solid fa-star"></i><span class="vacia"><i
+                                                            class="fa-solid fa-star"></i></span></span>
+                                            </header>
+                                            <p class="resena-texto">Muy buen juego, aunque la dificultad sube de golpe
+                                                en la tercera copa. Me faltó un modo de práctica.</p>
+                                            <div class="respuesta">
+                                                <div class="respuesta-cab">
+                                                    <strong>Respuesta de PixelStudio</strong>
+                                                    <span class="etiqueta-dev">Desarrollador</span>
+                                                </div>
+                                                <p>Tomamos nota, Rodrigo: un modo de práctica libre está en nuestra
+                                                    lista de pendientes.</p>
+                                            </div>
+                                        </article>
+                                    </li>
+                                </ul>
+                            </div>
+                            <nav aria-label="Páginas de reseñas" class="mt-3">
+                                <ul class="pagination justify-content-center mb-0" role="tablist">
+                                    <li role="presentation">
+                                        <button aria-controls="resenas1-pag1" aria-label="Página 1 de reseñas"
+                                            aria-selected="true" class="page-link active"
+                                            data-bs-target="#resenas1-pag1" data-bs-toggle="pill" id="resenas1-tab1"
+                                            role="tab" type="button">1</button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </section>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <div class="d-flex flex-column"><span class="precio-modal">40 créditos</span><span
+                            class="fila-meta">Consulta libre · Adquisición con sesión</span></div>
+                    <div class="d-flex gap-2"><button class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                            type="button">Cerrar</button><button class="btn btn-primary btn-grande"
+                            data-bs-target="#modalAccesoRequerido" data-bs-toggle="modal" type="button">Iniciar sesión
+                            para adquirir</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Confirmación visual: sin cargos, cambios de saldo ni peticiones al servidor. -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div aria-hidden="true" aria-labelledby="tituloJuegoPublico-hollow-keep" class="modal fade"
+        id="modalJuego-hollow-keep" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-juego">
+            <div class="modal-content">
+                <button aria-label="Cerrar" class="btn-close cerrar-modal" data-bs-dismiss="modal"
+                    type="button"></button>
+                <div class="modal-body d-flex flex-column gap-4">
+                    <div class="d-flex align-items-start gap-3 pe-5">
+                        <div class="portada-modal"><img alt="Portada de Hollow Keep"
+                                class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/hollow-knight-thumb.jpg" /></div>
+                        <div class="d-flex flex-column gap-1"><span class="fila-meta">Aventura · T · +13</span>
+                            <h2 class="modal-title" id="tituloJuegoPublico-hollow-keep">Hollow Keep</h2>
+                            <p class="calif-modal mb-0"><span aria-hidden="true" class="estrellas"><i
+                                        class="fa-solid fa-star"></i></span> 4.2 <span class="fila-meta">· 8
+                                    reseñas</span></p>
+                        </div>
+                    </div>
+                    <p class="mb-0">Explora un castillo en ruinas lleno de secretos.</p>
+                    <dl class="ficha">
+                        <div class="ficha-fila">
+                            <dt>Desarrollador</dt>
+                            <dd>PixelStudio</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>Especificaciones</dt>
+                            <dd>Windows 10 · 8 GB RAM · 15 GB</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>DLC incluidos</dt>
+                            <dd>Las criptas olvidadas</dd>
+                        </div>
+                    </dl>
+                    <section aria-labelledby="resenasPublico-hollow-keep">
+                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                            <h3 class="resenas-titulo" id="resenasPublico-hollow-keep">Reseñas</h3><span
+                                class="fila-meta">8 reseñas</span>
+                        </div>
+                        <ul class="resenas mb-0">
+                            <li class="resena">
+                                <article>
+                                    <header class="resena-cabecera"><span aria-hidden="true"
+                                            class="avatar avatar-sm">EX</span><strong>Explorador07</strong><span
+                                            aria-label="5 estrellas" class="estrellas ms-auto"><i
+                                                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                class="fa-solid fa-star"></i></span></header>
+                                    <p class="resena-texto">La ambientación del castillo es lo más destacado. Me
+                                        gustaría descubrir más zonas en una expansión.</p>
+                                </article>
+                            </li>
+                        </ul>
+                        <p class="fila-meta mt-2 mb-0">Reseña de ejemplo para ilustrar la interfaz pública.</p>
+                    </section>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <div class="d-flex flex-column"><span class="precio-modal">60 créditos</span><span
+                            class="fila-meta">Consulta libre · Adquisición con sesión</span></div>
+                    <div class="d-flex gap-2"><button class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                            type="button">Cerrar</button><button class="btn btn-primary btn-grande"
+                            data-bs-target="#modalAccesoRequerido" data-bs-toggle="modal" type="button">Iniciar sesión
+                            para adquirir</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div aria-hidden="true" aria-labelledby="tituloJuegoPublico-pixel-harvest" class="modal fade"
+        id="modalJuego-pixel-harvest" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-juego">
+            <div class="modal-content">
+                <button aria-label="Cerrar" class="btn-close cerrar-modal" data-bs-dismiss="modal"
+                    type="button"></button>
+                <div class="modal-body d-flex flex-column gap-4">
+                    <div class="d-flex align-items-start gap-3 pe-5">
+                        <div class="portada-modal"><img alt="Portada de Pixel Harvest"
+                                class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/Logo_of_Stardew_Valley.png" /></div>
+                        <div class="d-flex flex-column gap-1"><span class="fila-meta">Simulación · E · Todos</span>
+                            <h2 class="modal-title" id="tituloJuegoPublico-pixel-harvest">Pixel Harvest</h2>
+                            <p class="calif-modal mb-0"><span class="fila-meta">Todavía no hay reseñas</span></p>
+                        </div>
+                    </div>
+                    <p class="mb-0">Cultiva, cosecha y construye tu granja pixelada.</p>
+                    <dl class="ficha">
+                        <div class="ficha-fila">
+                            <dt>Desarrollador</dt>
+                            <dd>PixelStudio</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>Especificaciones</dt>
+                            <dd>Windows 10 · 4 GB RAM · 2 GB</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>DLC incluidos</dt>
+                            <dd>Sin DLC</dd>
+                        </div>
+                    </dl>
+                    <section aria-labelledby="resenasPublico-pixel-harvest">
+                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                            <h3 class="resenas-titulo" id="resenasPublico-pixel-harvest">Reseñas</h3><span
+                                class="fila-meta">0 reseñas</span>
+                        </div>
+                        <p class="fila-meta mb-0">Este videojuego todavía no tiene reseñas.</p>
+                    </section>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <div class="d-flex flex-column"><span class="precio-modal">25 créditos</span><span
+                            class="fila-meta">Consulta libre · Adquisición con sesión</span></div>
+                    <div class="d-flex gap-2"><button class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                            type="button">Cerrar</button><button class="btn btn-primary btn-grande"
+                            data-bs-target="#modalAccesoRequerido" data-bs-toggle="modal" type="button">Iniciar sesión
+                            para adquirir</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div aria-hidden="true" aria-labelledby="tituloJuegoPublico-ember-vale" class="modal fade"
+        id="modalJuego-ember-vale" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-juego">
+            <div class="modal-content">
+                <button aria-label="Cerrar" class="btn-close cerrar-modal" data-bs-dismiss="modal"
+                    type="button"></button>
+                <div class="modal-body d-flex flex-column gap-4">
+                    <div class="d-flex align-items-start gap-3 pe-5">
+                        <div class="portada-modal"><img alt="Portada de Ember Vale"
+                                class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                                src="../assets/images/fire-emblem-warriors-cover_cover_small.jpg" /></div>
+                        <div class="d-flex flex-column gap-1"><span class="fila-meta">RPG · T · +13</span>
+                            <h2 class="modal-title" id="tituloJuegoPublico-ember-vale">Ember Vale</h2>
+                            <p class="calif-modal mb-0"><span aria-hidden="true" class="estrellas"><i
+                                        class="fa-solid fa-star"></i></span> 4.8 <span class="fila-meta">· 31
+                                    reseñas</span></p>
+                        </div>
+                    </div>
+                    <p class="mb-0">Videojuego de rol y fantasía con exploración y aventuras.</p>
+                    <dl class="ficha">
+                        <div class="ficha-fila">
+                            <dt>Desarrollador</dt>
+                            <dd>Desarrollador del videojuego</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>Especificaciones</dt>
+                            <dd>Información técnica pendiente de publicación</dd>
+                        </div>
+                        <div class="ficha-fila">
+                            <dt>DLC incluidos</dt>
+                            <dd>Sin información de DLC</dd>
+                        </div>
+                    </dl>
+                    <section aria-labelledby="resenasPublico-ember-vale">
+                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                            <h3 class="resenas-titulo" id="resenasPublico-ember-vale">Reseñas</h3><span
+                                class="fila-meta">31 reseñas</span>
+                        </div>
+                        <ul class="resenas mb-0">
+                            <li class="resena">
+                                <article>
+                                    <header class="resena-cabecera"><span aria-hidden="true"
+                                            class="avatar avatar-sm">AV</span><strong>Aventurera21</strong><span
+                                            aria-label="5 estrellas" class="estrellas ms-auto"><i
+                                                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                class="fa-solid fa-star"></i></span></header>
+                                    <p class="resena-texto">El mundo tiene mucho por descubrir y las misiones mantienen
+                                        un buen ritmo.</p>
+                                </article>
+                            </li>
+                        </ul>
+                        <p class="fila-meta mt-2 mb-0">Reseña de ejemplo para ilustrar la interfaz pública.</p>
+                    </section>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <div class="d-flex flex-column"><span class="precio-modal">80 créditos</span><span
+                            class="fila-meta">Consulta libre · Adquisición con sesión</span></div>
+                    <div class="d-flex gap-2"><button class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                            type="button">Cerrar</button><button class="btn btn-primary btn-grande"
+                            data-bs-target="#modalAccesoRequerido" data-bs-toggle="modal" type="button">Iniciar sesión
+                            para adquirir</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="tituloAccesoRequerido" class="modal fade" id="modalAccesoRequerido"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="tituloAccesoRequerido">Inicia sesión para continuar</h2><button
+                        aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Puedes explorar el catálogo, los detalles y las reseñas sin una cuenta. Para
+                        adquirir videojuegos, guardar favoritos o escribir reseñas necesitas iniciar sesión o
+                        registrarte.</p>
+                </div>
+                <div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        type="button">Seguir explorando</button><a class="btn btn-primary" href="login.html">Iniciar
+                        sesión o crear cuenta</a></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
