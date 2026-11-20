@@ -158,12 +158,12 @@
                 <div class="controles">
                     <div class="control-buscar">
                         <label class="form-label" for="buscarBiblioteca">Buscar en mi biblioteca</label>
-                        <input autocomplete="off" class="form-control" id="buscarBiblioteca"
+                        <input name="buscar_biblioteca" autocomplete="off" class="form-control" id="buscarBiblioteca"
                             placeholder="Nombre del videojuego..." type="search" />
                     </div>
                     <div class="control-select">
                         <label class="form-label" for="filtrarBiblioteca">Estado</label>
-                        <select class="form-select" id="filtrarBiblioteca">
+                        <select name="estado_biblioteca" class="form-select" id="filtrarBiblioteca">
                             <option value="todos">Todos los juegos</option>
                             <option value="disponible">En catálogo</option>
                             <option value="retirado">Retirados</option>
@@ -171,7 +171,7 @@
                     </div>
                     <div class="control-select">
                         <label class="form-label" for="ordenBiblioteca">Ordenar por</label>
-                        <select class="form-select" id="ordenBiblioteca">
+                        <select name="orden_biblioteca" class="form-select" id="ordenBiblioteca">
                             <option value="reciente">Adquisición reciente</option>
                             <option value="nombre">Nombre A-Z</option>
                             <option value="antiguo">Adquisición antigua</option>
@@ -183,10 +183,10 @@
                 </p>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 grilla-juegos" id="listaBiblioteca">
                     <div class="col">
-                        <div class="juego-card h-100">
+                        <div class="juego-card h-100" data-juego-slug="nebula-drift">
                             <div class="cubierta arte-nebula">
                                 <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                                src="../assets/images/n64_diddykongracing_label_thumb.jpg" alt="Nebula Drift">
+                                    src="../assets/images/n64_diddykongracing_label_thumb.jpg" alt="Nebula Drift">
                             </div>
                             <div class="tarjeta-cuerpo">
                                 <span class="tipo-etiqueta">Carreras</span>
@@ -205,8 +205,9 @@
                                         data-bs-toggle="modal" type="button">
                                         Reseñar
                                     </button>
-                                    <input aria-label="Guardar Nebula Drift en favoritos" autocomplete="off" checked=""
-                                        class="btn-check check-favorito" id="favorito-nebula-drift-1" type="checkbox" />
+                                    <input name="favorito" aria-label="Guardar Nebula Drift en favoritos"
+                                        autocomplete="off" checked="" class="btn-check check-favorito"
+                                        id="favorito-nebula-drift-1" type="checkbox" value="nebula-drift" />
                                     <label class="btn btn-outline-secondary boton-corazon" for="favorito-nebula-drift-1"
                                         title="Agregar o quitar favorito">
                                         <span aria-hidden="true" class="corazon-vacio">
@@ -221,10 +222,10 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="juego-card h-100">
+                        <div class="juego-card h-100" data-juego-slug="pixel-harvest">
                             <div class="cubierta arte-pixel">
                                 <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                                src="../assets/images/Logo_of_Stardew_Valley.png" alt="Pixel Harvest">
+                                    src="../assets/images/Logo_of_Stardew_Valley.png" alt="Pixel Harvest">
                             </div>
                             <div class="tarjeta-cuerpo">
                                 <span class="tipo-etiqueta">Simulación</span>
@@ -242,9 +243,9 @@
                                         data-bs-toggle="modal" type="button">
                                         Reseñar
                                     </button>
-                                    <input aria-label="Guardar Pixel Harvest en favoritos" autocomplete="off" checked=""
-                                        class="btn-check check-favorito" id="favorito-pixel-harvest-2"
-                                        type="checkbox" />
+                                    <input name="favorito" aria-label="Guardar Pixel Harvest en favoritos"
+                                        autocomplete="off" checked="" class="btn-check check-favorito"
+                                        id="favorito-pixel-harvest-2" type="checkbox" value="pixel-harvest" />
                                     <label class="btn btn-outline-secondary boton-corazon"
                                         for="favorito-pixel-harvest-2" title="Agregar o quitar favorito">
                                         <span aria-hidden="true" class="corazon-vacio">
@@ -259,10 +260,10 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="juego-card h-100">
+                        <div class="juego-card h-100" data-juego-slug="aurora-protocol">
                             <div class="cubierta arte-aurora">
                                 <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                                src="../assets/images/The_Callisto_Protocol_cover_art.jpg" alt="Aurora Protocol">
+                                    src="../assets/images/The_Callisto_Protocol_cover_art.jpg" alt="Aurora Protocol">
                             </div>
                             <div class="tarjeta-cuerpo">
                                 <span class="tipo-etiqueta">Estrategia</span>
@@ -280,9 +281,9 @@
                                         data-bs-toggle="modal" type="button">
                                         Reseñar
                                     </button>
-                                    <input aria-label="Guardar Aurora Protocol en favoritos" autocomplete="off"
-                                        class="btn-check check-favorito" id="favorito-aurora-protocol-3"
-                                        type="checkbox" />
+                                    <input name="favorito" aria-label="Guardar Aurora Protocol en favoritos"
+                                        autocomplete="off" class="btn-check check-favorito"
+                                        id="favorito-aurora-protocol-3" type="checkbox" value="aurora-protocol" />
                                     <label class="btn btn-outline-secondary boton-corazon"
                                         for="favorito-aurora-protocol-3" title="Agregar o quitar favorito">
                                         <span aria-hidden="true" class="corazon-vacio">
@@ -328,12 +329,12 @@
                 <div class="controles">
                     <div class="control-buscar">
                         <label class="form-label" for="buscarFavoritos">Buscar en favoritos</label>
-                        <input autocomplete="off" class="form-control" id="buscarFavoritos"
+                        <input name="buscar_favoritos" autocomplete="off" class="form-control" id="buscarFavoritos"
                             placeholder="¿Qué juego guardaste?" type="search" />
                     </div>
                     <div class="control-select">
                         <label class="form-label" for="filtrarFavoritos">Disponibilidad</label>
-                        <select class="form-select" id="filtrarFavoritos">
+                        <select name="disponibilidad_favoritos" class="form-select" id="filtrarFavoritos">
                             <option value="todos">Todos</option>
                             <option value="adquirido">Ya adquiridos</option>
                             <option value="pendiente">Por adquirir</option>
@@ -341,7 +342,7 @@
                     </div>
                     <div class="control-select">
                         <label class="form-label" for="ordenFavoritos">Ordenar por</label>
-                        <select class="form-select" id="ordenFavoritos">
+                        <select name="orden_favoritos" class="form-select" id="ordenFavoritos">
                             <option value="reciente">Agregado recientemente</option>
                             <option value="nombre">Nombre A-Z</option>
                         </select>
@@ -352,10 +353,10 @@
                 </p>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 grilla-juegos" id="listaFavoritos">
                     <div class="col">
-                        <div class="juego-card h-100">
+                        <div class="juego-card h-100" data-juego-slug="nebula-drift">
                             <div class="cubierta arte-nebula">
                                 <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                                src="../assets/images/n64_diddykongracing_label_thumb.jpg" alt="Nebula Drift">
+                                    src="../assets/images/n64_diddykongracing_label_thumb.jpg" alt="Nebula Drift">
                             </div>
                             <div class="tarjeta-cuerpo">
                                 <span class="tipo-etiqueta">Carreras</span>
@@ -370,8 +371,9 @@
                                         data-bs-target="#modalDetalleNebula" data-bs-toggle="modal" type="button">
                                         Ver detalles
                                     </button>
-                                    <input aria-label="Guardar Nebula Drift en favoritos" autocomplete="off" checked=""
-                                        class="btn-check check-favorito" id="favorito-nebula-drift-4" type="checkbox" />
+                                    <input name="favorito" aria-label="Guardar Nebula Drift en favoritos"
+                                        autocomplete="off" checked="" class="btn-check check-favorito"
+                                        id="favorito-nebula-drift-4" type="checkbox" value="nebula-drift" />
                                     <label class="btn btn-outline-secondary boton-corazon" for="favorito-nebula-drift-4"
                                         title="Agregar o quitar favorito">
                                         <span aria-hidden="true" class="corazon-vacio">
@@ -386,10 +388,10 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="juego-card h-100">
+                        <div class="juego-card h-100" data-juego-slug="ember-vale">
                             <div class="cubierta arte-cinder">
                                 <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                                src="../assets/images/fire-emblem-warriors-cover_cover_small.jpg" alt="Ember Vale">
+                                    src="../assets/images/fire-emblem-warriors-cover_cover_small.jpg" alt="Ember Vale">
                             </div>
                             <div class="tarjeta-cuerpo">
                                 <span class="tipo-etiqueta">Rol / aventura</span>
@@ -402,8 +404,9 @@
                                         data-bs-target="#modalDetalleCinder" data-bs-toggle="modal" type="button">
                                         Ver detalles
                                     </button>
-                                    <input aria-label="Guardar Ember Vale en favoritos" autocomplete="off" checked=""
-                                        class="btn-check check-favorito" id="favorito-ember-vale-5" type="checkbox" />
+                                    <input name="favorito" aria-label="Guardar Ember Vale en favoritos"
+                                        autocomplete="off" checked="" class="btn-check check-favorito"
+                                        id="favorito-ember-vale-5" type="checkbox" value="ember-vale" />
                                     <label class="btn btn-outline-secondary boton-corazon" for="favorito-ember-vale-5"
                                         title="Agregar o quitar favorito">
                                         <span aria-hidden="true" class="corazon-vacio">
@@ -418,10 +421,10 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="juego-card h-100">
+                        <div class="juego-card h-100" data-juego-slug="pixel-harvest">
                             <div class="cubierta arte-pixel">
                                 <img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                                src="../assets/images/Logo_of_Stardew_Valley.png" alt="Pixel Harvest">
+                                    src="../assets/images/Logo_of_Stardew_Valley.png" alt="Pixel Harvest">
                             </div>
                             <div class="tarjeta-cuerpo">
                                 <span class="tipo-etiqueta">Simulación</span>
@@ -435,9 +438,9 @@
                                         data-bs-target="#modalDetallePixel" data-bs-toggle="modal" type="button">
                                         Ver detalles
                                     </button>
-                                    <input aria-label="Guardar Pixel Harvest en favoritos" autocomplete="off" checked=""
-                                        class="btn-check check-favorito" id="favorito-pixel-harvest-6"
-                                        type="checkbox" />
+                                    <input name="favorito" aria-label="Guardar Pixel Harvest en favoritos"
+                                        autocomplete="off" checked="" class="btn-check check-favorito"
+                                        id="favorito-pixel-harvest-6" type="checkbox" value="pixel-harvest" />
                                     <label class="btn btn-outline-secondary boton-corazon"
                                         for="favorito-pixel-harvest-6" title="Agregar o quitar favorito">
                                         <span aria-hidden="true" class="corazon-vacio">
@@ -493,7 +496,7 @@
                     </button>
                 </div>
 
-                <form id="formResena">
+                <form method="post" id="formResena">
                     <div class="modal-body d-flex flex-column gap-3">
                         <p class="fila-meta mb-0" id="nombreJuegoResena">
                             Comparte tu experiencia con un videojuego adquirido.
@@ -541,8 +544,9 @@
                             <label class="form-label" for="comentarioResena">
                                 Tu opinión
                             </label>
-                            <textarea class="form-control" id="comentarioResena" maxlength="600" minlength="10"
-                                placeholder="&iquest;Qu&eacute; te pareci&oacute; el videojuego? (m&iacute;nimo 10 caracteres)"
+                            <textarea name="comentario" class="form-control" id="comentarioResena" maxlength="600"
+                                minlength="10"
+                                placeholder="¿Qué te pareció el videojuego? (mínimo 10 caracteres)"
                                 required="" rows="4"></textarea>
                             <span class="form-text">
                                 La primera reseña válida por videojuego adquirido otorga 10
