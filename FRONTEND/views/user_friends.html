@@ -164,13 +164,13 @@
                 <div class="herramientas">
                     <div class="campo-buscar">
                         <label for="buscarAmigos" class="form-label">Buscar amigo</label>
-                        <input type="search" autocomplete="off" class="form-control" id="buscarAmigos"
-                            placeholder="Buscar por nombre de usuario...">
+                        <input name="buscar_amigos" type="search" autocomplete="off" class="form-control"
+                            id="buscarAmigos" placeholder="Buscar por nombre de usuario...">
                     </div>
 
                     <div class="campo-orden">
                         <label for="ordenAmigos" class="form-label">Ordenar por</label>
-                        <select class="form-select" id="ordenAmigos">
+                        <select name="orden_amigos" class="form-select" id="ordenAmigos">
                             <option value="nombre">Nombre A-Z</option>
                             <option value="reciente">Amistad más reciente</option>
                         </select>
@@ -178,7 +178,7 @@
                 </div>
 
                 <div class="vstack gap-3 listado-personas" id="listaAmigos">
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="nova-rider">
                         <div aria-hidden="true" class="avatar-persona avatar-violeta">
                             NR
                         </div>
@@ -192,7 +192,8 @@
 
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilNovaRider" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilNovaRider" aria-label="Ver perfil de NovaRider">
                                 Ver perfil
                             </button>
                             <button class="btn btn-link text-danger btn-eliminar-amigo"
@@ -202,7 +203,7 @@
                         </div>
                     </div>
 
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="luna-byte">
                         <div aria-hidden="true" class="avatar-persona avatar-azul">
                             LB
                         </div>
@@ -216,7 +217,8 @@
 
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilLunaByte" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilLunaByte" aria-label="Ver perfil de LunaByte">
                                 Ver perfil
                             </button>
                             <button class="btn btn-link text-danger btn-eliminar-amigo"
@@ -226,7 +228,7 @@
                         </div>
                     </div>
 
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="craft-mage">
                         <div aria-hidden="true" class="avatar-persona avatar-verde">
                             CM
                         </div>
@@ -240,7 +242,8 @@
 
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilCraftMage" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilCraftMage" aria-label="Ver perfil de CraftMage">
                                 Ver perfil
                             </button>
                             <button class="btn btn-link text-danger btn-eliminar-amigo"
@@ -284,7 +287,7 @@
                     Acepta una solicitud para agregar a esa persona a tus amigos, o recházala si lo prefieres.
                 </p>
                 <div class="vstack gap-3 listado-personas" id="listaRecibidas">
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="zero-shift">
                         <div aria-hidden="true" class="avatar-persona avatar-rosa">
                             ZS
                         </div>
@@ -298,7 +301,8 @@
                         </div>
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilZeroShift" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilZeroShift" aria-label="Ver perfil de ZeroShift">
                                 Ver perfil
                             </button>
                             <button class="btn btn-primary btn-aceptar" data-bs-target="#modalAceptar"
@@ -311,7 +315,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="atlas-fox">
                         <div aria-hidden="true" class="avatar-persona avatar-dorado">
                             AF
                         </div>
@@ -325,7 +329,8 @@
                         </div>
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilAtlasFox" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilAtlasFox" aria-label="Ver perfil de AtlasFox">
                                 Ver perfil
                             </button>
                             <button class="btn btn-primary btn-aceptar" data-bs-target="#modalAceptar"
@@ -362,7 +367,7 @@
                     Consulta las solicitudes pendientes y cancélalas si cambias de opinión.
                 </p>
                 <div class="vstack gap-3 listado-personas" id="listaEnviadas">
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="drift-king">
                         <div aria-hidden="true" class="avatar-persona avatar-celeste">
                             DK
                         </div>
@@ -379,7 +384,8 @@
                         </span>
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilDriftKing" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilDriftKing" aria-label="Ver perfil de DriftKing">
                                 Ver perfil
                             </button>
                             <button class="btn btn-link text-danger btn-cancelar" data-bs-target="#modalCancelar"
@@ -415,14 +421,14 @@
                         <label class="form-label" for="buscarJugadores">
                             Nombre del jugador
                         </label>
-                        <input autocomplete="off" class="form-control" id="buscarJugadores" maxlength="30"
-                            placeholder="Ej. PixelNova" type="search" />
+                        <input name="buscar_jugadores" autocomplete="off" class="form-control" id="buscarJugadores"
+                            maxlength="30" placeholder="Ej. PixelNova" type="search" />
                     </div>
                     <div class="campo-orden">
                         <label class="form-label" for="ordenJugadores">
                             Ordenar por
                         </label>
-                        <select class="form-select" id="ordenJugadores">
+                        <select name="orden_jugadores" class="form-select" id="ordenJugadores">
                             <option value="nombre">
                                 Nombre A-Z
                             </option>
@@ -437,7 +443,7 @@
                     solicitud pendiente.
                 </div>
                 <div class="vstack gap-3 listado-personas" id="listaJugadores">
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="pixel-nova">
                         <div aria-hidden="true" class="avatar-persona avatar-violeta">
                             PN
                         </div>
@@ -451,7 +457,8 @@
                         </div>
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilPixelNova" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilPixelNova" aria-label="Ver perfil de PixelNova">
                                 Ver perfil
                             </button>
                             <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
@@ -460,7 +467,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="rune-pilot">
                         <div aria-hidden="true" class="avatar-persona avatar-azul">
                             RP
                         </div>
@@ -474,7 +481,8 @@
                         </div>
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilRunePilot" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilRunePilot" aria-label="Ver perfil de RunePilot">
                                 Ver perfil
                             </button>
                             <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
@@ -483,7 +491,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="persona-card">
+                    <div class="persona-card" data-usuario-slug="cloud-ninja">
                         <div aria-hidden="true" class="avatar-persona avatar-verde">
                             CN
                         </div>
@@ -497,7 +505,8 @@
                         </div>
                         <div class="persona-acciones">
                             <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPublico" data-bs-toggle="modal" type="button">
+                                data-bs-target="#modalPerfilCloudNinja" data-bs-toggle="modal" type="button"
+                                id="btnVerPerfilCloudNinja" aria-label="Ver perfil de CloudNinja">
                                 Ver perfil
                             </button>
                             <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
@@ -519,46 +528,263 @@
         </div>
     </main>
 
-    <!-- Estado vacío de la lista de amigos -->
-    <div aria-hidden="true" aria-labelledby="tituloPerfilPublico" class="modal fade" id="modalPerfilPublico"
-        tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade modal-perfil-jugador" id="modalPerfilNovaRider" tabindex="-1"
+        aria-labelledby="tituloPerfilNovaRider" aria-hidden="true" data-usuario-slug="nova-rider">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title" id="tituloPerfilPublico">
-                        Perfil de jugador
-                    </h2>
-                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
-                    </button>
+                    <h2 class="modal-title" id="tituloPerfilNovaRider">Perfil de NovaRider</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar perfil"></button>
                 </div>
-                <div class="modal-body d-flex flex-column gap-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <span aria-hidden="true" class="avatar-persona avatar-violeta" id="avatarPerfilPublico">
-                            SP
-                        </span>
-                        <div>
-                            <h3 class="persona-nombre" id="nombrePerfilPublico">
-                                Perfil público
-                            </h3>
-                            <p class="persona-info">
-                                Cuenta de jugador
-                            </p>
+                <div class="modal-body">
+                    <div class="perfil-publico-cabecera d-flex align-items-center gap-3">
+                        <span class="avatar-persona avatar-violeta" aria-hidden="true">NR</span>
+                        <div class="flex-grow-1">
+                            <h3 class="persona-nombre mb-1">NovaRider</h3>
+                            <p class="persona-info">Jugador · Amigo</p>
                         </div>
+                        <span class="etiqueta d-none d-sm-inline">2 juegos en común</span>
                     </div>
-                    <div class="detalle-perfil">
-                        <span class="fila-label">
-                            Sobre este jugador
-                        </span>
-                        <p class="mb-0 mt-2" id="infoPerfilPublico">
-                            Consulta la información pública de otros jugadores y los videojuegos que
-                            tienen en común contigo.
-                        </p>
+                    <p class="perfil-publico-bio">Le gustan las carreras y las partidas cooperativas.</p>
+                    <div class="perfil-publico-metrica" aria-label="Resumen de colección">
+                        <div><span class="fila-label">Juegos visibles</span><strong>3</strong></div>
+                        <div><span class="fila-label">Juegos en común contigo</span><strong>2</strong></div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-3">
+                        <div>
+                            <h4 class="perfil-publico-subtitulo mb-1">Colección pública</h4>
+                            <p class="persona-info">Videojuegos compartidos en su perfil.</p>
+                        </div>
+                        <span class="etiqueta d-sm-none">2 juegos en común</span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="nebula-drift">
+                                <img src="../assets/images/n64_diddykongracing_label_thumb.jpg"
+                                    alt="Portada de Nebula Drift" class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Nebula Drift</strong>
+                                    <span class="perfil-en-comun"><i class="fa-solid fa-check" aria-hidden="true"></i>
+                                        En común</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="pixel-harvest">
+                                <img src="../assets/images/Logo_of_Stardew_Valley.png" alt="Portada de Pixel Harvest"
+                                    class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Pixel Harvest</strong>
+                                    <span class="perfil-en-comun"><i class="fa-solid fa-check" aria-hidden="true"></i>
+                                        En común</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="hollow-keep">
+                                <img src="../assets/images/hollow-knight-thumb.jpg" alt="Portada de Hollow Keep"
+                                    class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Hollow Keep</strong>
+                                    <span class="perfil-coleccion-etiqueta">En su colección</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-dismiss="modal" type="button">
-                        Cerrar perfil
-                    </button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar perfil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-perfil-jugador" id="modalPerfilLunaByte" tabindex="-1"
+        aria-labelledby="tituloPerfilLunaByte" aria-hidden="true" data-usuario-slug="luna-byte">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloPerfilLunaByte">Perfil de LunaByte</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar perfil"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="perfil-publico-cabecera d-flex align-items-center gap-3">
+                        <span class="avatar-persona avatar-azul" aria-hidden="true">LB</span>
+                        <div class="flex-grow-1">
+                            <h3 class="persona-nombre mb-1">LunaByte</h3>
+                            <p class="persona-info">Jugador · Amiga</p>
+                        </div>
+                        <span class="etiqueta d-none d-sm-inline">1 juego en común</span>
+                    </div>
+                    <p class="perfil-publico-bio">Prefiere mundos tranquilos y juegos de aventura.</p>
+                    <div class="perfil-publico-metrica" aria-label="Resumen de colección">
+                        <div><span class="fila-label">Juegos visibles</span><strong>2</strong></div>
+                        <div><span class="fila-label">Juegos en común contigo</span><strong>1</strong></div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-3">
+                        <div>
+                            <h4 class="perfil-publico-subtitulo mb-1">Colección pública</h4>
+                            <p class="persona-info">Videojuegos compartidos en su perfil.</p>
+                        </div>
+                        <span class="etiqueta d-sm-none">1 juego en común</span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="pixel-harvest">
+                                <img src="../assets/images/Logo_of_Stardew_Valley.png" alt="Portada de Pixel Harvest"
+                                    class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Pixel Harvest</strong>
+                                    <span class="perfil-en-comun"><i class="fa-solid fa-check" aria-hidden="true"></i>
+                                        En común</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="hollow-keep">
+                                <img src="../assets/images/hollow-knight-thumb.jpg" alt="Portada de Hollow Keep"
+                                    class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Hollow Keep</strong>
+                                    <span class="perfil-coleccion-etiqueta">En su colección</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar perfil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-perfil-jugador" id="modalPerfilCraftMage" tabindex="-1"
+        aria-labelledby="tituloPerfilCraftMage" aria-hidden="true" data-usuario-slug="craft-mage">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloPerfilCraftMage">Perfil de CraftMage</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar perfil"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="perfil-publico-cabecera d-flex align-items-center gap-3">
+                        <span class="avatar-persona avatar-verde" aria-hidden="true">CM</span>
+                        <div class="flex-grow-1">
+                            <h3 class="persona-nombre mb-1">CraftMage</h3>
+                            <p class="persona-info">Jugador · Amigo</p>
+                        </div>
+                        <span class="etiqueta d-none d-sm-inline">3 juegos en común</span>
+                    </div>
+                    <p class="perfil-publico-bio">Explora universos y busca desafíos estratégicos.</p>
+                    <div class="perfil-publico-metrica" aria-label="Resumen de colección">
+                        <div><span class="fila-label">Juegos visibles</span><strong>3</strong></div>
+                        <div><span class="fila-label">Juegos en común contigo</span><strong>3</strong></div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-3">
+                        <div>
+                            <h4 class="perfil-publico-subtitulo mb-1">Colección pública</h4>
+                            <p class="persona-info">Videojuegos compartidos en su perfil.</p>
+                        </div>
+                        <span class="etiqueta d-sm-none">3 juegos en común</span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="nebula-drift">
+                                <img src="../assets/images/n64_diddykongracing_label_thumb.jpg"
+                                    alt="Portada de Nebula Drift" class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Nebula Drift</strong>
+                                    <span class="perfil-en-comun"><i class="fa-solid fa-check" aria-hidden="true"></i>
+                                        En común</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="pixel-harvest">
+                                <img src="../assets/images/Logo_of_Stardew_Valley.png" alt="Portada de Pixel Harvest"
+                                    class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Pixel Harvest</strong>
+                                    <span class="perfil-en-comun"><i class="fa-solid fa-check" aria-hidden="true"></i>
+                                        En común</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="aurora-protocol">
+                                <img src="../assets/images/The_Callisto_Protocol_cover_art.jpg"
+                                    alt="Portada de Aurora Protocol" class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Aurora Protocol</strong>
+                                    <span class="perfil-en-comun"><i class="fa-solid fa-check" aria-hidden="true"></i>
+                                        En común</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar perfil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-perfil-jugador" id="modalPerfilZeroShift" tabindex="-1"
+        aria-labelledby="tituloPerfilZeroShift" aria-hidden="true" data-usuario-slug="zero-shift">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tituloPerfilZeroShift">Perfil de ZeroShift</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar perfil"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="perfil-publico-cabecera d-flex align-items-center gap-3">
+                        <span class="avatar-persona avatar-rosa" aria-hidden="true">ZS</span>
+                        <div class="flex-grow-1">
+                            <h3 class="persona-nombre mb-1">ZeroShift</h3>
+                            <p class="persona-info">Jugador · Solicitud recibida</p>
+                        </div>
+                        <span class="etiqueta d-none d-sm-inline">Sin juegos en común</span>
+                    </div>
+                    <p class="perfil-publico-bio">Disfruta de los juegos de acción y aventura.</p>
+                    <div class="perfil-publico-metrica" aria-label="Resumen de colección">
+                        <div><span class="fila-label">Juegos visibles</span><strong>2</strong></div>
+                        <div><span class="fila-label">Juegos en común contigo</span><strong>0</strong></div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-3">
+                        <div>
+                            <h4 class="perfil-publico-subtitulo mb-1">Colección pública</h4>
+                            <p class="persona-info">Videojuegos compartidos en su perfil.</p>
+                        </div>
+                        <span class="etiqueta d-sm-none">Sin juegos en común</span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="hollow-keep">
+                                <img src="../assets/images/hollow-knight-thumb.jpg" alt="Portada de Hollow Keep"
+                                    class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Hollow Keep</strong>
+                                    <span class="perfil-coleccion-etiqueta">En su colección</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <div class="perfil-juego h-100" data-juego-slug="ember-vale">
+                                <img src="../assets/images/fire-emblem-warriors-cover_cover_small.jpg"
+                                    alt="Portada de Ember Vale" class="perfil-juego-portada" loading="lazy">
+                                <div class="perfil-juego-cuerpo">
+                                    <strong class="perfil-juego-titulo">Ember Vale</strong>
+                                    <span class="perfil-coleccion-etiqueta">En su colección</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar perfil</button>
                 </div>
             </div>
         </div>
