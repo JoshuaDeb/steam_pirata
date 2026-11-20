@@ -37,7 +37,8 @@
                 <div class="collapse navbar-collapse justify-content-center" id="menuPrincipal">
                     <ul class="navbar-nav">
                         <li class="nav-item"><a class="nav-link" href="store.html">Catálogo</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="dev_profile.html">Panel</a>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page"
+                                href="dev_profile.html">Panel</a>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="user_profile.html">Perfil</a></li>
                     </ul>
@@ -116,7 +117,8 @@
                         </div>
 
                         <div class="collapse" id="editarJuego1">
-                            <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                            <form enctype="multipart/form-data" method="post" id="formEditarJuegoNebula"
+                                data-juego-slug="nebula-drift" class="form-edicion d-flex flex-column gap-3" novalidate>
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="portada portada-1" aria-hidden="true">ND</div>
                                     <div class="juego-info d-flex flex-column">
@@ -125,19 +127,19 @@
                                     </div>
                                     <label class="btn btn-outline-secondary boton-archivo">
                                         Cambiar portada
-                                        <input class="visually-hidden" type="file"
-                                            accept="image/png, image/jpeg, image/webp">
+                                        <input id="portadaEditarNebula" name="portada" class="visually-hidden"
+                                            type="file" accept="image/png, image/jpeg, image/webp">
                                     </label>
                                 </div>
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <label class="form-label" for="titulo1">Título</label>
-                                        <input class="form-control" type="text" id="titulo1" value="Nebula Drift"
-                                            maxlength="60">
+                                        <input name="titulo" class="form-control" type="text" id="titulo1"
+                                            value="Nebula Drift" maxlength="60">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="genero1">Género</label>
-                                        <select class="form-select" id="genero1">
+                                        <select name="genero" class="form-select" id="genero1">
                                             <option>Acción</option>
                                             <option>Aventura</option>
                                             <option selected>Carreras</option>
@@ -150,7 +152,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="clasificacion1">Clasificación de edad</label>
-                                        <select class="form-select" id="clasificacion1">
+                                        <select name="clasificacion_edad" class="form-select" id="clasificacion1">
                                             <option selected>E · Todos</option>
                                             <option>T · +13</option>
                                             <option>M · +17</option>
@@ -158,17 +160,17 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="precio1">Precio en créditos</label>
-                                        <input class="form-control" type="number" id="precio1" value="40" min="1"
-                                            step="1">
+                                        <input name="precio_creditos" class="form-control" type="number" id="precio1"
+                                            value="40" min="1" step="1">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="specs1">Especificaciones</label>
-                                        <input class="form-control" type="text" id="specs1"
+                                        <input name="especificaciones" class="form-control" type="text" id="specs1"
                                             value="Windows 10 · Intel i5 · 8 GB RAM · 20 GB">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label" for="descripcion1">Descripción</label>
-                                        <textarea class="form-control" id="descripcion1"
+                                        <textarea name="descripcion" class="form-control" id="descripcion1"
                                             rows="2">Carreras antigravedad a través de cinturones de asteroides.</textarea>
                                     </div>
                                 </div>
@@ -215,7 +217,8 @@
                         </div>
 
                         <div class="collapse" id="editarJuego2">
-                            <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                            <form enctype="multipart/form-data" method="post" id="formEditarJuegoHollow"
+                                data-juego-slug="hollow-keep" class="form-edicion d-flex flex-column gap-3" novalidate>
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="portada portada-2" aria-hidden="true">HK</div>
                                     <div class="juego-info d-flex flex-column">
@@ -224,19 +227,19 @@
                                     </div>
                                     <label class="btn btn-outline-secondary boton-archivo">
                                         Cambiar portada
-                                        <input class="visually-hidden" type="file"
-                                            accept="image/png, image/jpeg, image/webp">
+                                        <input id="portadaEditarHollow" name="portada" class="visually-hidden"
+                                            type="file" accept="image/png, image/jpeg, image/webp">
                                     </label>
                                 </div>
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <label class="form-label" for="titulo2">Título</label>
-                                        <input class="form-control" type="text" id="titulo2" value="Hollow Keep"
-                                            maxlength="60">
+                                        <input name="titulo" class="form-control" type="text" id="titulo2"
+                                            value="Hollow Keep" maxlength="60">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="genero2">Género</label>
-                                        <select class="form-select" id="genero2">
+                                        <select name="genero" class="form-select" id="genero2">
                                             <option>Acción</option>
                                             <option selected>Aventura</option>
                                             <option>Carreras</option>
@@ -249,7 +252,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="clasificacion2">Clasificación de edad</label>
-                                        <select class="form-select" id="clasificacion2">
+                                        <select name="clasificacion_edad" class="form-select" id="clasificacion2">
                                             <option>E · Todos</option>
                                             <option selected>T · +13</option>
                                             <option>M · +17</option>
@@ -257,17 +260,17 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="precio2">Precio en créditos</label>
-                                        <input class="form-control" type="number" id="precio2" value="60" min="1"
-                                            step="1">
+                                        <input name="precio_creditos" class="form-control" type="number" id="precio2"
+                                            value="60" min="1" step="1">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="specs2">Especificaciones</label>
-                                        <input class="form-control" type="text" id="specs2"
+                                        <input name="especificaciones" class="form-control" type="text" id="specs2"
                                             value="Windows 10 · 8 GB RAM · 15 GB">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label" for="descripcion2">Descripción</label>
-                                        <textarea class="form-control" id="descripcion2"
+                                        <textarea name="descripcion" class="form-control" id="descripcion2"
                                             rows="2">Explora un castillo en ruinas lleno de secretos.</textarea>
                                     </div>
                                 </div>
@@ -312,7 +315,9 @@
                         </div>
 
                         <div class="collapse" id="editarJuego3">
-                            <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                            <form enctype="multipart/form-data" method="post" id="formEditarJuegoPixel"
+                                data-juego-slug="pixel-harvest" class="form-edicion d-flex flex-column gap-3"
+                                novalidate>
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="portada portada-3" aria-hidden="true">PH</div>
                                     <div class="juego-info d-flex flex-column">
@@ -321,19 +326,19 @@
                                     </div>
                                     <label class="btn btn-outline-secondary boton-archivo">
                                         Cambiar portada
-                                        <input class="visually-hidden" type="file"
-                                            accept="image/png, image/jpeg, image/webp">
+                                        <input id="portadaEditarPixel" name="portada" class="visually-hidden"
+                                            type="file" accept="image/png, image/jpeg, image/webp">
                                     </label>
                                 </div>
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <label class="form-label" for="titulo3">Título</label>
-                                        <input class="form-control" type="text" id="titulo3" value="Pixel Harvest"
-                                            maxlength="60">
+                                        <input name="titulo" class="form-control" type="text" id="titulo3"
+                                            value="Pixel Harvest" maxlength="60">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="genero3">Género</label>
-                                        <select class="form-select" id="genero3">
+                                        <select name="genero" class="form-select" id="genero3">
                                             <option>Acción</option>
                                             <option>Aventura</option>
                                             <option>Carreras</option>
@@ -346,7 +351,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="clasificacion3">Clasificación de edad</label>
-                                        <select class="form-select" id="clasificacion3">
+                                        <select name="clasificacion_edad" class="form-select" id="clasificacion3">
                                             <option selected>E · Todos</option>
                                             <option>T · +13</option>
                                             <option>M · +17</option>
@@ -354,17 +359,17 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="precio3">Precio en créditos</label>
-                                        <input class="form-control" type="number" id="precio3" value="25" min="1"
-                                            step="1">
+                                        <input name="precio_creditos" class="form-control" type="number" id="precio3"
+                                            value="25" min="1" step="1">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="specs3">Especificaciones</label>
-                                        <input class="form-control" type="text" id="specs3"
+                                        <input name="especificaciones" class="form-control" type="text" id="specs3"
                                             value="Windows 10 · 4 GB RAM · 2 GB">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label" for="descripcion3">Descripción</label>
-                                        <textarea class="form-control" id="descripcion3"
+                                        <textarea name="descripcion" class="form-control" id="descripcion3"
                                             rows="2">Cultiva, cosecha y construye tu granja pixelada.</textarea>
                                     </div>
                                 </div>
@@ -438,16 +443,17 @@
                                     </div>
                                 </div>
                                 <div class="collapse" id="editarDlc1">
-                                    <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                    <form method="post" id="formEditarDlcOrion"
+                                        class="form-edicion d-flex flex-column gap-3" novalidate>
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="nombreDlc1">Nombre del DLC</label>
-                                                <input class="form-control" type="text" id="nombreDlc1"
+                                                <input name="nombre" class="form-control" type="text" id="nombreDlc1"
                                                     value="Cinturón de Orión" maxlength="60">
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="tipoDlc1">Tipo de contenido</label>
-                                                <select class="form-select" id="tipoDlc1">
+                                                <select name="tipo_contenido" class="form-select" id="tipoDlc1">
                                                     <option selected>Expansión</option>
                                                     <option>Vehículos</option>
                                                     <option>Personajes</option>
@@ -457,7 +463,7 @@
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label" for="descDlc1">Descripción</label>
-                                                <textarea class="form-control" id="descDlc1"
+                                                <textarea name="descripcion" class="form-control" id="descDlc1"
                                                     rows="2">3 pistas nuevas en un cinturón de asteroides.</textarea>
                                             </div>
                                         </div>
@@ -487,16 +493,17 @@
                                     </div>
                                 </div>
                                 <div class="collapse" id="editarDlc2">
-                                    <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                    <form method="post" id="formEditarDlcNaves"
+                                        class="form-edicion d-flex flex-column gap-3" novalidate>
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="nombreDlc2">Nombre del DLC</label>
-                                                <input class="form-control" type="text" id="nombreDlc2"
+                                                <input name="nombre" class="form-control" type="text" id="nombreDlc2"
                                                     value="Pack de naves clásicas" maxlength="60">
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="tipoDlc2">Tipo de contenido</label>
-                                                <select class="form-select" id="tipoDlc2">
+                                                <select name="tipo_contenido" class="form-select" id="tipoDlc2">
                                                     <option>Expansión</option>
                                                     <option selected>Vehículos</option>
                                                     <option>Personajes</option>
@@ -506,7 +513,7 @@
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label" for="descDlc2">Descripción</label>
-                                                <textarea class="form-control" id="descDlc2"
+                                                <textarea name="descripcion" class="form-control" id="descDlc2"
                                                     rows="2">5 vehículos con diseño retro.</textarea>
                                             </div>
                                         </div>
@@ -526,18 +533,20 @@
                                     <span class="mas" aria-hidden="true">+</span>Agregar DLC a Nebula Drift
                                 </button>
                                 <div class="collapse px-3 pb-3" id="agregarDlc1">
-                                    <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
+                                    <form method="post" id="formCrearDlcNebula"
+                                        class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="nombreNuevoDlc1">Nombre del DLC</label>
-                                                <input class="form-control is-invalid" type="text" id="nombreNuevoDlc1"
-                                                    value="" maxlength="60" aria-describedby="errorNuevoDlc1">
+                                                <input name="nombre" class="form-control is-invalid" type="text"
+                                                    id="nombreNuevoDlc1" value="" maxlength="60"
+                                                    aria-describedby="errorNuevoDlc1">
                                                 <div class="invalid-feedback" id="errorNuevoDlc1">El nombre del DLC es
                                                     obligatorio.</div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="tipoNuevoDlc1">Tipo de contenido</label>
-                                                <select class="form-select" id="tipoNuevoDlc1">
+                                                <select name="tipo_contenido" class="form-select" id="tipoNuevoDlc1">
                                                     <option selected>Expansión</option>
                                                     <option>Vehículos</option>
                                                     <option>Personajes</option>
@@ -547,8 +556,8 @@
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label" for="descNuevoDlc1">Descripción</label>
-                                                <textarea class="form-control" id="descNuevoDlc1" rows="2"
-                                                    placeholder="Qué incluye este contenido"></textarea>
+                                                <textarea name="descripcion" class="form-control" id="descNuevoDlc1"
+                                                    rows="2" placeholder="Qué incluye este contenido"></textarea>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
@@ -580,16 +589,17 @@
                                     </div>
                                 </div>
                                 <div class="collapse" id="editarDlc3">
-                                    <form class="form-edicion d-flex flex-column gap-3" novalidate>
+                                    <form method="post" id="formEditarDlcSemillas"
+                                        class="form-edicion d-flex flex-column gap-3" novalidate>
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="nombreDlc3">Nombre del DLC</label>
-                                                <input class="form-control" type="text" id="nombreDlc3"
+                                                <input name="nombre" class="form-control" type="text" id="nombreDlc3"
                                                     value="Las criptas olvidadas" maxlength="60">
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="tipoDlc3">Tipo de contenido</label>
-                                                <select class="form-select" id="tipoDlc3">
+                                                <select name="tipo_contenido" class="form-select" id="tipoDlc3">
                                                     <option selected>Expansión</option>
                                                     <option>Vehículos</option>
                                                     <option>Personajes</option>
@@ -599,7 +609,7 @@
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label" for="descDlc3">Descripción</label>
-                                                <textarea class="form-control" id="descDlc3"
+                                                <textarea name="descripcion" class="form-control" id="descDlc3"
                                                     rows="2">Una nueva zona subterránea con jefes inéditos.</textarea>
                                             </div>
                                         </div>
@@ -619,16 +629,17 @@
                                     <span class="mas" aria-hidden="true">+</span>Agregar DLC a Hollow Keep
                                 </button>
                                 <div class="collapse px-3 pb-3" id="agregarDlc2">
-                                    <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
+                                    <form method="post" id="formCrearDlcHollow"
+                                        class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="nombreNuevoDlc2">Nombre del DLC</label>
-                                                <input class="form-control" type="text" id="nombreNuevoDlc2"
-                                                    maxlength="60">
+                                                <input name="nombre" class="form-control" type="text"
+                                                    id="nombreNuevoDlc2" maxlength="60">
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="tipoNuevoDlc2">Tipo de contenido</label>
-                                                <select class="form-select" id="tipoNuevoDlc2">
+                                                <select name="tipo_contenido" class="form-select" id="tipoNuevoDlc2">
                                                     <option selected>Expansión</option>
                                                     <option>Vehículos</option>
                                                     <option>Personajes</option>
@@ -638,8 +649,8 @@
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label" for="descNuevoDlc2">Descripción</label>
-                                                <textarea class="form-control" id="descNuevoDlc2" rows="2"
-                                                    placeholder="Qué incluye este contenido"></textarea>
+                                                <textarea name="descripcion" class="form-control" id="descNuevoDlc2"
+                                                    rows="2" placeholder="Qué incluye este contenido"></textarea>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
@@ -663,16 +674,17 @@
                                     <span class="mas" aria-hidden="true">+</span>Agregar DLC a Pixel Harvest
                                 </button>
                                 <div class="collapse px-3 pb-3" id="agregarDlc3">
-                                    <form class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
+                                    <form method="post" id="formCrearDlcPixel"
+                                        class="form-edicion mt-0 d-flex flex-column gap-3" novalidate>
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="nombreNuevoDlc3">Nombre del DLC</label>
-                                                <input class="form-control" type="text" id="nombreNuevoDlc3"
-                                                    maxlength="60">
+                                                <input name="nombre" class="form-control" type="text"
+                                                    id="nombreNuevoDlc3" maxlength="60">
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label" for="tipoNuevoDlc3">Tipo de contenido</label>
-                                                <select class="form-select" id="tipoNuevoDlc3">
+                                                <select name="tipo_contenido" class="form-select" id="tipoNuevoDlc3">
                                                     <option selected>Expansión</option>
                                                     <option>Vehículos</option>
                                                     <option>Personajes</option>
@@ -682,8 +694,8 @@
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label" for="descNuevoDlc3">Descripción</label>
-                                                <textarea class="form-control" id="descNuevoDlc3" rows="2"
-                                                    placeholder="Qué incluye este contenido"></textarea>
+                                                <textarea name="descripcion" class="form-control" id="descNuevoDlc3"
+                                                    rows="2" placeholder="Qué incluye este contenido"></textarea>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
@@ -728,11 +740,13 @@
 
     <div class="modal fade" id="modalPublicar" tabindex="-1" aria-labelledby="modalPublicarTitulo" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-medio">
-            <form class="modal-content" novalidate>
+            <form enctype="multipart/form-data" method="post" id="formPublicarVideojuego" class="modal-content"
+                novalidate>
                 <div class="modal-header align-items-center gap-3">
                     <label class="boton-archivo" title="Subir portada">
                         <span class="portada-preview">+ Portada</span>
-                        <input class="visually-hidden" type="file" accept="image/png, image/jpeg, image/webp">
+                        <input id="portadaNuevoJuego" name="portada" class="visually-hidden" type="file"
+                            accept="image/png, image/jpeg, image/webp">
                     </label>
                     <div class="me-auto">
                         <h2 class="modal-title" id="modalPublicarTitulo">Publicar videojuego</h2>
@@ -745,17 +759,17 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label" for="nuevoTitulo">Título</label>
-                            <input class="form-control" type="text" id="nuevoTitulo" value="Starlight Forge"
-                                maxlength="60">
+                            <input name="titulo" class="form-control" type="text" id="nuevoTitulo"
+                                value="Starlight Forge" maxlength="60">
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="nuevoDescripcion">Descripción</label>
-                            <textarea class="form-control" id="nuevoDescripcion"
+                            <textarea name="descripcion" class="form-control" id="nuevoDescripcion"
                                 rows="3">Forja armas estelares y defiende tu estación espacial.</textarea>
                         </div>
                         <div class="col-sm-4">
                             <label class="form-label" for="nuevoGenero">Género</label>
-                            <select class="form-select" id="nuevoGenero">
+                            <select name="genero" class="form-select" id="nuevoGenero">
                                 <option>Acción</option>
                                 <option>Aventura</option>
                                 <option>Carreras</option>
@@ -768,7 +782,7 @@
                         </div>
                         <div class="col-sm-4">
                             <label class="form-label" for="nuevoClasificacion">Clasificación</label>
-                            <select class="form-select" id="nuevoClasificacion">
+                            <select name="clasificacion_edad" class="form-select" id="nuevoClasificacion">
                                 <option>E · Todos</option>
                                 <option selected>T · +13</option>
                                 <option>M · +17</option>
@@ -776,8 +790,8 @@
                         </div>
                         <div class="col-sm-4">
                             <label class="form-label" for="nuevoPrecio">Precio (créditos)</label>
-                            <input class="form-control is-invalid" type="number" id="nuevoPrecio" value="0" min="1"
-                                step="1" aria-describedby="errorPrecio">
+                            <input name="precio_creditos" class="form-control is-invalid" type="number" id="nuevoPrecio"
+                                value="0" min="1" step="1" aria-describedby="errorPrecio">
                         </div>
                         <div class="col-12 mt-1">
                             <div class="small text-danger" id="errorPrecio">El precio debe ser un número entero mayor a
@@ -785,7 +799,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="nuevoSpecs">Especificaciones</label>
-                            <input class="form-control" type="text" id="nuevoSpecs"
+                            <input name="especificaciones" class="form-control" type="text" id="nuevoSpecs"
                                 placeholder="SO, procesador, memoria, almacenamiento…">
                         </div>
                     </div>
