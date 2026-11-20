@@ -12,6 +12,9 @@
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
     <link rel="stylesheet" href="../assets/user_profile.css">
+    <style>
+        html[data-tipo-cuenta="desarrollador"] .solo-jugador { display: none !important; }
+    </style>
 </head>
 
 <body>
@@ -50,19 +53,19 @@
 
     <div class="banner-wrap">
         <div class="banner" aria-hidden="true">
-            <span class="banner-marca">LuisDCG</span>
+            <span class="banner-marca" id="bannerNombre"></span>
         </div>
     </div>
 
     <main class="contenido">
 
         <section class="d-flex flex-column align-items-center text-center gap-2">
-            <div class="avatar avatar-lg" aria-hidden="true">LD</div>
-            <h1 class="titulo-perfil mt-1">LuisDCG</h1>
+            <div class="avatar avatar-lg" aria-hidden="true" id="avatarPerfil"></div>
+            <h1 class="titulo-perfil mt-1" id="nombrePerfil">Mi perfil</h1>
             <p class="perfil-meta d-flex flex-wrap justify-content-center align-items-center gap-2 mb-0">
-                <span>Jugador</span>
-                <span aria-hidden="true">·</span>
-                <strong>110 créditos</strong>
+                <span id="tipoPerfil"></span>
+                <span aria-hidden="true" class="solo-jugador">·</span>
+                <strong class="solo-jugador"><span class="js-creditos">0</span> créditos</strong>
             </p>
         </section>
 
@@ -71,7 +74,7 @@
                 <button class="nav-link active" id="tabInfo" type="button" role="tab" data-bs-toggle="pill"
                     data-bs-target="#panelInfo" aria-controls="panelInfo" aria-selected="true">Información</button>
             </li>
-            <li class="nav-item" role="presentation">
+            <li class="nav-item solo-jugador" role="presentation">
                 <button class="nav-link" id="tabCreditos" type="button" role="tab" data-bs-toggle="pill"
                     data-bs-target="#panelCreditos" aria-controls="panelCreditos"
                     aria-selected="false">Créditos</button>
@@ -93,23 +96,22 @@
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div class="d-flex flex-column">
                                 <span class="fila-label">Nombre de usuario</span>
-                                <span class="fila-valor">LuisDCG</span>
+                                <span class="fila-valor" id="valorNombre"></span>
                             </div>
                             <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#editarNombre" aria-expanded="false"
                                 aria-controls="editarNombre">Editar</button>
                         </div>
                         <div class="collapse" id="editarNombre">
-                            <form class="form-edicion d-flex flex-column gap-2" novalidate>
+                            <form class="form-edicion d-flex flex-column gap-2" id="formNombre" novalidate>
                                 <label class="form-label mb-0" for="inputNombre">Nuevo nombre de usuario</label>
-                                <input class="form-control" type="text" id="inputNombre" value="LuisDCG" maxlength="20"
+                                <input class="form-control" type="text" id="inputNombre" maxlength="20"
                                     autocomplete="username">
                                 <div class="form-text">De 3 a 20 caracteres: letras, números o guion bajo.</div>
                                 <div class="d-flex justify-content-end gap-2 mt-1">
                                     <button class="btn btn-link" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#editarNombre">Cancelar</button>
-                                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#editarNombre">Guardar</button>
+                                    <button class="btn btn-primary" type="submit">Guardar</button>
                                 </div>
                             </form>
                         </div>
@@ -119,23 +121,23 @@
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div class="d-flex flex-column">
                                 <span class="fila-label">Correo electrónico</span>
-                                <span class="fila-valor">luis.chavez@iteso.mx</span>
+                                <span class="fila-valor" id="valorCorreo"></span>
                             </div>
                             <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#editarCorreo" aria-expanded="false"
                                 aria-controls="editarCorreo">Editar</button>
                         </div>
                         <div class="collapse" id="editarCorreo">
-                            <form class="form-edicion d-flex flex-column gap-2" novalidate>
+                            <form class="form-edicion d-flex flex-column gap-2" id="formCorreo" novalidate>
                                 <label class="form-label mb-0" for="inputCorreo">Nuevo correo electrónico</label>
-                                <input class="form-control is-invalid" type="email" id="inputCorreo"
-                                    value="luis.chavez@iteso" autocomplete="email" aria-describedby="errorCorreo">
+                                <input class="form-control" type="email" id="inputCorreo"
+                                    autocomplete="email" aria-describedby="errorCorreo">
                                 <div class="invalid-feedback" id="errorCorreo">Ingresa un correo válido (ej.
                                     nombre@dominio.com).</div>
                                 <div class="d-flex justify-content-end gap-2 mt-1">
                                     <button class="btn btn-link" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#editarCorreo">Cancelar</button>
-                                    <button class="btn btn-primary" type="button">Guardar</button>
+                                    <button class="btn btn-primary" type="submit">Guardar</button>
                                 </div>
                             </form>
                         </div>
@@ -145,7 +147,7 @@
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div class="d-flex flex-column">
                                 <span class="fila-label">Tipo de cuenta</span>
-                                <span class="fila-valor">Jugador</span>
+                                <span class="fila-valor" id="valorTipo"></span>
                             </div>
                             <span class="fila-meta">No editable</span>
                         </div>
@@ -159,7 +161,7 @@
                     <div class="card">
                         <div class="card-body d-flex flex-column gap-3">
                             <span class="fila-label">Saldo disponible</span>
-                            <p class="saldo">110 <small>créditos</small></p>
+                            <p class="saldo"><span class="js-creditos">0</span> <small>créditos</small></p>
                             <p class="fila-meta mb-0">Los créditos son virtuales y no equivalen a dinero real. Recibes
                                 10 créditos por tu primera reseña de cada juego adquirido.</p>
                             <div>
@@ -169,20 +171,7 @@
                         </div>
                     </div>
 
-                    <div class="list-group tarjeta">
-
-                        <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
-                            <div class="d-flex flex-column"><span class="fila-valor">Saldo inicial de la
-                                    cuenta</span><span class="fila-meta">6 nov 2026</span></div>
-                            <span class="movimiento-mas">+100</span>
-                        </div>
-
-                        <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
-                            <div class="d-flex flex-column"><span class="fila-valor">Primera reseña · Nebula
-                                    Drift</span><span class="fila-meta">7 nov 2026</span></div>
-                            <span class="movimiento-mas">+10</span>
-                        </div>
-                    </div>
+                    <div class="list-group tarjeta" id="listaMovimientos"></div>
                 </div>
             </section>
 
@@ -192,13 +181,9 @@
                     <div class="card-body">
                         <h2 class="card-title mb-3">Cambiar contraseña</h2>
 
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            Contraseña actualizada correctamente.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                aria-label="Cerrar"></button>
-                        </div>
+                        <div id="avisoPassword" class="mb-3" aria-live="polite"></div>
 
-                        <form class="d-flex flex-column gap-3" novalidate>
+                        <form class="d-flex flex-column gap-3" id="formPassword" novalidate>
                             <div>
                                 <label class="form-label" for="passActual">Contraseña actual</label>
                                 <input class="form-control" type="password" id="passActual"
@@ -216,7 +201,7 @@
                                     autocomplete="new-password">
                             </div>
                             <div class="d-flex justify-content-end">
-                                <button class="btn btn-primary" type="button">Actualizar contraseña</button>
+                                <button class="btn btn-primary" type="submit">Actualizar contraseña</button>
                             </div>
                         </form>
                     </div>
@@ -237,18 +222,19 @@
                 </div>
                 <div class="modal-body d-flex flex-column gap-3">
                     <p class="text-body-secondary mb-0">
-                        Perderás tu biblioteca, favoritos, reseñas, amistades y tus 110 créditos.
+                        <span id="textoEliminar">Perderás tu biblioteca, favoritos, reseñas, amistades y tus créditos.</span>
                         Esta acción no se puede deshacer.
                     </p>
                     <div>
                         <label class="form-label" for="inputConfirmacion">Escribe <strong>ELIMINAR</strong> para
                             confirmar</label>
                         <input class="form-control" type="text" id="inputConfirmacion" autocomplete="off">
+                        <div id="avisoEliminar" class="mt-2"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-danger" href="login.html">Sí, eliminar</a>
+                    <button type="button" class="btn btn-danger" id="confirmarEliminar">Sí, eliminar</button>
                 </div>
             </div>
         </div>
@@ -275,31 +261,31 @@
                     <fieldset class="d-flex flex-column gap-2">
                         <legend class="paso-titulo">1. Elige un paquete</legend>
 
-                        <input class="btn-check" type="radio" name="paquete" id="paq10" autocomplete="off">
+                        <input class="btn-check" type="radio" name="paquete" id="paq10" value="10" autocomplete="off">
                         <label class="opcion" for="paq10">
                             <span class="opcion-nombre">10 créditos</span>
                             <span class="opcion-precio">$100.00 MXN</span>
                         </label>
 
-                        <input class="btn-check" type="radio" name="paquete" id="paq20" autocomplete="off">
+                        <input class="btn-check" type="radio" name="paquete" id="paq20" value="20" autocomplete="off">
                         <label class="opcion" for="paq20">
                             <span class="opcion-nombre">20 créditos</span>
                             <span class="opcion-precio">$200.00 MXN</span>
                         </label>
 
-                        <input class="btn-check" type="radio" name="paquete" id="paq50" autocomplete="off">
+                        <input class="btn-check" type="radio" name="paquete" id="paq50" value="50" autocomplete="off">
                         <label class="opcion" for="paq50">
                             <span class="opcion-nombre">50 créditos <span class="etiqueta-popular">Popular</span></span>
                             <span class="opcion-precio">$500.00 MXN</span>
                         </label>
 
-                        <input class="btn-check" type="radio" name="paquete" id="paq100" autocomplete="off">
+                        <input class="btn-check" type="radio" name="paquete" id="paq100" value="100" autocomplete="off">
                         <label class="opcion" for="paq100">
                             <span class="opcion-nombre">100 créditos</span>
                             <span class="opcion-precio">$1,000.00 MXN</span>
                         </label>
 
-                        <input class="btn-check" type="radio" name="paquete" id="paq200" autocomplete="off">
+                        <input class="btn-check" type="radio" name="paquete" id="paq200" value="200" autocomplete="off">
                         <label class="opcion" for="paq200">
                             <span class="opcion-nombre">200 créditos</span>
                             <span class="opcion-precio">$2,000.00 MXN</span>
@@ -414,8 +400,7 @@
                                         maxlength="4" placeholder="123" autocomplete="off">
                                 </div>
                             </div>
-                            <button class="btn btn-primary btn-pagar" type="button" data-bs-toggle="modal"
-                                data-bs-target="#modalCompraExitosa">
+                            <button class="btn btn-primary btn-pagar" type="button" data-pagar="tarjeta">
                                 Pagar <span class="monto"><span class="m10">$100.00</span><span
                                         class="m20">$200.00</span><span class="m50">$500.00</span><span
                                         class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
@@ -465,7 +450,7 @@
                                 </div>
                                 <div class="list-group-item d-flex justify-content-between gap-3">
                                     <span class="fila-meta">Concepto</span>
-                                    <span class="fila-valor codigo">SP-LUISDCG-4821</span>
+                                    <span class="fila-valor codigo" id="conceptoSpei">SP-0000</span>
                                 </div>
                                 <div class="list-group-item d-flex justify-content-between gap-3">
                                     <span class="fila-meta">Monto</span>
@@ -474,8 +459,7 @@
                                             class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
                                 </div>
                             </div>
-                            <button class="btn btn-primary btn-pagar" type="button" data-bs-toggle="modal"
-                                data-bs-target="#modalCompraExitosa">Ya hice la transferencia</button>
+                            <button class="btn btn-primary btn-pagar" type="button" data-pagar="spei">Ya hice la transferencia</button>
                         </div>
                     </div>
                 </div>
@@ -507,7 +491,7 @@
                         </div>
                         <div class="list-group-item d-flex justify-content-between gap-3">
                             <span class="fila-meta">Cuenta</span>
-                            <span class="fila-valor">l•••••@iteso.mx</span>
+                            <span class="fila-valor" id="cuentaPaypal"></span>
                         </div>
                         <div class="list-group-item d-flex justify-content-between gap-3">
                             <span class="fila-meta">Total</span>
@@ -520,8 +504,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-target="#modalComprar"
                         data-bs-toggle="modal">Regresar</button>
-                    <button type="button" class="btn btn-primary" data-bs-target="#modalCompraExitosa"
-                        data-bs-toggle="modal">Autorizar pago</button>
+                    <button type="button" class="btn btn-primary" data-pagar="paypal">Autorizar pago</button>
                 </div>
             </div>
         </div>
@@ -600,5 +583,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/profile.js"></script>
 </body>
 </html>
