@@ -5,6 +5,10 @@
     <title>Biblioteca y Favoritos</title>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
+
+    <script src="../assets/session.js"></script>
+
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap CSS v5.3.8 -->
@@ -27,10 +31,10 @@
                 <a class="navbar-brand" href="store.html">SteamPirata</a>
 
                 <div class="d-flex align-items-center gap-3 order-md-last">
-                    <a class="btn btn-link px-0" href="login.html">Cerrar sesión</a>
+                    <a id="btnCerrarSesion" class="btn btn-link px-0" href="login.html"> Cerrar sesión</a>
                     <a class="usuario-nav" href="user_profile.html" title="Mi perfil">
-                        <span class="d-none d-lg-inline">LuisDCG</span>
-                        <span class="avatar avatar-sm" aria-hidden="true">LD</span>
+                        <span id="nombreUsuarioNav" class="d-none d-lg-inline"></span>
+                        <span id="avatarUsuarioNav" class="avatar avatar-sm" aria-hidden="true"></span>
                         <span class="visually-hidden">Ir a mi perfil</span>
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -545,8 +549,7 @@
                                 Tu opinión
                             </label>
                             <textarea name="comentario" class="form-control" id="comentarioResena" maxlength="600"
-                                minlength="10"
-                                placeholder="¿Qué te pareció el videojuego? (mínimo 10 caracteres)"
+                                minlength="10" placeholder="¿Qué te pareció el videojuego? (mínimo 10 caracteres)"
                                 required="" rows="4"></textarea>
                             <span class="form-text">
                                 La primera reseña válida por videojuego adquirido otorga 10

@@ -3,6 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
+
+    <script src="../assets/session.js"></script>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel del desarrollador · SteamPirata</title>
 
@@ -20,13 +23,18 @@
             <div class="container-fluid">
                 <a class="navbar-brand" href="store.html">SteamPirata</a>
 
+
                 <div class="d-flex align-items-center gap-3 order-md-last">
-                    <a class="btn btn-link px-0" href="login.html">Cerrar sesión</a>
+                    <a id="btnCerrarSesion" class="btn btn-link px-0" href="login.html">
+                        Cerrar sesión
+                    </a>
+
                     <a class="usuario-nav" href="user_profile.html" title="Mi perfil">
-                        <span class="d-none d-lg-inline">PixelStudio</span>
-                        <span class="avatar avatar-sm" aria-hidden="true">PS</span>
+                        <span id="nombreUsuarioNav" class="d-none d-lg-inline"></span>
+                        <span id="avatarUsuarioNav" class="avatar avatar-sm" aria-hidden="true"></span>
                         <span class="visually-hidden">Ir a mi perfil</span>
                     </a>
+
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false"
                         aria-label="Abrir menú">
