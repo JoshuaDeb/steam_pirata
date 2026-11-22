@@ -14,7 +14,7 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
-    <link rel="stylesheet" href="../assets/user_profile.css">
+    <link rel="stylesheet" href="../assets/styles/user_profile.css">
 </head>
 
 <body>
@@ -124,7 +124,7 @@
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div class="d-flex flex-column">
                                 <span class="fila-label">Nombre de usuario</span>
-                                <span class="fila-valor">LuisDCG</span>
+                                <span id="infoNombreUsuario" class="fila-valor"></span>
                             </div>
                             <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#editarNombre" aria-expanded="false"
@@ -132,18 +132,31 @@
                         </div>
                         <div class="collapse" id="editarNombre">
                             <form method="post" id="formEditarNombreUsuario"
-                                class="form-edicion d-flex flex-column gap-2" novalidate>
+                                class="form-edicion d-flex flex-column gap-2">
                                 <label class="form-label mb-0" for="inputNombre">Nuevo nombre de usuario</label>
                                 <input name="nombre_usuario" class="form-control" type="text" id="inputNombre"
-                                    value="LuisDCG" maxlength="20" autocomplete="username">
-                                <div class="form-text">De 3 a 20 caracteres: letras, números o guion bajo.</div>
+                                    minlength="3" maxlength="30" autocomplete="username" required>
+                                <div class="form-text">De 3 a 30 caracteres: letras, números o guion bajo.</div>
                                 <div class="d-flex justify-content-end gap-2 mt-1">
                                     <button class="btn btn-link" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#editarNombre">Cancelar</button>
-                                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#editarNombre">Guardar</button>
+
+                                    <button id="btnGuardarNombre" class="btn btn-primary" type="submit">
+                                        <span id="spinnerGuardarNombre" class="spinner-border spinner-border-sm d-none"
+                                            aria-hidden="true"></span>
+                                        Guardar
+                                    </button>
+
                                 </div>
                             </form>
+                        </div>
+
+                        <div id="mensajeEditarNombre" class="alert alert-dismissible d-none mt-2 mb-0" role="alert">
+
+                            <span id="textoMensajeEditarNombre"></span>
+
+                            <button id="btnCerrarMensajeNombre" type="button" class="btn-close" aria-label="Cerrar">
+                            </button>
                         </div>
                     </div>
 
@@ -151,7 +164,7 @@
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div class="d-flex flex-column">
                                 <span class="fila-label">Correo electrónico</span>
-                                <span class="fila-valor">luis.chavez@iteso.mx</span>
+                                <span id="infoCorreoUsuario" class="fila-valor"></span>
                             </div>
                             <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#editarCorreo" aria-expanded="false"
@@ -159,18 +172,29 @@
                         </div>
                         <div class="collapse" id="editarCorreo">
                             <form method="post" id="formEditarCorreoUsuario"
-                                class="form-edicion d-flex flex-column gap-2" novalidate>
+                                class="form-edicion d-flex flex-column gap-2">
                                 <label class="form-label mb-0" for="inputCorreo">Nuevo correo electrónico</label>
-                                <input name="correo" class="form-control is-invalid" type="email" id="inputCorreo"
-                                    value="luis.chavez@iteso" autocomplete="email" aria-describedby="errorCorreo">
+                                <input name="correo" class="form-control" type="email" id="inputCorreo"
+                                    autocomplete="email" aria-describedby="errorCorreo" required>
                                 <div class="invalid-feedback" id="errorCorreo">Ingresa un correo válido (ej.
                                     nombre@dominio.com).</div>
                                 <div class="d-flex justify-content-end gap-2 mt-1">
                                     <button class="btn btn-link" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#editarCorreo">Cancelar</button>
-                                    <button class="btn btn-primary" type="button">Guardar</button>
+
+                                    <button id="btnGuardarCorreo" class="btn btn-primary" type="submit">
+                                        <span id="spinnerGuardarCorreo" class="spinner-border spinner-border-sm d-none"
+                                            aria-hidden="true"></span>
+                                        Guardar
+                                    </button>
                                 </div>
                             </form>
+                        </div>
+
+                        <div id="mensajeEditarCorreo" class="alert alert-dismissible d-none mt-2 mb-0" role="alert">
+                            <span id="textoMensajeEditarCorreo"></span>
+                            <button id="btnCerrarMensajeCorreo" type="button" class="btn-close" aria-label="Cerrar">
+                            </button>
                         </div>
                     </div>
 
@@ -178,7 +202,7 @@
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div class="d-flex flex-column">
                                 <span class="fila-label">Rol</span>
-                                <span class="fila-valor">Jugador</span>
+                                <span id="infoRolUsuario" class="fila-valor"></span>
                             </div>
                             <span class="fila-meta">No editable</span>
                         </div>
@@ -197,14 +221,13 @@
                                 <span class="perfil-publico-distintivo">Perfil público</span>
                             </div>
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="avatar avatar-publico" aria-hidden="true">LD</div>
+                                <div id="avatarPerfilPublico" class="avatar avatar-publico" aria-hidden="true"></div>
                                 <div>
-                                    <h3 class="perfil-publico-usuario mb-1">LuisDCG</h3>
-                                    <span class="fila-meta">Jugador</span>
+                                    <h3 id="nombrePerfilPublico" class="perfil-publico-usuario mb-1"></h3>
+                                    <span id="rolPerfilPublico" class="fila-meta"></span>
                                 </div>
                             </div>
-                            <p class="perfil-publico-descripcion mb-4">Me gustan las carreras espaciales, los juegos de
-                                estrategia y descubrir mundos nuevos. Siempre busco algo distinto para jugar.</p>
+                            <p id="textoDescripcionPublica" class="perfil-publico-descripcion mb-4"></p>
                             <h3 class="perfil-publico-subtitulo mb-3">Mis 3 videojuegos favoritos</h3>
                             <div class="row g-2">
                                 <div class="col-12 col-sm-4">
@@ -238,8 +261,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="form-text mt-3 mb-0">Vista previa de los datos actuales. En este prototipo no se
-                                actualiza automáticamente al editar.</p>
                         </div>
                     </div>
 
@@ -254,7 +275,7 @@
                                     <label for="descripcionPublica" class="form-label">Descripción pública</label>
                                     <textarea id="descripcionPublica" name="descripcion_publica" class="form-control"
                                         rows="4" minlength="1" maxlength="300" required
-                                        aria-describedby="ayudaDescripcionPublica">Me gustan las carreras espaciales, los juegos de estrategia y descubrir mundos nuevos. Siempre busco algo distinto para jugar.</textarea>
+                                        aria-describedby="ayudaDescripcionPublica"></textarea>
                                     <div class="form-text" id="ayudaDescripcionPublica">Máximo 300 caracteres. Esta
                                         descripción será visible para otros jugadores.</div>
                                 </div>
@@ -297,8 +318,19 @@
 
                                 <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 pt-2">
                                     <button class="btn btn-outline-secondary" type="reset">Restablecer</button>
-                                    <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#modalGuardarPerfilPublico">Guardar cambios</button>
+                                    <button id="btnGuardarDescripcion" class="btn btn-primary" type="submit">
+                                        <span id="spinnerGuardarDescripcion"
+                                            class="spinner-border spinner-border-sm d-none" aria-hidden="true"></span>
+                                        Guardar descripción
+                                    </button>
+                                </div>
+
+                                <div id="mensajeEditarDescripcion" class="alert alert-dismissible d-none mt-2 mb-0"
+                                    role="alert">
+                                    <span id="textoMensajeEditarDescripcion"></span>
+                                    <button id="btnCerrarMensajeDescripcion" type="button" class="btn-close"
+                                        aria-label="Cerrar">
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -344,34 +376,40 @@
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title mb-3">Cambiar contraseña</h2>
-
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            Contraseña actualizada correctamente.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                aria-label="Cerrar"></button>
-                        </div>
-
-                        <form method="post" id="formCambiarContrasena" class="d-flex flex-column gap-3" novalidate>
+                        <form method="post" id="formCambiarContrasena" class="d-flex flex-column gap-3">
                             <div>
                                 <label class="form-label" for="passActual">Contraseña actual</label>
                                 <input name="contrasena_actual" class="form-control" type="password" id="passActual"
-                                    autocomplete="current-password">
+                                    autocomplete="current-password" required>
                             </div>
                             <div>
                                 <label class="form-label" for="passNueva">Nueva contraseña</label>
                                 <input name="contrasena_nueva" class="form-control" type="password" id="passNueva"
-                                    autocomplete="new-password" aria-describedby="ayudaPass">
+                                    autocomplete="new-password" aria-describedby="ayudaPass" minlength="8" required>
                                 <div class="form-text" id="ayudaPass">Mínimo 8 caracteres.</div>
                             </div>
                             <div>
                                 <label class="form-label" for="passConfirmar">Confirmar nueva contraseña</label>
                                 <input name="confirmar_contrasena" class="form-control" type="password"
-                                    id="passConfirmar" autocomplete="new-password">
+                                    id="passConfirmar" autocomplete="new-password" minlength="8" required>
                             </div>
                             <div class="d-flex justify-content-end">
-                                <button class="btn btn-primary" type="button">Actualizar contraseña</button>
+                                <button id="btnCambiarContrasena" class="btn btn-primary" type="submit">
+                                    <span id="spinnerCambiarContrasena" class="spinner-border spinner-border-sm d-none"
+                                        aria-hidden="true"></span>
+                                    Actualizar contraseña
+                                </button>
                             </div>
                         </form>
+
+                        <div id="mensajeCambiarContrasena" class="alert alert-dismissible d-none mt-3 mb-0"
+                            role="alert">
+
+                            <span id="textoMensajeCambiarContrasena"></span>
+
+                            <button id="btnCerrarMensajeContrasena" type="button" class="btn-close" aria-label="Cerrar">
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -384,26 +422,50 @@
     <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarTitulo" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="modalEliminarTitulo">¿Eliminar tu cuenta?</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body d-flex flex-column gap-3">
-                    <p class="text-body-secondary mb-0">
-                        Perderás tu biblioteca, favoritos, reseñas, amistades y tus 110 créditos.
-                        Esta acción no se puede deshacer.
-                    </p>
-                    <div>
-                        <label class="form-label" for="inputConfirmacion">Escribe <strong>ELIMINAR</strong> para
-                            confirmar</label>
-                        <input name="confirmacion_eliminar" class="form-control" type="text" id="inputConfirmacion"
-                            autocomplete="off">
+                <form id="formEliminarCuenta">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="modalEliminarTitulo">
+                            ¿Eliminar tu cuenta?
+                        </h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-danger" href="login.html">Sí, eliminar</a>
-                </div>
+
+                    <div class="modal-body d-flex flex-column gap-3">
+                        <p class="text-body-secondary mb-0">
+                            Perderás el acceso a tu cuenta de Steam Pirata.
+                            Esta acción no se puede deshacer.
+                        </p>
+                        <div>
+                            <label class="form-label" for="passEliminar">
+                                Contraseña actual
+                            </label>
+
+                            <input class="form-control" type="password" id="passEliminar"
+                                autocomplete="current-password" required>
+                        </div>
+                        <div>
+                            <label class="form-label" for="inputConfirmacion">
+                                Escribe <strong>ELIMINAR</strong> para confirmar
+                            </label>
+                            <input class="form-control" type="text" id="inputConfirmacion" autocomplete="off"
+                                pattern="ELIMINAR" title="Escribe ELIMINAR en mayúsculas" required>
+                        </div>
+                        <div id="mensajeEliminarCuenta" class="alert alert-danger d-none mb-0" role="alert">
+                            <span id="textoMensajeEliminarCuenta"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button id="btnEliminarCuenta" type="submit" class="btn btn-danger">
+                            <span id="spinnerEliminarCuenta" class="spinner-border spinner-border-sm d-none"
+                                aria-hidden="true"></span>
+                            Sí, eliminar mi cuenta
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -773,6 +835,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../controllers/user_profile.js"></script>
 </body>
 
 </html>

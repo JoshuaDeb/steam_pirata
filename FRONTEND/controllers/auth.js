@@ -54,12 +54,14 @@ formLogin.addEventListener("submit", (event) => {
                 throw new Error("El servidor devolvió un rol no válido");
             }
 
-            // Guardar los datos públicos del usuario en la sesión temporal
+            // Guardar los datos públicos del usuario en la sesión temporalj
             sessionStorage.setItem("usuario", JSON.stringify({
                 id: usuario.id,
                 nombre_usuario: usuario.nombre_usuario,
+                correo: usuario.correo,
                 role: usuario.role,
-                creditos: usuario.creditos
+                creditos: usuario.creditos,
+                descripcion_publica: usuario.descripcion_publica || ""
             }));
 
             // Redirigir según el rol

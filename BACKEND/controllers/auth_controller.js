@@ -81,14 +81,38 @@ function registrarUsuario(req, res) {
         });
     }
 
-    // Generar un ID consecutivo
-    const nuevoId = usuarios.length > 0 ? Math.max(...usuarios.map(usuario => usuario.id)) + 1 : 1;
+    const contadores = leerDatos("contadores");
+    // Validar que el contador exista y sea correcto
+    if (
+        !contadores ||
+        !Number.isSafeInteger(contadores.siguienteUsuarioId) ||
+        contadores.siguienteUsuarioId < 1 ||
+        contadores.siguienteUsuarioId >= Number.MAX_SAFE_INTEGER
+    ) {
+        return res.status(500).json({
+            message: "Error en el contador de usuarios"
+        });
+    }
+
+    // Obtener el siguiente ID disponible
+    const idNuevo = contadores.siguienteUsuarioId;
+
+    // Evitar conflictos con los usuarios existentes
+    if (usuarios.some(user => user.id === idNuevo)) {
+        return res.status(500).json({
+            message: "El ID generado ya está en uso"
+        });
+    }
+
+    // Reservar el ID antes de continuar con el registro
+    contadores.siguienteUsuarioId = idNuevo + 1;
+    guardarDatos("contadores", contadores);
 
     // Generar hash de la contraseña
     bcrypt.hash(contrasena, 10)
         .then(hash => {
             const nuevoUsuario = {
-                id: nuevoId,
+                id: idNuevo,
                 nombre_usuario: nombre,
                 correo: email,
                 passwordHash: hash,
@@ -178,7 +202,8 @@ function iniciarSesion(req, res) {
                     nombre_usuario: usuario.nombre_usuario,
                     correo: usuario.correo,
                     role: usuario.role,
-                    creditos: usuario.creditos
+                    creditos: usuario.creditos,
+                    descripcion_publica: usuario.descripcion_publica || ""
                 }
             });
         })

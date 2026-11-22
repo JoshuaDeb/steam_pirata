@@ -97,6 +97,20 @@ document.addEventListener("DOMContentLoaded", () => {
         // La compra de créditos es exclusiva de jugadores
         document.getElementById("tabCreditos").closest("li").hidden = !esJugador;
         document.getElementById("tabsPerfil").classList.toggle("sin-creditos", !esJugador);
+
+        // Mostrar la información del usuario
+        document.getElementById("infoNombreUsuario").textContent = usuario.nombre_usuario;
+        document.getElementById("infoCorreoUsuario").textContent = usuario.correo;
+        document.getElementById("infoRolUsuario").textContent = esJugador ? "Jugador" : "Desarrollador";
+
+        // Preparar los campos de edición
+        document.getElementById("inputNombre").value = usuario.nombre_usuario;
+        document.getElementById("inputCorreo").value = usuario.correo;
+
+        // Mostrar la información del perfil público
+        document.getElementById("nombrePerfilPublico").textContent = usuario.nombre_usuario;
+        document.getElementById("avatarPerfilPublico").textContent = usuario.nombre_usuario.substring(0, 2).toUpperCase();
+        document.getElementById("rolPerfilPublico").textContent = esJugador ? "Jugador" : "Desarrollador";
     }
 
 
