@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": 1,
+    "titulo": "axadads",
+    "descripcion": "adsadaasddsaasd",
+    "genero": "Acción",
+    "clasificacion_edad": "E",
+    "precio_creditos": 10,
+    "especificaciones": "",
+    "portada": "juego-1-1795376039854.png",
+    "id_desarrollador": 7,
+    "estado": "publicado"
+  }
+]

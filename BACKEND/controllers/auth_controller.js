@@ -216,4 +216,52 @@ function iniciarSesion(req, res) {
         });
 }
 
-module.exports = { registrarUsuario, iniciarSesion };
+// Exige que quien hace la petición sea un desarrollador registrado.
+// No vuelve a pedir credenciales: el frontend envía el id del usuario que ya
+// inició sesión en el encabezado X-Usuario-Id y aquí solo se comprueba que
+// exista y tenga el rol "desarrollador".
+function requerirDesarrollador(req, res, next) {
+    const id = Number(req.get("x-usuario-id"));
+
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(401).json({
+            message: "Debes iniciar sesión para realizar esta acción"
+        });
+    }
+
+    let usuarios;
+
+    try {
+        usuarios = leerDatos("usuarios");
+    } catch (error) {
+        console.error("Error al leer usuarios:", error);
+
+        return res.status(500).json({
+            message: "Error al consultar los usuarios"
+        });
+    }
+
+    const usuario = usuarios.find(user => user.id === id);
+
+    if (!usuario) {
+        return res.status(401).json({
+            message: "Debes iniciar sesión para realizar esta acción"
+        });
+    }
+
+    if (usuario.role !== "desarrollador") {
+        return res.status(403).json({
+            message: "Solo los desarrolladores pueden realizar esta acción"
+        });
+    }
+
+    req.usuario = {
+        id: usuario.id,
+        nombre_usuario: usuario.nombre_usuario,
+        role: usuario.role
+    };
+
+    next();
+}
+
+module.exports = { registrarUsuario, iniciarSesion, requerirDesarrollador };

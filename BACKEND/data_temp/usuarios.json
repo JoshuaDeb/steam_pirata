@@ -1,19 +1,18 @@
 [
   {
-    "id": 1,
-    "nombre_usuario": "jugador",
-    "correo": "jugador@iteso.com",
-    "passwordHash": "$2b$10$e0QeNnrBfbVYscLwVOuDLuJHYq7JjwYwwQlNg4OSDev/w91yyqYs2",
+    "id": 5,
+    "nombre_usuario": "josh",
+    "correo": "jugador@gmail.com",
+    "passwordHash": "$2b$10$68LYDCb0JsmzcqbIr8Nw6uXENcx8tKhcj6q7hEmHYPKqPIqZBUWbG",
     "role": "jugador",
     "creditos": 100
   },
   {
-    "id": 2,
-    "nombre_usuario": "dev",
-    "correo": "dev@iteso.com",
-    "passwordHash": "$2b$10$0xxv9iLBQXPwIlYYuEWn6.sXkcsXZyaqeMgPgtK9tAT9lNWh3v4wy",
+    "id": 7,
+    "nombre_usuario": "joshh",
+    "correo": "j@gmail.com",
+    "passwordHash": "$2b$10$iFOvJTr04x3bdsWPwZR4fu1/qtOs3bbtNaHgXrz0urCr2HsCbeXTC",
     "role": "desarrollador",
-    "creditos": 0,
-    "descripcion_publica": "Descripción de prueba."
+    "creditos": 0
   }
 ]
