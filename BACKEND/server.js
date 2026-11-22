@@ -12,7 +12,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 
 app.use("/assets", express.static(path.join(__dirname, "../FRONTEND/assets")));
-
+app.use("/controllers", express.static(path.join(__dirname, "../FRONTEND/controllers")))
 app.use(express.static(path.join(__dirname, "../FRONTEND/views")));
 
 app.get("/", (req, res) => {

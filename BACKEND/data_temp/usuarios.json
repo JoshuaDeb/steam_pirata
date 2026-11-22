@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": 1,
+    "nombre_usuario": "asdsadsa",
+    "correo": "sdad@gmail.com",
+    "passwordHash": "$2b$10$Yz69RWedSsttk/pUYVgrtuahgjBj2XojYNe.ZmFLZ4nqZeVIE23hm",
+    "role": "jugador",
+    "creditos": 100
+  }
+]
