@@ -84,6 +84,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let paginaActual = 1;
     let totalPaginas = 1;
 
+    // Mostrar el perfil público de un jugador
+    function mostrarPerfilJugador(jugador) {
+        document.getElementById("tituloPerfilJugador").textContent = `Perfil de ${jugador.nombre_usuario}`;
+        document.getElementById("nombreJugadorPublico").textContent = jugador.nombre_usuario;
+        document.getElementById("avatarJugadorPublico").textContent = jugador.nombre_usuario.slice(0, 2).toUpperCase();
+        document.getElementById("descripcionJugadorPublico").textContent = jugador.descripcion_publica || "Este jugador todavía no ha agregado una descripción pública.";
+        const modal = document.getElementById("modalPerfilJugador");
+
+        bootstrap.Modal.getOrCreateInstance(modal).show();
+    }
+
     // Crear una tarjeta para cada jugador
     function crearTarjetaJugador(jugador) {
         const tarjeta = document.createElement("div");
@@ -119,7 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
         btnPerfil.className =
             "btn btn-outline-secondary btn-ver-perfil";
         btnPerfil.textContent = "Ver perfil";
-        btnPerfil.disabled = true;
+        btnPerfil.addEventListener("click", () => {
+            mostrarPerfilJugador(jugador);
+        });
 
         const btnSolicitud = document.createElement("button");
         btnSolicitud.type = "button";
@@ -262,8 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
         btnPerfil.className =
             "btn btn-outline-secondary btn-ver-perfil";
         btnPerfil.textContent = "Ver perfil";
-        btnPerfil.disabled = true;
-
+        btnPerfil.addEventListener("click", () => {
+            mostrarPerfilJugador(jugador);
+        });
         acciones.appendChild(btnPerfil);
 
         if (tipo === "recibida") {
@@ -355,8 +369,10 @@ document.addEventListener("DOMContentLoaded", () => {
         btnPerfil.type = "button";
         btnPerfil.className = "btn btn-outline-secondary btn-ver-perfil";
         btnPerfil.textContent = "Ver perfil";
-        btnPerfil.disabled = true;
-
+        btnPerfil.addEventListener("click", () => {
+            mostrarPerfilJugador(jugador);
+        });
+        
         const btnEliminar = document.createElement("button");
         btnEliminar.type = "button";
         btnEliminar.className = "btn btn-link text-danger btn-eliminar-amigo";

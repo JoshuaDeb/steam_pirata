@@ -1,34 +1,23 @@
 [
   {
-    "id": 2,
-    "solicitante_id": 1,
-    "receptor_id": 13,
-    "estado": "aceptada",
-    "fecha_creacion": "2026-11-22T22:02:17.441Z",
-    "fecha_aceptacion": "2026-11-22T22:51:07.238Z"
-  },
-  {
-    "id": 6,
+    "id": 10,
     "solicitante_id": 1,
     "receptor_id": 14,
-    "estado": "aceptada",
-    "fecha_creacion": "2026-11-22T23:39:03.863Z",
-    "fecha_aceptacion": "2026-11-22T23:39:32.208Z"
+    "estado": "pendiente",
+    "fecha_creacion": "2026-11-23T04:26:31.070Z"
   },
   {
-    "id": 8,
+    "id": 11,
+    "solicitante_id": 1,
+    "receptor_id": 13,
+    "estado": "pendiente",
+    "fecha_creacion": "2026-11-23T04:26:34.715Z"
+  },
+  {
+    "id": 12,
     "solicitante_id": 1,
     "receptor_id": 12,
-    "estado": "aceptada",
-    "fecha_creacion": "2026-11-22T23:43:16.135Z",
-    "fecha_aceptacion": "2026-11-22T23:46:00.332Z"
-  },
-  {
-    "id": 9,
-    "solicitante_id": 12,
-    "receptor_id": 13,
-    "estado": "aceptada",
-    "fecha_creacion": "2026-11-23T00:12:09.556Z",
-    "fecha_aceptacion": "2026-11-23T00:12:27.734Z"
+    "estado": "pendiente",
+    "fecha_creacion": "2026-11-23T04:26:35.975Z"
   }
 ]

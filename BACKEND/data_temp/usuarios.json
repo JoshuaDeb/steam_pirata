@@ -1,11 +1,12 @@
 [
   {
-    "id": 5,
+    "id": 1,
     "nombre_usuario": "josh",
     "correo": "jugador@gmail.com",
     "passwordHash": "$2b$10$68LYDCb0JsmzcqbIr8Nw6uXENcx8tKhcj6q7hEmHYPKqPIqZBUWbG",
     "role": "jugador",
-    "creditos": 100
+    "creditos": 100,
+    "descripcion_publica": "YA QUIERO JUGAR GTA VI"
   },
   {
     "id": 7,
@@ -61,14 +62,6 @@
     "nombre_usuario": "prueba6",
     "correo": "prueba6@iteso.com",
     "passwordHash": "$2b$10$YcmSiStJmVay1igiqgVCS.S4OXXZ8LA0nVBbOvALCsXCM3aO4gddq",
-    "role": "jugador",
-    "creditos": 100
-  },
-  {
-    "id": 10,
-    "nombre_usuario": "preuba8",
-    "correo": "prueba8@iteso.com",
-    "passwordHash": "$2b$10$l4AJuxuyIVoDjck.jivQf.1hR9CTnA9.h6o2mKdxQyJYDuqGOL6iO",
     "role": "jugador",
     "creditos": 100
   },
