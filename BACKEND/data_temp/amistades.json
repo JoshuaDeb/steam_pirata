@@ -32,8 +32,8 @@
     "fecha_aceptacion": "2026-11-23T00:12:27.734Z"
   },
   {
-    "id": 10,
-    "solicitante_id": 10,
+    "id": 9,
+    "solicitante_id": 9,
     "receptor_id": 5,
     "estado": "aceptada",
     "fecha_creacion": "2026-11-23T03:17:29.035Z",

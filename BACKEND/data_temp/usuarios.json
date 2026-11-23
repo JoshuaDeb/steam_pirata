@@ -25,8 +25,8 @@
   },
   {
     "id": 9,
-    "nombre_usuario": "Eduardo",
-    "correo": "edu@gmail.com",
+    "nombre_usuario": "lalo",
+    "correo": "lalo@gmail.com",
     "passwordHash": "$2b$10$/cLsyxssKKeVEXNW7PNza.7PZPluQ2rSxz5qjbW6CqjXZ8M/TvZZu",
     "role": "jugador",
     "creditos": 120
