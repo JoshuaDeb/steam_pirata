@@ -22,5 +22,13 @@
     "passwordHash": "$2b$10$S6T9BQT/HtL/CfU9nO3KmeUD3kmAhxmnzKb4dWUO31vLkKyyfmFa2",
     "role": "desarrollador",
     "creditos": 0
+  },
+  {
+    "id": 9,
+    "nombre_usuario": "Eduardo",
+    "correo": "edu@gmail.com",
+    "passwordHash": "$2b$10$/cLsyxssKKeVEXNW7PNza.7PZPluQ2rSxz5qjbW6CqjXZ8M/TvZZu",
+    "role": "jugador",
+    "creditos": 120
   }
 ]

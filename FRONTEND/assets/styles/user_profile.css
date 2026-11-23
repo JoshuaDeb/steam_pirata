@@ -749,7 +749,7 @@ body:has(#paq200:checked) .c200 {
 
 .segmentado-perfil {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   width: min(100%, 780px);
 }
 .segmentado-perfil .nav-item {
