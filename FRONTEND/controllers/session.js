@@ -96,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // La compra de créditos es exclusiva de jugadores
         document.getElementById("tabCreditos").closest("li").hidden = !esJugador;
+        document.getElementById("tabResenas").closest("li").hidden = !esJugador;
         document.getElementById("tabsPerfil").classList.toggle("sin-creditos", !esJugador);
 
         // Mostrar la información del usuario

@@ -221,6 +221,18 @@ function listarVideojuegos(req, res) {
         }
     }
 
+    let calificacionMin = null;
+
+    if (leerTexto(consulta.calificacion_min)) {
+        calificacionMin = Number(consulta.calificacion_min);
+
+        if (!Number.isFinite(calificacionMin) || calificacionMin < 1 || calificacionMin > 5) {
+            return res.status(400).json({
+                message: "La calificación mínima debe estar entre 1 y 5"
+            });
+        }
+    }
+
     let idDesarrollador = null;
 
     if (leerTexto(consulta.id_desarrollador)) {
@@ -256,6 +268,8 @@ function listarVideojuegos(req, res) {
         if (clasificacion && juego.clasificacion_edad !== clasificacion) return false;
         if (precioMax !== null && juego.precio_creditos > precioMax) return false;
         if (busqueda && !normalizar(juego.titulo).includes(busqueda)) return false;
+        if (calificacionMin !== null &&
+            !(typeof juego.calificacion_promedio === "number" && juego.calificacion_promedio >= calificacionMin)) return false;
 
         return true;
     });
@@ -263,8 +277,13 @@ function listarVideojuegos(req, res) {
     const porNombre = (a, b) =>
         a.titulo.localeCompare(b.titulo, "es", { sensitivity: "base" });
 
-    // "calificacion" se ordenará por nombre hasta que existan las reseñas
-    if (orden === "precio_asc") {
+    // Los juegos sin reseñas quedan al final al ordenar por calificación
+    if (orden === "calificacion") {
+        resultado.sort((a, b) =>
+            (b.calificacion_promedio ?? -1) - (a.calificacion_promedio ?? -1) ||
+            (b.total_resenas ?? 0) - (a.total_resenas ?? 0) ||
+            porNombre(a, b));
+    } else if (orden === "precio_asc") {
         resultado.sort((a, b) => a.precio_creditos - b.precio_creditos || porNombre(a, b));
     } else if (orden === "precio_desc") {
         resultado.sort((a, b) => b.precio_creditos - a.precio_creditos || porNombre(a, b));

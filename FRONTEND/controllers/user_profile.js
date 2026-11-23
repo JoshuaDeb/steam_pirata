@@ -187,6 +187,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Recuperar la descripción de la sesión temporal
     const usuarioActual = JSON.parse(sessionStorage.getItem("usuario"));
 
+    // Mostrar los favoritos únicamente a los jugadores
+    const esDesarrollador = usuarioActual?.role === "desarrollador";
+
+    document.getElementById("seccionFavoritosPublicos").classList.toggle("d-none", esDesarrollador);
+
+    document.getElementById("seccionSeleccionFavoritos").classList.toggle("d-none", esDesarrollador);
+
     if (usuarioActual) {
         const descripcion = usuarioActual.descripcion_publica || "";
 
@@ -201,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mensajeDescripcion.classList.add("d-none");
     });
 
-    // ACTUALIZAR DESCRIPCIÓN PÚBLICA
+    // ACTUALIZAR DESCRIPCIÓN Y FAVORITOS DEL PERFIL
     formDescripcion.addEventListener("submit", (event) => {
         event.preventDefault();
 
@@ -215,8 +222,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
             mensajeDescripcion.className =
                 "alert alert-danger alert-dismissible mt-2 mb-0";
-
             return;
+        }
+
+        // Obtener los tres videojuegos seleccionados, respetando el orden
+        const idsElegidos = selectsFavoritos.map(select =>
+            select.value ? Number(select.value) : null
+        );
+
+        const idsNoVacios = idsElegidos.filter(id => id !== null);
+
+        // Evitar videojuegos repetidos
+        if (new Set(idsNoVacios).size !== idsNoVacios.length) {
+            textoMensajeDescripcion.textContent =
+                "Selecciona videojuegos distintos para tus favoritos";
+
+            mensajeDescripcion.className =
+                "alert alert-danger alert-dismissible mt-2 mb-0";
+            return;
+        }
+
+        // Los desarrolladores únicamente actualizan su descripción
+        const cuerpo = {
+            descripcion_publica: nuevaDescripcion
+        };
+
+        if (usuario.role === "jugador") {
+            cuerpo.favoritos_perfil = idsElegidos;
         }
 
         // Mostrar indicador de carga
@@ -229,33 +261,41 @@ document.addEventListener("DOMContentLoaded", () => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                descripcion_publica: nuevaDescripcion
-            })
+            body: JSON.stringify(cuerpo)
         })
             .then(response => {
                 return response.json().then(datos => {
                     if (!response.ok) {
-                        throw new Error(datos.message || "Error al actualizar descripción");
+                        throw new Error(
+                            datos.message || "Error al actualizar el perfil público"
+                        );
                     }
 
                     return datos;
                 });
             })
             .then(datos => {
-                const descripcionActualizada = datos.user.descripcion_publica;
+                // Actualizar la descripción en la sesión y en la interfaz
+                usuario.descripcion_publica = datos.user.descripcion_publica;
 
-                // Actualizar la sesión temporal
-                usuario.descripcion_publica = descripcionActualizada;
+                inputDescripcion.value = usuario.descripcion_publica;
+
+                document.getElementById("textoDescripcionPublica").textContent =
+                    usuario.descripcion_publica;
+
+                // Actualizar los videojuegos destacados del jugador
+                if (usuario.role === "jugador") {
+                    favoritosPerfilGuardados = Array.isArray(datos.user.favoritos_perfil) ? datos.user.favoritos_perfil : [null, null, null];
+                    usuario.favoritos_perfil = favoritosPerfilGuardados;
+
+                    llenarSelects();
+                    pintarFavoritosPublicos();
+                }
+
+                // Conservar los datos actualizados de la sesión
                 sessionStorage.setItem("usuario", JSON.stringify(usuario));
 
-                // Actualizar la vista previa sin recargar
-                document.getElementById("textoDescripcionPublica").textContent =
-                    descripcionActualizada;
-
-                inputDescripcion.value = descripcionActualizada;
-
-                // Mostrar confirmación
+                // Mostrar mensaje de éxito
                 textoMensajeDescripcion.textContent = datos.message;
                 mensajeDescripcion.className =
                     "alert alert-success alert-dismissible mt-2 mb-0";
@@ -270,6 +310,160 @@ document.addEventListener("DOMContentLoaded", () => {
                 spinnerDescripcion.classList.add("d-none");
             });
     });
+
+    // ---------- Videojuegos favoritos del perfil público ----------
+    // Biblioteca y favoritos vienen de /api/users/:id/library y /favorites
+    // (en el backend solo guardan IDs de usuario y de videojuego).
+
+    const selectsFavoritos = [
+        document.getElementById("juegoFavorito1"),
+        document.getElementById("juegoFavorito2"),
+        document.getElementById("juegoFavorito3")
+    ];
+    const contenedorFavoritos = document.getElementById("favoritosPublicos");
+    const ayudaFavoritos = document.getElementById("ayudaFavoritosPerfil");
+
+    let bibliotecaPerfil = [];   // Videojuegos adquiridos
+    let favoritosPerfilGuardados = [null, null, null];
+
+    function escaparHtml(texto) {
+        return String(texto ?? "").replace(/[&<>"']/g, (caracter) => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        }[caracter]));
+    }
+
+    function inicialesJuego(titulo) {
+        const palabras = titulo.trim().split(/\s+/);
+
+        return (palabras.length > 1
+            ? palabras[0][0] + palabras[1][0]
+            : titulo.trim().substring(0, 2)).toUpperCase();
+    }
+
+    function consultar(url) {
+        return fetch(url).then((response) => {
+            return response.json().catch(() => ({})).then((datos) => {
+                if (!response.ok) {
+                    throw new Error(datos.message || "Error en la petición");
+                }
+
+                return datos;
+            });
+        });
+    }
+
+    // Recuperar los tres destacados respetando sus posiciones
+    function favoritosElegibles() {
+        return favoritosPerfilGuardados.map(id =>
+            bibliotecaPerfil.find(juego => juego.id === id) || null
+        );
+    }
+
+    // Llenar las listas desplegables con la biblioteca y preseleccionar favoritos
+    function llenarSelects() {
+        const elegidos = favoritosElegibles();
+
+        const opciones = ['<option value="">Sin selección</option>']
+            .concat(bibliotecaPerfil.map((juego) =>
+                `<option value="${juego.id}">${escaparHtml(juego.titulo)}</option>`
+            ))
+            .join("");
+
+        selectsFavoritos.forEach((select, indice) => {
+            select.innerHTML = opciones;
+            select.value = elegidos[indice] ? String(elegidos[indice].id) : "";
+        });
+
+        ayudaFavoritos.textContent = bibliotecaPerfil.length === 0
+            ? "Aún no has adquirido videojuegos. Adquiere uno desde el catálogo para elegirlo."
+            : "Solo se podrán seleccionar videojuegos adquiridos.";
+    }
+
+    // Vista previa del perfil público según lo seleccionado
+    function pintarFavoritosPublicos() {
+        const elegidos = selectsFavoritos.map((select) =>
+            bibliotecaPerfil.find((juego) => String(juego.id) === select.value) || null
+        );
+
+        contenedorFavoritos.innerHTML = elegidos.map((juego, indice) => {
+            const posicion = `Favorito ${indice + 1}`;
+
+            if (!juego) {
+                return `
+                    <div class="col-12 col-sm-4">
+                        <div class="favorito-publico h-100">
+                            <div class="favorito-publico-portada favorito-portada-nebula" aria-hidden="true">–</div>
+                            <div class="favorito-publico-detalle">
+                                <span class="favorito-publico-posicion">${posicion}</span>
+                                <strong>Sin selección</strong>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            const portada = juego.portada
+                ? `<img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                        src="/assets/images/${encodeURIComponent(juego.portada)}" alt="">`
+                : escaparHtml(inicialesJuego(juego.titulo));
+
+            return `
+                <div class="col-12 col-sm-4">
+                    <div class="favorito-publico h-100">
+                        <div class="favorito-publico-portada favorito-portada-nebula position-relative overflow-hidden"
+                            aria-hidden="true">${portada}</div>
+                        <div class="favorito-publico-detalle">
+                            <span class="favorito-publico-posicion">${posicion}</span>
+                            <strong>${escaparHtml(juego.titulo)}</strong>
+                        </div>
+                    </div>
+                </div>`;
+        }).join("");
+    }
+
+    function cargarFavoritosPerfil() {
+        const sesion = JSON.parse(sessionStorage.getItem("usuario"));
+
+        // La biblioteca y los favoritos solo existen para jugadores
+        if (!sesion || sesion.role !== "jugador") {
+            ayudaFavoritos.textContent = "Los favoritos están disponibles solo para jugadores.";
+            selectsFavoritos.forEach((select) => { select.disabled = true; });
+            pintarFavoritosPublicos();
+            return;
+        }
+
+        Promise.all([
+            consultar(`/api/users/${sesion.id}/library`),
+            consultar(`/api/users/${sesion.id}/favorites`)
+        ])
+            .then(([biblioteca, favoritos]) => {
+                bibliotecaPerfil = biblioteca.videojuegos;
+
+                // Recuperar los destacados guardados en el backend
+                favoritosPerfilGuardados = Array.isArray(favoritos.favoritos_perfil) && favoritos.favoritos_perfil.length === 3 ? favoritos.favoritos_perfil : [null, null, null];
+
+                llenarSelects();
+                pintarFavoritosPublicos();
+            })
+            .catch((error) => {
+                ayudaFavoritos.textContent = error.message;
+                pintarFavoritosPublicos();
+            });
+    }
+
+    selectsFavoritos.forEach((select) => {
+        select.addEventListener("change", pintarFavoritosPublicos);
+    });
+
+    // "Restablecer" vuelve a los favoritos guardados
+    formDescripcion.addEventListener("reset", () => {
+        setTimeout(() => {
+            inputDescripcion.value = (JSON.parse(sessionStorage.getItem("usuario")) || {}).descripcion_publica || "";
+            llenarSelects();
+            pintarFavoritosPublicos();
+        }, 0);
+    });
+
+    cargarFavoritosPerfil();
 
     // Elementos del formulario de cambio de contraseña
     const formContrasena = document.getElementById("formCambiarContrasena");

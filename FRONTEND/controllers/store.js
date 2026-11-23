@@ -20,6 +20,10 @@
     let juegosCargados = [];   // Videojuegos de la página actual
     let juegoActual = null;    // Videojuego abierto en la ficha
 
+    // IDs de videojuegos del jugador (solo referencias, como en el backend)
+    const enBiblioteca = new Set();
+    const enFavoritos = new Set();
+
     const el = (id) => document.getElementById(id);
 
     const formFiltros = el("formFiltrosCatalogo");
@@ -62,6 +66,17 @@
         return `<span class="juego-marca" aria-hidden="true">${escapar(iniciales(juego.titulo))}</span>`;
     }
 
+    // Calificación promedio: "★ 4.5 (2 reseñas)" o "Sin reseñas"
+    function textoCalificacion(juego) {
+        const total = juego.total_resenas || 0;
+
+        if (total === 0 || typeof juego.calificacion_promedio !== "number") {
+            return "Sin reseñas";
+        }
+
+        return `★ ${juego.calificacion_promedio.toFixed(1)} (${total} ${total === 1 ? "reseña" : "reseñas"})`;
+    }
+
     // Color de portada (portada-1 ... portada-4)
     function colorPortada(id) {
         return `portada-${((id - 1) % 4) + 1}`;
@@ -70,6 +85,50 @@
 
     // ---------- Carga de datos ----------
 
+    // Petición a la API que devuelve el JSON o lanza un Error con el mensaje
+    function pedir(url, opciones) {
+        return fetch(url, opciones).then((response) => {
+            return response.json().catch(() => ({})).then((datos) => {
+                if (!response.ok) {
+                    throw new Error(datos.message || "Error en la petición");
+                }
+
+                return datos;
+            });
+        });
+    }
+
+    // Consultar la biblioteca y los favoritos del jugador
+    function cargarRelaciones() {
+        if (!esJugador) return Promise.resolve();
+
+        return Promise.all([
+            pedir(`/api/users/${usuario.id}/library`),
+            pedir(`/api/users/${usuario.id}/favorites`)
+        ])
+            .then(([biblioteca, favoritos]) => {
+                enBiblioteca.clear();
+                enFavoritos.clear();
+
+                biblioteca.videojuegos.forEach((juego) => enBiblioteca.add(juego.id));
+                favoritos.videojuegos.forEach((juego) => enFavoritos.add(juego.id));
+            })
+            .catch((error) => {
+                // El catálogo sigue siendo consultable aunque fallen estas listas
+                console.error("No se pudieron consultar biblioteca y favoritos:", error);
+            });
+    }
+
+    // Guardar los créditos actualizados en la sesión y en la pantalla
+    function actualizarCreditos(creditos) {
+        usuario.creditos = creditos;
+        sessionStorage.setItem("usuario", JSON.stringify(usuario));
+
+        const saldo = el("saldoCreditosCatalogo");
+
+        if (saldo) saldo.textContent = `${creditos} créditos`;
+    }
+
     function cargarCatalogo(numeroPagina = 1) {
         const campos = formFiltros.elements;
         const filtros = {
@@ -77,6 +136,7 @@
             genero: campos.genero.value,
             clasificacion: campos.clasificacion.value,
             precio_max: campos.precio_max.value.trim(),
+            calificacion_min: campos.calificacion_min.value,
             orden: campos.orden.value
         };
 
@@ -90,7 +150,7 @@
         params.set("limite", POR_PAGINA);
 
         const hayFiltros = Boolean(
-            filtros.q || filtros.genero || filtros.clasificacion || filtros.precio_max
+            filtros.q || filtros.genero || filtros.clasificacion || filtros.precio_max || filtros.calificacion_min
         );
 
         return fetch(`/api/videojuegos?${params}`, { credentials: "same-origin" })
@@ -163,7 +223,8 @@
 
         return `<input name="favorito" aria-label="Guardar ${escapar(juego.titulo)} en favoritos"
                             autocomplete="off" class="btn-check check-favorito" id="favorito-${juego.id}"
-                            type="checkbox" value="${juego.id}" />
+                            type="checkbox" value="${juego.id}"
+                            ${enFavoritos.has(juego.id) ? "checked" : ""} />
                         <label class="btn btn-outline-secondary boton-corazon" for="favorito-${juego.id}"
                             title="Agregar o quitar favorito">
                             <span aria-hidden="true" class="corazon-vacio">
@@ -194,7 +255,7 @@
                         </h3>
                         <p class="juego-genero">${escapar(juego.genero)}</p>
                         <div class="juego-pie">
-                            <span class="juego-calif fila-meta">Sin reseñas</span>
+                            <span class="juego-calif fila-meta">${textoCalificacion(juego)}</span>
                             <span class="juego-precio">${juego.precio_creditos} créditos</span>
                         </div>
                     </div>
@@ -234,7 +295,7 @@
                     <div class="d-flex flex-column gap-1">
                         <span class="fila-meta">${escapar(juego.genero)} · ${edad.texto}</span>
                         <h2 class="modal-title" id="juegoTitulo">${escapar(juego.titulo)}</h2>
-                        <p class="calif-modal mb-0"><span class="fila-meta">Sin reseñas</span></p>
+                        <p class="calif-modal mb-0"><span class="fila-meta">${textoCalificacion(juego)}</span></p>
                     </div>
                 </div>
 
@@ -256,22 +317,23 @@
                 </dl>
 
                 <section aria-labelledby="resenasTitulo">
-                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
-                        <h3 class="resenas-titulo" id="resenasTitulo">Reseñas</h3>
-                        <span class="fila-meta">Todavía no hay reseñas</span>
-                    </div>
+                    <h3 class="resenas-titulo" id="resenasTitulo">Reseñas</h3>
+                    <div id="zonaResenas" class="d-flex flex-column gap-3"></div>
                 </section>
             </div>
 
             <div class="modal-footer justify-content-between">
                 <div class="d-flex flex-column">
                     <span class="precio-modal">${juego.precio_creditos} créditos</span>
-                    ${esJugador ? `<span class="fila-meta">Tu saldo: ${usuario.creditos} créditos</span>` : ""}
+                    ${esJugador ? `<span class="fila-meta" id="saldoModalJuego">Tu saldo: ${usuario.creditos} créditos</span>` : ""}
                     ${esPublico ? `<span class="fila-meta">Consulta libre · Adquisición con sesión</span>` : ""}
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    ${esJugador ? `<button type="button" class="btn btn-primary btn-grande" data-bs-toggle="modal"
+                    ${esJugador && enBiblioteca.has(juego.id)
+                        ? `<button type="button" class="btn btn-primary btn-grande" disabled>En tu biblioteca</button>`
+                        : ""}
+                    ${esJugador && !enBiblioteca.has(juego.id) ? `<button type="button" class="btn btn-primary btn-grande" data-bs-toggle="modal"
                         data-bs-target="#modalAdquirir">Adquirir</button>` : ""}
                     ${esPublico ? `<button type="button" class="btn btn-primary btn-grande" data-bs-toggle="modal"
                         data-bs-target="#modalAccesoRequerido">Iniciar sesión para adquirir</button>` : ""}
@@ -281,6 +343,7 @@
 
     function confirmacionAdquirir(juego) {
         const saldoPrevisto = usuario.creditos - juego.precio_creditos;
+        const sinSaldo = saldoPrevisto < 0;
 
         return `
             <div class="modal-header">
@@ -303,10 +366,14 @@
                         <dd>${escapar(juego.desarrollador)}</dd>
                     </div>
                 </dl>
+                <div id="mensajeAdquirir" class="alert alert-danger d-none mb-0" role="alert"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-primary" type="button">Confirmar adquisición</button>
+                <button id="btnConfirmarAdquirir" class="btn btn-primary" type="button" ${sinSaldo ? "disabled" : ""}>
+                    <span id="spinnerAdquirir" class="spinner-border spinner-border-sm d-none" aria-hidden="true"></span>
+                    Confirmar adquisición
+                </button>
             </div>`;
     }
 
@@ -347,10 +414,78 @@
         }
 
         modalJuego.querySelector(".modal-content").innerHTML = fichaJuego(juegoActual);
+        cargarResenas();
     });
 
-    // Confirmación de adquisición (solo visual)
+    // Marcar o desmarcar un favorito
+    listaJuegos.addEventListener("change", (event) => {
+        const casilla = event.target.closest(".check-favorito");
+
+        if (!casilla || !esJugador) return;
+
+        const idJuego = Number(casilla.value);
+        const agregar = casilla.checked;
+
+        casilla.disabled = true;
+
+        const peticion = agregar
+            ? pedir(`/api/users/${usuario.id}/favorites`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ videojuego_id: idJuego })
+            })
+            : pedir(`/api/users/${usuario.id}/favorites/${idJuego}`, { method: "DELETE" });
+
+        peticion
+            .then(() => {
+                if (agregar) enFavoritos.add(idJuego);
+                else enFavoritos.delete(idJuego);
+            })
+            .catch(() => {
+                // Revertir la casilla si el servidor no guardó el cambio
+                casilla.checked = !agregar;
+            })
+            .finally(() => {
+                casilla.disabled = false;
+            });
+    });
+
+    // Confirmación de adquisición
     if (modalAdquirir) {
+        modalAdquirir.addEventListener("click", (event) => {
+            if (!event.target.closest("#btnConfirmarAdquirir") || !juegoActual) return;
+
+            const boton = el("btnConfirmarAdquirir");
+            const spinner = el("spinnerAdquirir");
+            const mensaje = el("mensajeAdquirir");
+            const juego = juegoActual;
+
+            boton.disabled = true;
+            spinner.classList.remove("d-none");
+            mensaje.classList.add("d-none");
+
+            pedir(`/api/users/${usuario.id}/library`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ videojuego_id: juego.id })
+            })
+                .then((datos) => {
+                    enBiblioteca.add(juego.id);
+                    actualizarCreditos(datos.user.creditos);
+
+                    bootstrap.Modal.getOrCreateInstance(modalAdquirir).hide();
+                    bootstrap.Modal.getOrCreateInstance(modalJuego).hide();
+                })
+                .catch((error) => {
+                    mensaje.textContent = error.message;
+                    mensaje.classList.remove("d-none");
+                    boton.disabled = false;
+                })
+                .finally(() => {
+                    spinner.classList.add("d-none");
+                });
+        });
+
         modalAdquirir.addEventListener("show.bs.modal", (event) => {
             if (!juegoActual) {
                 event.preventDefault();
@@ -361,8 +496,181 @@
         });
     }
 
+    // ---------- Reseñas ----------
+
+    let miResena = null;   // Reseña del usuario en el juego abierto (null si no ha escrito)
+
+    // Pedir las reseñas del juego abierto y pintarlas
+    function cargarResenas(mensajeExito) {
+        const zona = el("zonaResenas");
+
+        zona.innerHTML = `<div class="fila-meta">
+            <span class="spinner-border spinner-border-sm"></span> Cargando reseñas...</div>`;
+
+        fetch(`/api/resenas?juego_id=${juegoActual.id}`)
+            .then((response) => response.json())
+            .then((datos) => {
+                // Buscar si el usuario ya escribió una reseña de este juego
+                miResena = esJugador
+                    ? datos.resenas.find((resena) => resena.usuario_id === usuario.id)
+                    : null;
+
+                zona.innerHTML = formularioResena() + listaResenas(datos.resenas);
+
+                if (mensajeExito) mostrarMensajeResena(mensajeExito, "success");
+            })
+            .catch(() => {
+                zona.innerHTML = `<div class="alert alert-danger mb-0">No se pudieron cargar las reseñas</div>`;
+            });
+    }
+
+    // Formulario para escribir (o editar) la reseña. Solo lo ven los jugadores.
+    function formularioResena() {
+        if (!esJugador) return "";
+
+        // Solo se reseñan los videojuegos adquiridos (si ya hay reseña, se puede editar)
+        if (!miResena && !enBiblioteca.has(juegoActual.id)) {
+            return `<div class="fila-meta">Adquiere este videojuego para escribir una reseña.
+                Tu primera reseña de cada juego te da 10 créditos.</div>`;
+        }
+
+        const opciones = [5, 4, 3, 2, 1].map((numero) =>
+            `<option value="${numero}" ${miResena?.estrellas === numero ? "selected" : ""}>${"★".repeat(numero)}</option>`
+        ).join("");
+
+        return `
+            <form id="formResena" class="d-flex flex-column gap-2">
+                <label class="form-label mb-0" for="estrellasResena">
+                    ${miResena ? "Tu reseña (puedes editarla)" : "Escribe una reseña (+10 créditos la primera vez)"}
+                </label>
+                <select class="form-select" id="estrellasResena">${opciones}</select>
+                <textarea class="form-control" id="textoResena" rows="3" maxlength="500"
+                    placeholder="¿Qué te pareció el juego?">${miResena ? escapar(miResena.texto) : ""}</textarea>
+                <div id="mensajeResena"></div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" type="submit">
+                        ${miResena ? "Guardar cambios" : "Publicar reseña"}
+                    </button>
+                    ${miResena ? `<button class="btn btn-outline-danger" type="button" id="btnBorrarResena">Borrar</button>` : ""}
+                </div>
+            </form>`;
+    }
+
+    // Lista con las reseñas de todos
+    function listaResenas(resenas) {
+        if (resenas.length === 0) {
+            return `<span class="fila-meta">Todavía no hay reseñas</span>`;
+        }
+
+        return resenas.map((resena) => `
+            <div class="border rounded p-2">
+                <strong>${escapar(resena.nombre_usuario)}</strong>
+                <span class="text-warning">${"★".repeat(resena.estrellas)}</span>
+                <p class="mb-0">${escapar(resena.texto)}</p>
+                ${resena.respuesta ? `
+                <div class="border-start border-primary border-3 ps-2 mt-2">
+                    <span class="fila-meta">Respuesta del desarrollador</span>
+                    <p class="mb-0">${escapar(resena.respuesta)}</p>
+                </div>` : ""}
+            </div>`).join(""); 
+    }
+
+    function mostrarMensajeResena(texto, tipo) {
+        const mensaje = el("mensajeResena");
+
+        if (mensaje) {
+            mensaje.innerHTML = `<div class="alert alert-${tipo} py-2 mb-0">${escapar(texto)}</div>`;
+        }
+    }
+
+    // Mandar la reseña al servidor (POST = crear, PUT = editar, DELETE = borrar)
+    function enviarResena(url, metodo, datos, mensajeExito) {
+        mostrarMensajeResena("Guardando...", "secondary");
+
+        fetch(url, {
+            method: metodo,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        })
+            .then((response) => response.json().then((respuesta) => {
+                if (!response.ok) {
+                    throw new Error(respuesta.message || "No se pudo guardar la reseña");
+                }
+
+                aplicarCalificacion(respuesta);   // Promedio nuevo del juego
+
+                // Premio por la primera reseña: actualizar el saldo
+                if (respuesta.premio > 0) {
+                    actualizarCreditos(respuesta.creditos);
+
+                    const saldoModal = el("saldoModalJuego");
+
+                    if (saldoModal) saldoModal.textContent = `Tu saldo: ${usuario.creditos} créditos`;
+
+                    mensajeExito += ` · ¡Ganaste ${respuesta.premio} créditos!`;
+                }
+
+                cargarResenas(mensajeExito);      // Volver a pintar las reseñas
+            }))
+            .catch((error) => mostrarMensajeResena(error.message, "danger"));
+    }
+
+    // Mostrar el promedio actualizado (que devuelve el servidor) en la ficha y en la tarjeta
+    function aplicarCalificacion(respuesta) {
+        if (!juegoActual || respuesta.total_resenas === undefined) return;
+
+        for (const juego of [juegoActual, juegosCargados.find((item) => item.id === juegoActual.id)]) {
+            if (!juego) continue;
+
+            juego.calificacion_promedio = respuesta.calificacion_promedio;
+            juego.total_resenas = respuesta.total_resenas;
+        }
+
+        const textoModal = modalJuego.querySelector(".calif-modal .fila-meta");
+
+        if (textoModal) textoModal.textContent = textoCalificacion(juegoActual);
+
+        const textoTarjeta = listaJuegos.querySelector(`[data-juego-id="${juegoActual.id}"] .juego-calif`);
+
+        if (textoTarjeta) textoTarjeta.textContent = textoCalificacion(juegoActual);
+    }
+
+    // Publicar o guardar cambios
+    modalJuego.addEventListener("submit", (event) => {
+        if (event.target.id !== "formResena") return;
+
+        event.preventDefault();
+
+        const datos = {
+            usuario_id: usuario.id,
+            juego_id: juegoActual.id,
+            estrellas: Number(el("estrellasResena").value),
+            texto: el("textoResena").value.trim()
+        };
+
+        if (datos.texto.length < 5) {
+            mostrarMensajeResena("La reseña debe tener al menos 5 caracteres", "danger");
+            return;
+        }
+
+        if (miResena) {
+            enviarResena(`/api/resenas/${miResena.id}`, "PUT", datos, "Reseña actualizada");
+        } else {
+            enviarResena("/api/resenas", "POST", datos, "Reseña publicada");
+        }
+    });
+
+    // Borrar la reseña
+    modalJuego.addEventListener("click", (event) => {
+        if (event.target.id !== "btnBorrarResena") return;
+
+        if (!confirm("¿Seguro que quieres borrar tu reseña?")) return;
+
+        enviarResena(`/api/resenas/${miResena.id}`, "DELETE", { usuario_id: usuario.id }, "Reseña eliminada");
+    });
+
 
     // ---------- Inicio ----------
 
-    cargarCatalogo(1);
+    cargarRelaciones().then(() => cargarCatalogo(1));
 })();

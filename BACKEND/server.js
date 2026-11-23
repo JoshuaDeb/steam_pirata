@@ -5,6 +5,9 @@ const usersRoutes = require("./routes/users_routes");
 const friendsRoutes = require("./routes/friends_routes");
 const videojuegosRoutes = require("./routes/videojuegos_routes");
 const dlcsRoutes = require("./routes/dlcs_routes");
+const resenasRoutes = require("./routes/resenas_routes");
+const comprasRoutes = require("./routes/compras_routes");
+
 
 const app = express();
 const PORT = 3000;
@@ -24,6 +27,8 @@ app.use("/api/friends", friendsRoutes);
 // Rutas de videojuegos y DLC
 app.use("/api/videojuegos", videojuegosRoutes);
 app.use("/api/dlcs", dlcsRoutes);
+app.use("/api/resenas", resenasRoutes);
+app.use("/api/compras", comprasRoutes);
 
 app.use("/assets", express.static(path.join(__dirname, "../FRONTEND/assets")));
 app.use("/controllers", express.static(path.join(__dirname, "../FRONTEND/controllers")))
