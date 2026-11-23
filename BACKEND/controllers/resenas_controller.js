@@ -1,6 +1,9 @@
 const { leerDatos, guardarDatos } = require("../storage");
 
 
+// Créditos que se ganan por la primera reseña de cada videojuego de la biblioteca
+const PREMIO_RESENA = 10;
+
 function validarResena(estrellas, texto) {
     if (!Number.isInteger(estrellas) || estrellas < 1 || estrellas > 5) {
         return "Elige de 1 a 5 estrellas";
@@ -17,6 +20,48 @@ function validarResena(estrellas, texto) {
     return null; 
 }
 
+
+// Recalcular la calificación promedio de los videojuegos a partir de las reseñas.
+// Se guarda en cada videojuego (calificacion_promedio y total_resenas) para que
+// el catálogo la pueda mostrar, filtrar y ordenar sin recorrer las reseñas.
+// Si el videojuego no tiene reseñas, el promedio queda en null.
+function recalcularCalificaciones() {
+    const resenas = leerDatos("resenas");
+    const videojuegos = leerDatos("videojuegos");
+
+    let cambio = false;
+
+    videojuegos.forEach(juego => {
+        const delJuego = resenas.filter(resena => resena.juego_id === juego.id);
+
+        const total = delJuego.length;
+        const promedio = total > 0
+            ? Math.round(delJuego.reduce((suma, resena) => suma + resena.estrellas, 0) / total * 10) / 10
+            : null;
+
+        if (juego.total_resenas !== total || juego.calificacion_promedio !== promedio) {
+            juego.total_resenas = total;
+            juego.calificacion_promedio = promedio;
+            cambio = true;
+        }
+    });
+
+    if (cambio) {
+        guardarDatos("videojuegos", videojuegos);
+    }
+
+    return videojuegos;
+}
+
+// Calificación actual de un videojuego (para devolverla en las respuestas)
+function calificacionDe(videojuegos, juegoId) {
+    const juego = videojuegos.find(item => item.id === juegoId);
+
+    return {
+        calificacion_promedio: juego ? juego.calificacion_promedio : null,
+        total_resenas: juego ? juego.total_resenas : 0
+    };
+}
 
 
 function listarResenas(req, res) {
@@ -78,6 +123,17 @@ function crearResena(req, res) {
     }
 
 
+    // Solo se pueden reseñar los videojuegos adquiridos (los de la biblioteca)
+    const adquirido = leerDatos("bibliotecas").some(registro =>
+        registro.usuario_id === usuarioId && registro.videojuego_id === juegoId
+    );
+
+    if (!adquirido) {
+        return res.status(403).json({
+            message: "Solo puedes reseñar los videojuegos de tu biblioteca"
+        });
+    }
+
     const yaExiste = resenas.some(resena =>
         resena.usuario_id === usuarioId && resena.juego_id === juegoId
     );
@@ -103,7 +159,32 @@ function crearResena(req, res) {
     resenas.push(nuevaResena);
     guardarDatos("resenas", resenas);
 
-    res.status(201).json({ message: "Reseña publicada", resena: nuevaResena });
+    // Actualizar el promedio del videojuego
+    const actualizados = recalcularCalificaciones();
+
+    // Premio por la primera reseña del videojuego. Los juegos premiados se
+    // guardan en el usuario (resenas_premiadas) para que borrar la reseña y
+    // volver a escribirla no entregue el premio otra vez.
+    const premiadas = Array.isArray(usuario.resenas_premiadas) ? usuario.resenas_premiadas : [];
+    let premio = 0;
+
+    if (!premiadas.includes(juegoId)) {
+        premio = PREMIO_RESENA;
+        usuario.creditos += premio;
+        usuario.resenas_premiadas = [...premiadas, juegoId];
+
+        guardarDatos("usuarios", usuarios);
+    }
+
+    res.status(201).json({
+        message: premio > 0
+            ? `Reseña publicada. ¡Ganaste ${premio} créditos!`
+            : "Reseña publicada",
+        resena: nuevaResena,
+        premio: premio,
+        creditos: usuario.creditos,
+        ...calificacionDe(actualizados, juegoId)
+    });
 }
 
 
@@ -137,7 +218,13 @@ function actualizarResena(req, res) {
 
     guardarDatos("resenas", resenas);
 
-    res.status(200).json({ message: "Reseña actualizada", resena: resena });
+    const actualizados = recalcularCalificaciones();
+
+    res.status(200).json({
+        message: "Reseña actualizada",
+        resena: resena,
+        ...calificacionDe(actualizados, resena.juego_id)
+    });
 }
 
 
@@ -160,7 +247,12 @@ function eliminarResena(req, res) {
     const restantes = resenas.filter(r => r.id !== id);
     guardarDatos("resenas", restantes);
 
-    res.status(200).json({ message: "Reseña eliminada" });
+    const actualizados = recalcularCalificaciones();
+
+    res.status(200).json({
+        message: "Reseña eliminada",
+        ...calificacionDe(actualizados, resena.juego_id)
+    });
 }
 
 // ---------- DESARROLLADOR: ver y responder reseñas de sus juegos ----------
@@ -229,6 +321,7 @@ function responderResena(req, res) {
 }
 
 module.exports = {
+    recalcularCalificaciones,
     listarResenas, crearResena, actualizarResena, eliminarResena,
     listarResenasDesarrollador, responderResena
 };

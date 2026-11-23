@@ -1,5 +1,6 @@
 const { leerDatos, guardarDatos } = require("../storage");
 const bcrypt = require("bcrypt");
+const { recalcularCalificaciones } = require("./resenas_controller");
 
 function actualizarNombre(req, res) {
     const id = Number(req.params.id);
@@ -403,6 +404,9 @@ function eliminarCuenta(req, res) {
                 guardarDatos("bibliotecas", bibliotecasActualizadas);
                 guardarDatos("favoritos", favoritosActualizados);
                 guardarDatos("resenas", resenasActualizadas);
+
+                // Las reseñas del usuario ya no cuentan en el promedio de los juegos
+                recalcularCalificaciones();
                 guardarDatos("amistades", amistadesActualizadas);
 
                 // Eliminar físicamente al usuario al final
@@ -429,4 +433,300 @@ function eliminarCuenta(req, res) {
     }
 }
 
-module.exports = { actualizarNombre, actualizarCorreo, actualizarDescripcion, cambiarContrasena, eliminarCuenta };
+// ---------- Biblioteca y favoritos ----------
+// Cada registro de bibliotecas.json y favoritos.json solo guarda dos
+// referencias: { usuario_id, videojuego_id }. El orden del arreglo conserva
+// el orden en que se agregaron.
+
+// Convertir un valor en un ID válido (entero positivo) o null
+function leerIdPositivo(valor) {
+    const id = Number(valor);
+
+    return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
+// Datos públicos del usuario (sin passwordHash)
+function usuarioPublico(usuario) {
+    return {
+        id: usuario.id,
+        nombre_usuario: usuario.nombre_usuario,
+        correo: usuario.correo,
+        role: usuario.role,
+        creditos: usuario.creditos,
+        descripcion_publica: usuario.descripcion_publica || ""
+    };
+}
+
+// Combinar los registros (solo IDs) con los datos del videojuego
+function armarJuegos(registros, videojuegos, usuarios, dlcs) {
+    return registros
+        .map(registro => {
+            const juego = videojuegos.find(item => item.id === registro.videojuego_id);
+
+            if (!juego) return null;
+
+            const desarrollador = usuarios.find(user => user.id === juego.id_desarrollador);
+
+            return {
+                ...juego,
+                desarrollador: desarrollador
+                    ? desarrollador.nombre_usuario
+                    : "Desarrollador desconocido",
+                dlcs: dlcs.filter(dlc => dlc.id_videojuego === juego.id)
+            };
+        })
+        .filter(Boolean);
+}
+
+// Leer un usuario jugador a partir del :id de la URL.
+// Devuelve { usuarios, usuario } o responde con el error y devuelve null.
+function obtenerJugador(req, res) {
+    const id = leerIdPositivo(req.params.id);
+
+    if (id === null) {
+        res.status(400).json({ message: "Identificador de usuario inválido" });
+        return null;
+    }
+
+    const usuarios = leerDatos("usuarios");
+    const usuario = usuarios.find(user => user.id === id);
+
+    if (!usuario) {
+        res.status(404).json({ message: "Usuario no encontrado" });
+        return null;
+    }
+
+    if (usuario.role !== "jugador") {
+        res.status(403).json({
+            message: "Solo los jugadores tienen biblioteca y favoritos"
+        });
+        return null;
+    }
+
+    return { usuarios, usuario };
+}
+
+// Consultar la biblioteca del usuario
+function listarBiblioteca(req, res) {
+    try {
+        const contexto = obtenerJugador(req, res);
+
+        if (!contexto) return;
+
+        const { usuarios, usuario } = contexto;
+
+        const registros = leerDatos("bibliotecas")
+            .filter(registro => registro.usuario_id === usuario.id);
+
+        const videojuegos = armarJuegos(
+            registros,
+            leerDatos("videojuegos"),
+            usuarios,
+            leerDatos("dlcs")
+        );
+
+        res.status(200).json({ total: videojuegos.length, videojuegos });
+
+    } catch (error) {
+        console.error("Error al consultar la biblioteca:", error);
+
+        res.status(500).json({ message: "Error al consultar la biblioteca" });
+    }
+}
+
+// Adquirir un videojuego: lo agrega a la biblioteca y descuenta los créditos
+function agregarABiblioteca(req, res) {
+    const idJuego = leerIdPositivo(req.body?.videojuego_id);
+
+    if (idJuego === null) {
+        return res.status(400).json({
+            message: "Identificador de videojuego inválido"
+        });
+    }
+
+    try {
+        const contexto = obtenerJugador(req, res);
+
+        if (!contexto) return;
+
+        const { usuarios, usuario } = contexto;
+
+        const juego = leerDatos("videojuegos").find(item => item.id === idJuego);
+
+        if (!juego) {
+            return res.status(404).json({ message: "Videojuego no encontrado" });
+        }
+
+        if (juego.estado !== "publicado") {
+            return res.status(409).json({
+                message: "Este videojuego ya no está disponible en el catálogo"
+            });
+        }
+
+        const bibliotecas = leerDatos("bibliotecas");
+
+        const yaAdquirido = bibliotecas.some(registro =>
+            registro.usuario_id === usuario.id &&
+            registro.videojuego_id === idJuego
+        );
+
+        if (yaAdquirido) {
+            return res.status(409).json({
+                message: "Ya tienes este videojuego en tu biblioteca"
+            });
+        }
+
+        if (usuario.creditos < juego.precio_creditos) {
+            return res.status(409).json({
+                message: "No tienes créditos suficientes para adquirir este videojuego"
+            });
+        }
+
+        // Descontar créditos y agregar la referencia a la biblioteca
+        usuario.creditos -= juego.precio_creditos;
+        bibliotecas.push({ usuario_id: usuario.id, videojuego_id: idJuego });
+
+        guardarDatos("bibliotecas", bibliotecas);
+        guardarDatos("usuarios", usuarios);
+
+        res.status(201).json({
+            message: "Videojuego agregado a tu biblioteca",
+            user: usuarioPublico(usuario)
+        });
+
+    } catch (error) {
+        console.error("Error al agregar a la biblioteca:", error);
+
+        res.status(500).json({ message: "Error al adquirir el videojuego" });
+    }
+}
+
+// Consultar los favoritos del usuario
+function listarFavoritos(req, res) {
+    try {
+        const contexto = obtenerJugador(req, res);
+
+        if (!contexto) return;
+
+        const { usuarios, usuario } = contexto;
+
+        const registros = leerDatos("favoritos")
+            .filter(registro => registro.usuario_id === usuario.id);
+
+        const videojuegos = armarJuegos(
+            registros,
+            leerDatos("videojuegos"),
+            usuarios,
+            leerDatos("dlcs")
+        );
+
+        res.status(200).json({ total: videojuegos.length, videojuegos });
+
+    } catch (error) {
+        console.error("Error al consultar los favoritos:", error);
+
+        res.status(500).json({ message: "Error al consultar los favoritos" });
+    }
+}
+
+// Agregar un videojuego a favoritos (no requiere haberlo adquirido)
+function agregarFavorito(req, res) {
+    const idJuego = leerIdPositivo(req.body?.videojuego_id);
+
+    if (idJuego === null) {
+        return res.status(400).json({
+            message: "Identificador de videojuego inválido"
+        });
+    }
+
+    try {
+        const contexto = obtenerJugador(req, res);
+
+        if (!contexto) return;
+
+        const { usuario } = contexto;
+
+        const juego = leerDatos("videojuegos").find(item => item.id === idJuego);
+
+        if (!juego) {
+            return res.status(404).json({ message: "Videojuego no encontrado" });
+        }
+
+        const favoritos = leerDatos("favoritos");
+
+        const yaFavorito = favoritos.some(registro =>
+            registro.usuario_id === usuario.id &&
+            registro.videojuego_id === idJuego
+        );
+
+        if (yaFavorito) {
+            return res.status(200).json({
+                message: "El videojuego ya estaba en tus favoritos"
+            });
+        }
+
+        favoritos.push({ usuario_id: usuario.id, videojuego_id: idJuego });
+        guardarDatos("favoritos", favoritos);
+
+        res.status(201).json({ message: "Videojuego agregado a favoritos" });
+
+    } catch (error) {
+        console.error("Error al agregar favorito:", error);
+
+        res.status(500).json({ message: "Error al agregar a favoritos" });
+    }
+}
+
+// Quitar un videojuego de favoritos
+function eliminarFavorito(req, res) {
+    const idJuego = leerIdPositivo(req.params.juegoId);
+
+    if (idJuego === null) {
+        return res.status(400).json({
+            message: "Identificador de videojuego inválido"
+        });
+    }
+
+    try {
+        const contexto = obtenerJugador(req, res);
+
+        if (!contexto) return;
+
+        const { usuario } = contexto;
+
+        const favoritos = leerDatos("favoritos");
+
+        const restantes = favoritos.filter(registro =>
+            !(registro.usuario_id === usuario.id && registro.videojuego_id === idJuego)
+        );
+
+        if (restantes.length === favoritos.length) {
+            return res.status(404).json({
+                message: "El videojuego no está en tus favoritos"
+            });
+        }
+
+        guardarDatos("favoritos", restantes);
+
+        res.status(200).json({ message: "Videojuego quitado de favoritos" });
+
+    } catch (error) {
+        console.error("Error al quitar favorito:", error);
+
+        res.status(500).json({ message: "Error al quitar de favoritos" });
+    }
+}
+
+
+module.exports = {
+    actualizarNombre,
+    actualizarCorreo,
+    actualizarDescripcion,
+    cambiarContrasena,
+    eliminarCuenta,
+    listarBiblioteca,
+    agregarABiblioteca,
+    listarFavoritos,
+    agregarFavorito,
+    eliminarFavorito
+};

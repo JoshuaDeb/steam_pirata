@@ -29,6 +29,9 @@
     "correo": "lalo@gmail.com",
     "passwordHash": "$2b$10$/cLsyxssKKeVEXNW7PNza.7PZPluQ2rSxz5qjbW6CqjXZ8M/TvZZu",
     "role": "jugador",
-    "creditos": 120
+    "creditos": 120,
+    "resenas_premiadas": [
+      1
+    ]
   }
 ]

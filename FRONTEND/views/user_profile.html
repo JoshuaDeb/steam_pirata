@@ -236,38 +236,7 @@
                             </div>
                             <p id="textoDescripcionPublica" class="perfil-publico-descripcion mb-4"></p>
                             <h3 class="perfil-publico-subtitulo mb-3">Mis 3 videojuegos favoritos</h3>
-                            <div class="row g-2">
-                                <div class="col-12 col-sm-4">
-                                    <div class="favorito-publico h-100">
-                                        <div class="favorito-publico-portada favorito-portada-nebula"
-                                            aria-hidden="true">ND</div>
-                                        <div class="favorito-publico-detalle">
-                                            <span class="favorito-publico-posicion">Favorito 1</span>
-                                            <strong>Nebula Drift</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-4">
-                                    <div class="favorito-publico h-100">
-                                        <div class="favorito-publico-portada favorito-portada-pixel" aria-hidden="true">
-                                            PH</div>
-                                        <div class="favorito-publico-detalle">
-                                            <span class="favorito-publico-posicion">Favorito 2</span>
-                                            <strong>Pixel Harvest</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-4">
-                                    <div class="favorito-publico h-100">
-                                        <div class="favorito-publico-portada favorito-portada-aurora"
-                                            aria-hidden="true">AP</div>
-                                        <div class="favorito-publico-detalle">
-                                            <span class="favorito-publico-posicion">Favorito 3</span>
-                                            <strong>Aurora Protocol</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="row g-2" id="favoritosPublicos"></div>
                         </div>
                     </div>
 
@@ -294,33 +263,24 @@
                                     <div class="row g-3">
                                         <div class="col-12 col-md-4">
                                             <label class="form-label" for="juegoFavorito1">Favorito 1</label>
-                                            <select class="form-select" id="juegoFavorito1" name="juego_favorito_1"
-                                                required>
-                                                <option value="nebula-drift" selected>Nebula Drift</option>
-                                                <option value="pixel-harvest">Pixel Harvest</option>
-                                                <option value="aurora-protocol">Aurora Protocol</option>
+                                            <select class="form-select" id="juegoFavorito1" name="juego_favorito_1">
+                                                <option value="">Sin selección</option>
                                             </select>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label class="form-label" for="juegoFavorito2">Favorito 2</label>
-                                            <select class="form-select" id="juegoFavorito2" name="juego_favorito_2"
-                                                required>
-                                                <option value="nebula-drift">Nebula Drift</option>
-                                                <option value="pixel-harvest" selected>Pixel Harvest</option>
-                                                <option value="aurora-protocol">Aurora Protocol</option>
+                                            <select class="form-select" id="juegoFavorito2" name="juego_favorito_2">
+                                                <option value="">Sin selección</option>
                                             </select>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label class="form-label" for="juegoFavorito3">Favorito 3</label>
-                                            <select class="form-select" id="juegoFavorito3" name="juego_favorito_3"
-                                                required>
-                                                <option value="nebula-drift">Nebula Drift</option>
-                                                <option value="pixel-harvest">Pixel Harvest</option>
-                                                <option value="aurora-protocol" selected>Aurora Protocol</option>
+                                            <select class="form-select" id="juegoFavorito3" name="juego_favorito_3">
+                                                <option value="">Sin selección</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-text mt-2">Solo se podrán seleccionar videojuegos adquiridos.</div>
+                                    <div class="form-text mt-2" id="ayudaFavoritosPerfil">Solo se podrán seleccionar videojuegos adquiridos.</div>
                                 </fieldset>
 
                                 <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 pt-2">

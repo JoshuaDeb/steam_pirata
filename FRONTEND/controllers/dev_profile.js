@@ -534,7 +534,9 @@
         if (retirado) {
             filas.push(["Estado", "Ya no se puede adquirir; sigue en las bibliotecas de quienes lo compraron."]);
         } else {
-            filas.push(["Calificación promedio", "Sin reseñas todavía"]);
+            filas.push(["Calificación promedio", juego.total_resenas > 0 && typeof juego.calificacion_promedio === "number"
+                ? `★ ${juego.calificacion_promedio.toFixed(1)} (${juego.total_resenas} ${juego.total_resenas === 1 ? "reseña" : "reseñas"})`
+                : "Sin reseñas todavía"]);
         }
 
         return `
