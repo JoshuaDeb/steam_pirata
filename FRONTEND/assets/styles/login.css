@@ -311,3 +311,7 @@ body {
         padding: 24px 4px 32px;
     }
 }
+
+html:not(.login-listo) body {
+    visibility: hidden;
+}

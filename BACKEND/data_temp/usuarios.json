@@ -33,5 +33,21 @@
     "resenas_premiadas": [
       1
     ]
+  },
+  {
+    "id": 10,
+    "nombre_usuario": "dev",
+    "correo": "dev@gmail.com",
+    "passwordHash": "$2b$10$ZThCy3eywgwJMQhpIXYT5.tv.fdgBmpdSO9bC0x8RZsz.KXsgzo8y",
+    "role": "desarrollador",
+    "creditos": 0
+  },
+  {
+    "id": 11,
+    "nombre_usuario": "player",
+    "correo": "player@gmail.com",
+    "passwordHash": "$2b$10$677NGwvuesNbx3wwGt.lx.EnlAvVSOkeq6rvZHqsSRfhpzkgPK/3K",
+    "role": "jugador",
+    "creditos": 100
   }
 ]

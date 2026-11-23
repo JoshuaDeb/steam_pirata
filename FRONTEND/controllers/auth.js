@@ -2,6 +2,51 @@
 const formLogin = document.getElementById("formIniciarSesion");
 const formRegistro = document.getElementById("formRegistrarUsuario");
 
+function redirigirSegunRol(usuario) {
+    if (!usuario || !usuario.id) {
+        return false;
+    }
+
+    if (usuario.role === "jugador") {
+        window.location.replace("user_library.html");
+        return true;
+    }
+
+    if (usuario.role === "desarrollador") {
+        window.location.replace("dev_profile.html");
+        return true;
+    }
+
+    return false;
+}
+
+// Evitar acceder al login cuando existe una sesión
+function verificarSesionActiva() {
+    const sesion = sessionStorage.getItem("usuario");
+
+    if (!sesion) {
+        return;
+    }
+
+    try {
+        const usuario = JSON.parse(sesion);
+
+        if (!redirigirSegunRol(usuario)) {
+            sessionStorage.removeItem("usuario");
+        }
+    } catch (error) {
+        sessionStorage.removeItem("usuario");
+    }
+}
+
+// Comprobar si existe una sesión antes de mostrar el login
+verificarSesionActiva();
+
+// Mostrar el formulario solamente si no hay sesión activa
+if (!sessionStorage.getItem("usuario")) {
+    document.documentElement.classList.add("login-listo");
+}
+
 // Mostrar mensajes de éxito o error
 function mostrarMensaje(id, mensaje, tipo) {
     const elemento = document.getElementById(id);
@@ -114,13 +159,29 @@ formRegistro.addEventListener("submit", (event) => {
             });
         })
         .then(datos => {
-            mostrarMensaje(
-                "mensajeRegistro",
-                "Cuenta creada correctamente. Ahora puedes iniciar sesión.",
-                "success"
-            );
+            const usuario = datos.user;
 
-            formRegistro.reset();
+            // Validar la información devuelta por el backend
+            if (
+                !usuario ||
+                !usuario.id ||
+                !["jugador", "desarrollador"].includes(usuario.role)
+            ) {
+                throw new Error("El servidor devolvió un usuario inválido");
+            }
+
+            // Iniciar sesión automáticamente
+            sessionStorage.setItem("usuario", JSON.stringify({
+                id: usuario.id,
+                nombre_usuario: usuario.nombre_usuario,
+                correo: usuario.correo,
+                role: usuario.role,
+                creditos: usuario.creditos,
+                descripcion_publica: usuario.descripcion_publica || ""
+            }));
+
+            // Redirigir según el rol
+            redirigirSegunRol(usuario);
         })
         .catch(error => {
             mostrarMensaje("mensajeRegistro", error.message, "danger");
