@@ -36,12 +36,5 @@
     "receptor_id": 8,
     "estado": "pendiente",
     "fecha_creacion": "2026-11-23T09:20:32.037Z"
-  },
-  {
-    "id": 14,
-    "solicitante_id": 1,
-    "receptor_id": 5,
-    "estado": "pendiente",
-    "fecha_creacion": "2026-11-23T09:35:05.677Z"
   }
 ]

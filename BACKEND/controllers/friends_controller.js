@@ -1,5 +1,21 @@
 const { leerDatos, guardarDatos } = require("../storage");
 
+// Videojuegos destacados en el perfil público de un jugador.
+// Siempre devuelve 3 posiciones: { id, titulo, portada } o null si está vacía.
+function obtenerFavoritosPerfil(jugador, videojuegos) {
+    const ids = Array.isArray(jugador.favoritos_perfil) ? jugador.favoritos_perfil : [];
+
+    return [0, 1, 2].map(posicion => {
+        const juego = Array.isArray(videojuegos)
+            ? videojuegos.find(item => item.id === ids[posicion])
+            : null;
+
+        return juego
+            ? { id: juego.id, titulo: juego.titulo, portada: juego.portada || "" }
+            : null;
+    });
+}
+
 function buscarJugadores(req, res) {
     const usuarioId = Number(req.query.usuario_id);
 
@@ -41,6 +57,7 @@ function buscarJugadores(req, res) {
     try {
         const usuarios = leerDatos("usuarios");
         const amistades = leerDatos("amistades");
+        const videojuegos = leerDatos("videojuegos");
 
         if (!Array.isArray(usuarios) || !Array.isArray(amistades)) {
             throw new Error("Estructura inválida de usuarios");
@@ -102,6 +119,7 @@ function buscarJugadores(req, res) {
                     id: usuario.id,
                     nombre_usuario: usuario.nombre_usuario,
                     descripcion_publica: usuario.descripcion_publica || "",
+                    favoritos_perfil: obtenerFavoritosPerfil(usuario, videojuegos),
                     estado_relacion: estadoRelacion
                 };
             });
@@ -286,6 +304,7 @@ function listarSolicitudes(req, res) {
     try {
         const usuarios = leerDatos("usuarios");
         const amistades = leerDatos("amistades");
+        const videojuegos = leerDatos("videojuegos");
 
         // Validar estructuras
         if (!Array.isArray(usuarios) || !Array.isArray(amistades)) {
@@ -328,7 +347,8 @@ function listarSolicitudes(req, res) {
                             id: otroJugador.id,
                             nombre_usuario: otroJugador.nombre_usuario,
                             descripcion_publica:
-                                otroJugador.descripcion_publica || ""
+                                otroJugador.descripcion_publica || "",
+                            favoritos_perfil: obtenerFavoritosPerfil(otroJugador, videojuegos)
                         }
                     };
                 })
@@ -540,6 +560,7 @@ function listarAmigos(req, res) {
     try {
         const usuarios = leerDatos("usuarios");
         const amistades = leerDatos("amistades");
+        const videojuegos = leerDatos("videojuegos");
 
         if (!Array.isArray(usuarios) || !Array.isArray(amistades)) {
             throw new Error("Estructura de datos inválida");
@@ -592,7 +613,8 @@ function listarAmigos(req, res) {
                         id: otroJugador.id,
                         nombre_usuario: otroJugador.nombre_usuario,
                         descripcion_publica:
-                            otroJugador.descripcion_publica || ""
+                            otroJugador.descripcion_publica || "",
+                        favoritos_perfil: obtenerFavoritosPerfil(otroJugador, videojuegos)
                     }
                 };
             })

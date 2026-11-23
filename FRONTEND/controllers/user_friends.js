@@ -84,12 +84,60 @@ document.addEventListener("DOMContentLoaded", () => {
     let paginaActual = 1;
     let totalPaginas = 1;
 
+    // Pintar los 3 videojuegos favoritos en el perfil público de un jugador
+    function pintarFavoritosJugador(favoritos) {
+        const contenedor = document.getElementById("favoritosJugadorPublico");
+        contenedor.innerHTML = "";
+
+        const lista = Array.isArray(favoritos) ? favoritos : [null, null, null];
+
+        lista.forEach((juego, indice) => {
+            const columna = document.createElement("div");
+            columna.className = "col-12 col-sm-4";
+
+            const tarjeta = document.createElement("div");
+            tarjeta.className = "favorito-publico h-100";
+
+            const portada = document.createElement("div");
+            portada.className = "favorito-publico-portada favorito-portada-nebula position-relative overflow-hidden";
+            portada.setAttribute("aria-hidden", "true");
+
+            if (juego && juego.portada) {
+                const imagen = document.createElement("img");
+                imagen.className = "position-absolute top-0 start-0 w-100 h-100 object-fit-cover";
+                imagen.src = `/assets/images/${encodeURIComponent(juego.portada)}`;
+                imagen.alt = "";
+                portada.appendChild(imagen);
+            } else {
+                portada.textContent = juego ? juego.titulo.slice(0, 2).toUpperCase() : "–";
+            }
+
+            const detalle = document.createElement("div");
+            detalle.className = "favorito-publico-detalle";
+
+            const posicion = document.createElement("span");
+            posicion.className = "favorito-publico-posicion";
+            posicion.textContent = `Favorito ${indice + 1}`;
+
+            const titulo = document.createElement("strong");
+            titulo.textContent = juego ? juego.titulo : "Sin selección";
+
+            detalle.appendChild(posicion);
+            detalle.appendChild(titulo);
+            tarjeta.appendChild(portada);
+            tarjeta.appendChild(detalle);
+            columna.appendChild(tarjeta);
+            contenedor.appendChild(columna);
+        });
+    }
+
     // Mostrar el perfil público de un jugador
     function mostrarPerfilJugador(jugador) {
         document.getElementById("tituloPerfilJugador").textContent = `Perfil de ${jugador.nombre_usuario}`;
         document.getElementById("nombreJugadorPublico").textContent = jugador.nombre_usuario;
         document.getElementById("avatarJugadorPublico").textContent = jugador.nombre_usuario.slice(0, 2).toUpperCase();
         document.getElementById("descripcionJugadorPublico").textContent = jugador.descripcion_publica || "Este jugador todavía no ha agregado una descripción pública.";
+        pintarFavoritosJugador(jugador.favoritos_perfil);
         const modal = document.getElementById("modalPerfilJugador");
 
         bootstrap.Modal.getOrCreateInstance(modal).show();
