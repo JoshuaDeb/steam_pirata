@@ -13,6 +13,95 @@
     "correo": "j@gmail.com",
     "passwordHash": "$2b$10$iFOvJTr04x3bdsWPwZR4fu1/qtOs3bbtNaHgXrz0urCr2HsCbeXTC",
     "role": "desarrollador",
-    "creditos": 0
+    "creditos": 0,
+    "descripcion_publica": "Descripción de prueba."
+  },
+  {
+    "id": 4,
+    "nombre_usuario": "pureba1",
+    "correo": "prueba1@iteso.com",
+    "passwordHash": "$2b$10$EYN9xkwn6Zpa3gaZTL6oROoYJMssF341bdegZS9R41ow5Fte7qHfK",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 5,
+    "nombre_usuario": "prueba2",
+    "correo": "prueba2@iteso.com",
+    "passwordHash": "$2b$10$8VZXoF00.yk4EW9TjEzqbuVVJmewkBLlosw9kRu7SJWYa3QoitBfe",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 6,
+    "nombre_usuario": "prueba3",
+    "correo": "prueba3@iteso.com",
+    "passwordHash": "$2b$10$r75JZ/mg1xJhGBbwOUoBm./v4nB5lHt2/sh7uh3GD8gwf8bfEb3Ly",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 7,
+    "nombre_usuario": "prueba4",
+    "correo": "prueba4@iteso.com",
+    "passwordHash": "$2b$10$JWcIbl6hM9E7Z5ISpx2a1OhKrLMR8Ros4eE0MW7Bx/WEBxqAT7.tu",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 8,
+    "nombre_usuario": "prueba5",
+    "correo": "prueba5@iteso.com",
+    "passwordHash": "$2b$10$xQWtvv7s9lidXxIdOKxtaunZUiuQXf./BitD7e9Nelq364zICyNEG",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 9,
+    "nombre_usuario": "prueba6",
+    "correo": "prueba6@iteso.com",
+    "passwordHash": "$2b$10$YcmSiStJmVay1igiqgVCS.S4OXXZ8LA0nVBbOvALCsXCM3aO4gddq",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 10,
+    "nombre_usuario": "preuba8",
+    "correo": "prueba8@iteso.com",
+    "passwordHash": "$2b$10$l4AJuxuyIVoDjck.jivQf.1hR9CTnA9.h6o2mKdxQyJYDuqGOL6iO",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 11,
+    "nombre_usuario": "prueba9",
+    "correo": "prueba9@iteso.com",
+    "passwordHash": "$2b$10$SpFRUDT8rGnF6GwCKaG.yuRGseeFAymYrGL51rjjl.0jGsQLl4DX2",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 12,
+    "nombre_usuario": "preuba10",
+    "correo": "prueba10@iteso.com",
+    "passwordHash": "$2b$10$oVMrOfSlRUeAOBuv.GuVLOgWfwRppFbC.8ap6A2gM.2HyBKjUpyES",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 13,
+    "nombre_usuario": "jugador11",
+    "correo": "jugador11@iteso.com",
+    "passwordHash": "$2b$10$HWAZDPWnE0UiPcGDt.euDezeKxdjM5PvMc/zB9CBm7gfvG3jtIZoi",
+    "role": "jugador",
+    "creditos": 100
+  },
+  {
+    "id": 14,
+    "nombre_usuario": "jugador 12",
+    "correo": "jugador12@iteso.com",
+    "passwordHash": "$2b$10$u3iPmdX/JLx15TrLXfKb9e4HWRmolOt.nbQXDMAQm9MY0ThYbe5xO",
+    "role": "jugador",
+    "creditos": 100
   }
 ]
