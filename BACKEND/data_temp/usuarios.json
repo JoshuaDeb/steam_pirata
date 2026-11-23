@@ -22,5 +22,13 @@
     "passwordHash": "$2b$10$S6T9BQT/HtL/CfU9nO3KmeUD3kmAhxmnzKb4dWUO31vLkKyyfmFa2",
     "role": "desarrollador",
     "creditos": 0
+  },
+  {
+    "id": 10,
+    "nombre_usuario": "lalo",
+    "correo": "lalo@gmail.com",
+    "passwordHash": "$2b$10$FJN.U6iQJBDx561Yav2oPOxnLZkLPlBY54GAM9bR.alF1bZOnR/QG",
+    "role": "jugador",
+    "creditos": 100
   }
 ]
