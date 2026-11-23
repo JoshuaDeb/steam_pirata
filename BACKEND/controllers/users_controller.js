@@ -518,6 +518,30 @@ function usuarioPublico(usuario) {
     };
 }
 
+// Consultar los datos públicos del usuario (incluye el saldo de créditos actualizado)
+function obtenerUsuario(req, res) {
+    const id = leerIdPositivo(req.params.id);
+
+    if (id === null) {
+        return res.status(400).json({ message: "Identificador de usuario inválido" });
+    }
+
+    try {
+        const usuario = leerDatos("usuarios").find(user => user.id === id);
+
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        res.status(200).json({ user: usuarioPublico(usuario) });
+
+    } catch (error) {
+        console.error("Error al consultar el usuario:", error);
+
+        res.status(500).json({ message: "Error al consultar el usuario" });
+    }
+}
+
 // Combinar los registros (solo IDs) con los datos del videojuego
 function armarJuegos(registros, videojuegos, usuarios, dlcs) {
     return registros
@@ -821,6 +845,7 @@ module.exports = {
     actualizarDescripcion,
     cambiarContrasena,
     eliminarCuenta,
+    obtenerUsuario,
     listarBiblioteca,
     agregarABiblioteca,
     listarFavoritos,

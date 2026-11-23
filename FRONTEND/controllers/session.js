@@ -115,6 +115,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    // Actualizar el saldo de créditos desde el servidor. Los créditos pueden
+    // cambiar sin que el usuario haga nada (por ejemplo, cuando un jugador compra
+    // un videojuego de un desarrollador), así que el valor guardado al iniciar
+    // sesión puede estar desactualizado.
+    fetch(`/api/users/${usuario.id}`, { credentials: "same-origin" })
+        .then(response => response.ok ? response.json() : null)
+        .then(datos => {
+            if (!datos || !datos.user || datos.user.id !== usuario.id) return;
+
+            usuario.creditos = datos.user.creditos;
+            sessionStorage.setItem("usuario", JSON.stringify(usuario));
+
+            const saldoCatalogo = document.getElementById("saldoCreditosCatalogo");
+            const saldoPerfil = document.getElementById("creditosPerfil");
+
+            if (saldoCatalogo && usuario.role === "jugador") {
+                saldoCatalogo.textContent = `${usuario.creditos} créditos`;
+            }
+
+            if (saldoPerfil) {
+                saldoPerfil.textContent = `${usuario.creditos} créditos`;
+            }
+        })
+        .catch(() => { /* Si falla, se conserva el saldo guardado */ });
+
+
     // Cerrar sesión
     const btnCerrarSesion = document.getElementById("btnCerrarSesion");
 

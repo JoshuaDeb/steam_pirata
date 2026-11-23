@@ -3,6 +3,9 @@ const router = express.Router();
 
 const usersController = require("../controllers/users_controller");
 
+// Consultar los datos del usuario (saldo de créditos actualizado)
+router.get("/:id", usersController.obtenerUsuario);
+
 // Actualizar nombre de usuario
 router.patch("/:id/name", usersController.actualizarNombre);
 
