@@ -12,5 +12,53 @@
     "estado": "publicado",
     "total_resenas": 1,
     "calificacion_promedio": 5
+  },
+  {
+    "id": 2,
+    "titulo": "Jueguito chulo",
+    "descripcion": "Ni idea se va a borrar",
+    "genero": "Deportes",
+    "clasificacion_edad": "T",
+    "precio_creditos": 25,
+    "especificaciones": "No tiene",
+    "portada": "juego-2-1795416772988.png",
+    "id_desarrollador": 10,
+    "estado": "retirado"
+  },
+  {
+    "id": 3,
+    "titulo": "YAAAAAAAAAAA",
+    "descripcion": "YAAAAAAAAAAAAAAA",
+    "genero": "Acción",
+    "clasificacion_edad": "E",
+    "precio_creditos": 20,
+    "especificaciones": "",
+    "portada": "juego-3-1795417831103.png",
+    "id_desarrollador": 8,
+    "estado": "publicado"
+  },
+  {
+    "id": 4,
+    "titulo": "PORFVAOR",
+    "descripcion": "QUE SE AcABE EL SEMESTRE",
+    "genero": "Acción",
+    "clasificacion_edad": "E",
+    "precio_creditos": 50,
+    "especificaciones": "",
+    "portada": "juego-4-1795417850357.png",
+    "id_desarrollador": 8,
+    "estado": "publicado"
+  },
+  {
+    "id": 5,
+    "titulo": "TENGOOOOOO",
+    "descripcion": "SUEEEEÑOOOOO",
+    "genero": "Acción",
+    "clasificacion_edad": "E",
+    "precio_creditos": 5,
+    "especificaciones": "",
+    "portada": "juego-5-1795417872565.png",
+    "id_desarrollador": 8,
+    "estado": "publicado"
   }
 ]

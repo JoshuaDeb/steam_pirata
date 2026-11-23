@@ -5,7 +5,13 @@
     "correo": "jugador@gmail.com",
     "passwordHash": "$2b$10$68LYDCb0JsmzcqbIr8Nw6uXENcx8tKhcj6q7hEmHYPKqPIqZBUWbG",
     "role": "jugador",
-    "creditos": 100
+    "creditos": 15,
+    "favoritos_perfil": [
+      5,
+      null,
+      4
+    ],
+    "descripcion_publica": "YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
   },
   {
     "id": 7,
@@ -13,7 +19,8 @@
     "correo": "j@gmail.com",
     "passwordHash": "$2b$10$iFOvJTr04x3bdsWPwZR4fu1/qtOs3bbtNaHgXrz0urCr2HsCbeXTC",
     "role": "desarrollador",
-    "creditos": 0
+    "creditos": 20,
+    "descripcion_publica": "AYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYAAAAAAAAAAAAAAAAA"
   },
   {
     "id": 8,
@@ -21,7 +28,7 @@
     "correo": "cluisd9beli@gmail.com",
     "passwordHash": "$2b$10$S6T9BQT/HtL/CfU9nO3KmeUD3kmAhxmnzKb4dWUO31vLkKyyfmFa2",
     "role": "desarrollador",
-    "creditos": 0
+    "creditos": 75
   },
   {
     "id": 9,
@@ -35,19 +42,19 @@
     ]
   },
   {
-    "id": 10,
-    "nombre_usuario": "dev",
-    "correo": "dev@gmail.com",
-    "passwordHash": "$2b$10$ZThCy3eywgwJMQhpIXYT5.tv.fdgBmpdSO9bC0x8RZsz.KXsgzo8y",
-    "role": "desarrollador",
-    "creditos": 0
-  },
-  {
     "id": 11,
     "nombre_usuario": "player",
     "correo": "player@gmail.com",
     "passwordHash": "$2b$10$677NGwvuesNbx3wwGt.lx.EnlAvVSOkeq6rvZHqsSRfhpzkgPK/3K",
     "role": "jugador",
-    "creditos": 100
+    "creditos": 65
+  },
+  {
+    "id": 12,
+    "nombre_usuario": "lalo2",
+    "correo": "2lalo@gmail.com",
+    "passwordHash": "$2b$10$eUD3DNm3PKpRuqqN9w8vAOLKCzO53iPlqOXY7EPAjp8ha5ipqhV7i",
+    "role": "jugador",
+    "creditos": 90
   }
 ]

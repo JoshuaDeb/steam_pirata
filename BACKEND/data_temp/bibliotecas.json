@@ -2,5 +2,33 @@
   {
     "usuario_id": 9,
     "videojuego_id": 1
+  },
+  {
+    "usuario_id": 5,
+    "videojuego_id": 1
+  },
+  {
+    "usuario_id": 11,
+    "videojuego_id": 1
+  },
+  {
+    "usuario_id": 12,
+    "videojuego_id": 1
+  },
+  {
+    "usuario_id": 11,
+    "videojuego_id": 2
+  },
+  {
+    "usuario_id": 5,
+    "videojuego_id": 5
+  },
+  {
+    "usuario_id": 5,
+    "videojuego_id": 3
+  },
+  {
+    "usuario_id": 5,
+    "videojuego_id": 4
   }
 ]

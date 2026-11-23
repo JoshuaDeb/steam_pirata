@@ -148,7 +148,7 @@ function actualizarCorreo(req, res) {
 
 function actualizarDescripcion(req, res) {
     const id = Number(req.params.id);
-    const { descripcion_publica } = req.body;
+    const { descripcion_publica, favoritos_perfil } = req.body;
 
     // Validar identificador
     if (!Number.isSafeInteger(id) || id <= 0) {
@@ -180,6 +180,40 @@ function actualizarDescripcion(req, res) {
             });
         }
 
+        // Validar los tres videojuegos destacados del perfil
+        if (favoritos_perfil !== undefined) {
+            if (usuario.role !== "jugador" || !Array.isArray(favoritos_perfil) || favoritos_perfil.length !== 3) {
+                return res.status(400).json({
+                    message: "La selección de favoritos no es válida"
+                });
+            }
+
+            // Permitir posiciones vacías y validar los IDs
+            const idsElegidos = favoritos_perfil.filter(id => id !== null);
+
+            if (idsElegidos.some(id => !Number.isSafeInteger(id) || id <= 0) ||
+                new Set(idsElegidos).size !== idsElegidos.length
+            ) {
+                return res.status(400).json({
+                    message: "Los videojuegos seleccionados deben ser distintos"
+                });
+            }
+
+            // Solo se pueden destacar videojuegos adquiridos
+            const idsBiblioteca = new Set(
+                leerDatos("bibliotecas").filter(registro => registro.usuario_id === id).map(registro => registro.videojuego_id)
+            );
+
+            if (idsElegidos.some(idJuego => !idsBiblioteca.has(idJuego))) {
+                return res.status(400).json({
+                    message: "Solo puedes destacar videojuegos de tu biblioteca"
+                });
+            }
+
+            // Conservar la selección y el orden
+            usuario.favoritos_perfil = favoritos_perfil;
+        }
+
         // Actualizar descripción
         usuario.descripcion_publica = descripcion_publica.trim();
 
@@ -194,7 +228,8 @@ function actualizarDescripcion(req, res) {
                 correo: usuario.correo,
                 role: usuario.role,
                 creditos: usuario.creditos,
-                descripcion_publica: usuario.descripcion_publica
+                descripcion_publica: usuario.descripcion_publica,
+                favoritos_perfil: usuario.favoritos_perfil || [null, null, null]
             }
         });
 
@@ -370,11 +405,37 @@ function eliminarCuenta(req, res) {
                     });
                 }
 
-                // La eliminación de desarrolladores requiere
-                // integrar primero sus videojuegos publicados.
+                // Eliminar la cuenta del desarrollador sin borrar sus juegos
                 if (usuario.role === "desarrollador") {
-                    return res.status(409).json({
-                        message: "La eliminación de desarrolladores estará disponible al integrar sus videojuegos"
+                    const videojuegos = leerDatos("videojuegos");
+
+                    if (!Array.isArray(videojuegos)) {
+                        throw new Error("La colección de videojuegos es inválida");
+                    }
+
+                    // Retirar del catálogo todos los juegos del desarrollador
+                    let totalRetirados = 0;
+
+                    videojuegos.forEach(juego => {
+                        if (juego.id_desarrollador === id) {
+                            juego.estado = "retirado";
+                            totalRetirados++;
+                        }
+                    });
+
+                    // Conservar videojuegos, DLC, bibliotecas y reseñas
+                    guardarDatos("videojuegos", videojuegos);
+
+                    // Eliminar físicamente la cuenta
+                    const usuariosActualizados = usuarios.filter(
+                        registro => registro.id !== id
+                    );
+
+                    guardarDatos("usuarios", usuariosActualizados);
+
+                    return res.status(200).json({
+                        message: "Cuenta eliminada correctamente",
+                        videojuegos_retirados: totalRetirados
                     });
                 }
 
@@ -394,7 +455,7 @@ function eliminarCuenta(req, res) {
 
                 const favoritosActualizados = favoritos.filter(registro => registro.usuario_id !== id);
 
-                const resenasActualizadas = resenas.filter(resena => resena.usuario_id !== id).map(resena => ({...resena, respuestas: Array.isArray(resena.respuestas) ? resena.respuestas.filter(respuesta => respuesta.usuario_id !== id) : resena.respuestas}));
+                const resenasActualizadas = resenas.filter(resena => resena.usuario_id !== id).map(resena => ({ ...resena, respuestas: Array.isArray(resena.respuestas) ? resena.respuestas.filter(respuesta => respuesta.usuario_id !== id) : resena.respuestas }));
 
                 const amistadesActualizadas = amistades.filter(amistad => amistad.solicitante_id !== id && amistad.receptor_id !== id);
 
@@ -576,16 +637,49 @@ function agregarABiblioteca(req, res) {
             });
         }
 
+
+        // Comprobar que el videojuego tenga un desarrollador válido
+        const desarrollador = usuarios.find(user =>
+            user.id === juego.id_desarrollador &&
+            user.role === "desarrollador"
+        );
+
+        if (!desarrollador) {
+            return res.status(409).json({
+                message: "El videojuego no tiene un desarrollador válido"
+            });
+        }
+
+        // Validar el precio y los saldos antes de transferir créditos
+        if (
+            !Number.isSafeInteger(juego.precio_creditos) || juego.precio_creditos < 1 ||
+            !Number.isSafeInteger(usuario.creditos) || usuario.creditos < 0 ||
+            !Number.isSafeInteger(desarrollador.creditos) || desarrollador.creditos < 0 ||
+            desarrollador.creditos > Number.MAX_SAFE_INTEGER - juego.precio_creditos
+        ) {
+            return res.status(500).json({
+                message: "Datos de créditos inválidos"
+            });
+        }
+
+
         if (usuario.creditos < juego.precio_creditos) {
             return res.status(409).json({
                 message: "No tienes créditos suficientes para adquirir este videojuego"
             });
         }
 
-        // Descontar créditos y agregar la referencia a la biblioteca
+        // Transferir los créditos del jugador al desarrollador
         usuario.creditos -= juego.precio_creditos;
-        bibliotecas.push({ usuario_id: usuario.id, videojuego_id: idJuego });
+        desarrollador.creditos += juego.precio_creditos;
 
+        // Agregar el videojuego a la biblioteca del jugador
+        bibliotecas.push({
+            usuario_id: usuario.id,
+            videojuego_id: idJuego
+        });
+
+        // Guardar los cambios
         guardarDatos("bibliotecas", bibliotecas);
         guardarDatos("usuarios", usuarios);
 
@@ -610,8 +704,7 @@ function listarFavoritos(req, res) {
 
         const { usuarios, usuario } = contexto;
 
-        const registros = leerDatos("favoritos")
-            .filter(registro => registro.usuario_id === usuario.id);
+        const registros = leerDatos("favoritos").filter(registro => registro.usuario_id === usuario.id);
 
         const videojuegos = armarJuegos(
             registros,
@@ -620,7 +713,11 @@ function listarFavoritos(req, res) {
             leerDatos("dlcs")
         );
 
-        res.status(200).json({ total: videojuegos.length, videojuegos });
+        res.status(200).json({
+            total: videojuegos.length,
+            videojuegos,
+            favoritos_perfil: usuario.favoritos_perfil || [null, null, null]
+        });
 
     } catch (error) {
         console.error("Error al consultar los favoritos:", error);

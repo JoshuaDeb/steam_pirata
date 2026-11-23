@@ -102,7 +102,7 @@
                     data-bs-target="#panelPerfilPublico" aria-controls="panelPerfilPublico" aria-selected="false">Perfil
                     público</button>
             </li>
-            
+
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tabResenas" type="button" role="tab" data-bs-toggle="pill"
                     data-bs-target="#panelResenas" aria-controls="panelResenas" aria-selected="false">Mis
@@ -235,8 +235,12 @@
                                 </div>
                             </div>
                             <p id="textoDescripcionPublica" class="perfil-publico-descripcion mb-4"></p>
-                            <h3 class="perfil-publico-subtitulo mb-3">Mis 3 videojuegos favoritos</h3>
-                            <div class="row g-2" id="favoritosPublicos"></div>
+                            <div id="seccionFavoritosPublicos">
+                                <h3 class="perfil-publico-subtitulo mb-3">
+                                    Mis 3 videojuegos favoritos
+                                </h3>
+                                <div class="row g-2" id="favoritosPublicos"></div>
+                            </div>
                         </div>
                     </div>
 
@@ -256,7 +260,7 @@
                                         descripción será visible para otros jugadores.</div>
                                 </div>
 
-                                <fieldset class="perfil-publico-seleccion">
+                                <fieldset id="seccionSeleccionFavoritos" class="perfil-publico-seleccion">
                                     <legend class="perfil-publico-subtitulo">Mis 3 videojuegos favoritos</legend>
                                     <p class="form-text mb-3">Selecciona tres videojuegos distintos de tu biblioteca. El
                                         orden indica cómo aparecerán en tu perfil.</p>
@@ -280,7 +284,8 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-text mt-2" id="ayudaFavoritosPerfil">Solo se podrán seleccionar videojuegos adquiridos.</div>
+                                    <div class="form-text mt-2" id="ayudaFavoritosPerfil">Solo se podrán seleccionar
+                                        videojuegos adquiridos.</div>
                                 </fieldset>
 
                                 <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 pt-2">
@@ -305,8 +310,7 @@
                 </div>
             </section>
 
-            <section class="tab-pane fade" id="panelResenas" role="tabpanel" aria-labelledby="tabResenas"
-                tabindex="0">
+            <section class="tab-pane fade" id="panelResenas" role="tabpanel" aria-labelledby="tabResenas" tabindex="0">
                 <div class="list-group tarjeta" id="listaMisResenas"></div>
             </section>
 
@@ -316,8 +320,8 @@
                     <div class="card">
                         <div class="card-body d-flex flex-column gap-3">
                             <span class="fila-label">Saldo disponible</span>
-                           <p class="saldo"><span id="saldoCreditos">0</span> <small>créditos</small></p>
-                            
+                            <p class="saldo"><span id="saldoCreditos">0</span> <small>créditos</small></p>
+
                             <p class="fila-meta mb-0">Los créditos son virtuales y no equivalen a dinero real. Recibes
                                 10 créditos por tu primera reseña de cada juego adquirido.</p>
                             <div>
@@ -330,10 +334,13 @@
                     <div>
                         <h3 class="fila-label mb-2">Historial de compras</h3>
                         <div class="list-group tarjeta" id="listaHistorial"></div>
-                        <div class="d-flex justify-content-between align-items-center mt-2" id="paginacionHistorial" hidden>
-                            <button class="btn btn-outline-secondary btn-sm" type="button" id="btnHistorialAnterior">Anterior</button>
+                        <div class="d-flex justify-content-between align-items-center mt-2" id="paginacionHistorial"
+                            hidden>
+                            <button class="btn btn-outline-secondary btn-sm" type="button"
+                                id="btnHistorialAnterior">Anterior</button>
                             <span class="fila-meta" id="textoPaginaHistorial"></span>
-                            <button class="btn btn-outline-secondary btn-sm" type="button" id="btnHistorialSiguiente">Siguiente</button>
+                            <button class="btn btn-outline-secondary btn-sm" type="button"
+                                id="btnHistorialSiguiente">Siguiente</button>
                         </div>
                     </div>
 
@@ -580,7 +587,7 @@
                                     <span id="visualVence">MM/AA</span>
                                 </div>
 
-                                
+
                             </div>
                             <div class="row g-3">
                                 <div class="col-12">
@@ -609,9 +616,9 @@
                             <div id="errorTarjeta"></div>
                             <button class="btn btn-primary btn-pagar" type="button" id="btnPagarTarjeta">
                                 Pagar <span class="monto">
-                                    <span class="m10">$100.00</span><span
-                                        class="m20">$200.00</span><span class="m50">$500.00</span><span
-                                        class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
+                                    <span class="m10">$100.00</span><span class="m20">$200.00</span><span
+                                        class="m50">$500.00</span><span class="m100">$1,000.00</span><span
+                                        class="m200">$2,000.00</span> MXN</span>
                             </button>
                         </div>
 
@@ -634,7 +641,8 @@
                         <div class="pago pago-oxxo d-flex flex-column gap-3">
                             <div class="caja-info">
                                 <p class="fila-valor mb-1">Pago en efectivo en OXXO</p>
-                                <p class="fila-meta mb-0">Se genera una ficha con una referencia. Tienes una semana habil para
+                                <p class="fila-meta mb-0">Se genera una ficha con una referencia. Tienes una semana
+                                    habil para
                                     pagar en cualquier tienda. Tus créditos se agregan cuando se confirma el pago.</p>
                             </div>
                             <button class="btn btn-primary btn-pagar" type="button" data-bs-toggle="modal"
@@ -667,7 +675,8 @@
                                             class="m100">$1,000.00</span><span class="m200">$2,000.00</span> MXN</span>
                                 </div>
                             </div>
-                              <button class="btn btn-primary btn-pagar" type="button" id="btnPagarSpei">Ya hice la transferencia</button>
+                            <button class="btn btn-primary btn-pagar" type="button" id="btnPagarSpei">Ya hice la
+                                transferencia</button>
                         </div>
                     </div>
                 </div>
@@ -712,7 +721,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-target="#modalComprar"
                         data-bs-toggle="modal">Regresar</button>
-                     <button type="button" class="btn btn-primary" id="btnPagarPaypal">Autorizar pago</button>
+                    <button type="button" class="btn btn-primary" id="btnPagarPaypal">Autorizar pago</button>
                 </div>
             </div>
         </div>
@@ -758,7 +767,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-target="#modalComprar"
                         data-bs-toggle="modal">Regresar</button>
-                     <button type="button" class="btn btn-primary" id="btnPagarOxxo">Ya pagué en OXXO</button>
+                    <button type="button" class="btn btn-primary" id="btnPagarOxxo">Ya pagué en OXXO</button>
                 </div>
             </div>
         </div>
