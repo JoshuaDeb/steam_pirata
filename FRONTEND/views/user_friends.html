@@ -184,81 +184,17 @@
                     </div>
                 </div>
 
+                <div id="cargandoAmigos" class="text-center py-4 d-none" role="status">
+                    <div class="spinner-border text-primary" aria-hidden="true"></div>
+                    <p class="mt-2 mb-0 text-body-secondary">
+                        Cargando amigos...
+                    </p>
+                </div>
+
+                <div id="errorAmigos" class="alert alert-danger d-none" role="alert">
+                </div>
+
                 <div class="vstack gap-3 listado-personas" id="listaAmigos">
-                    <div class="persona-card" data-usuario-slug="nova-rider">
-                        <div aria-hidden="true" class="avatar-persona avatar-violeta">
-                            NR
-                        </div>
-
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">NovaRider</h3>
-                            <p class="persona-info">
-                                2 juegos en común - Amigos desde 8 nov 2026
-                            </p>
-                        </div>
-
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilNovaRider" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilNovaRider" aria-label="Ver perfil de NovaRider">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-link text-danger btn-eliminar-amigo"
-                                data-bs-target="#modalEliminarAmigo" data-bs-toggle="modal" type="button">
-                                Eliminar amigo
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="persona-card" data-usuario-slug="luna-byte">
-                        <div aria-hidden="true" class="avatar-persona avatar-azul">
-                            LB
-                        </div>
-
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">LunaByte</h3>
-                            <p class="persona-info">
-                                1 juego en común - Amigos desde 2 nov 2026
-                            </p>
-                        </div>
-
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilLunaByte" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilLunaByte" aria-label="Ver perfil de LunaByte">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-link text-danger btn-eliminar-amigo"
-                                data-bs-target="#modalEliminarAmigo" data-bs-toggle="modal" type="button">
-                                Eliminar amigo
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="persona-card" data-usuario-slug="craft-mage">
-                        <div aria-hidden="true" class="avatar-persona avatar-verde">
-                            CM
-                        </div>
-
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">CraftMage</h3>
-                            <p class="persona-info">
-                                3 juegos en común - Amigos desde 28 oct 2026
-                            </p>
-                        </div>
-
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilCraftMage" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilCraftMage" aria-label="Ver perfil de CraftMage">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-link text-danger btn-eliminar-amigo"
-                                data-bs-target="#modalEliminarAmigo" data-bs-toggle="modal" type="button">
-                                Eliminar amigo
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Estado vacío de la lista de amigos -->
@@ -293,63 +229,21 @@
                 <p class="descripcion-seccion">
                     Acepta una solicitud para agregar a esa persona a tus amigos, o recházala si lo prefieres.
                 </p>
+
+                <!-- Cargando solicitudes recibidas -->
+                <div id="cargandoRecibidas" class="text-center py-4 d-none" role="status">
+                    <div class="spinner-border text-primary" aria-hidden="true"></div>
+                    <p class="mt-2 mb-0 text-body-secondary">
+                        Cargando solicitudes recibidas...
+                    </p>
+                </div>
+
+                <!-- Error al consultar solicitudes recibidas -->
+                <div id="errorRecibidas" class="alert alert-danger d-none" role="alert">
+                </div>
+
                 <div class="vstack gap-3 listado-personas" id="listaRecibidas">
-                    <div class="persona-card" data-usuario-slug="zero-shift">
-                        <div aria-hidden="true" class="avatar-persona avatar-rosa">
-                            ZS
-                        </div>
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">
-                                ZeroShift
-                            </h3>
-                            <p class="persona-info">
-                                Solicitud recibida el 9 nov 2026
-                            </p>
-                        </div>
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilZeroShift" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilZeroShift" aria-label="Ver perfil de ZeroShift">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-primary btn-aceptar" data-bs-target="#modalAceptar"
-                                data-bs-toggle="modal" type="button">
-                                Aceptar
-                            </button>
-                            <button class="btn btn-link text-danger btn-rechazar" data-bs-target="#modalRechazar"
-                                data-bs-toggle="modal" type="button">
-                                Rechazar
-                            </button>
-                        </div>
-                    </div>
-                    <div class="persona-card" data-usuario-slug="atlas-fox">
-                        <div aria-hidden="true" class="avatar-persona avatar-dorado">
-                            AF
-                        </div>
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">
-                                AtlasFox
-                            </h3>
-                            <p class="persona-info">
-                                Solicitud recibida el 7 nov 2026
-                            </p>
-                        </div>
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilAtlasFox" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilAtlasFox" aria-label="Ver perfil de AtlasFox">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-primary btn-aceptar" data-bs-target="#modalAceptar"
-                                data-bs-toggle="modal" type="button">
-                                Aceptar
-                            </button>
-                            <button class="btn btn-link text-danger btn-rechazar" data-bs-target="#modalRechazar"
-                                data-bs-toggle="modal" type="button">
-                                Rechazar
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
                 <div class="vacio" hidden="" id="vacioRecibidas">
                     <span aria-hidden="true" class="signo">
@@ -373,34 +267,21 @@
                 <p class="descripcion-seccion">
                     Consulta las solicitudes pendientes y cancélalas si cambias de opinión.
                 </p>
+
+                <!-- Cargando solicitudes enviadas -->
+                <div id="cargandoEnviadas" class="text-center py-4 d-none" role="status">
+                    <div class="spinner-border text-primary" aria-hidden="true"></div>
+                    <p class="mt-2 mb-0 text-body-secondary">
+                        Cargando solicitudes enviadas...
+                    </p>
+                </div>
+
+                <!-- Error al consultar solicitudes enviadas -->
+                <div id="errorEnviadas" class="alert alert-danger d-none" role="alert">
+                </div>
+
                 <div class="vstack gap-3 listado-personas" id="listaEnviadas">
-                    <div class="persona-card" data-usuario-slug="drift-king">
-                        <div aria-hidden="true" class="avatar-persona avatar-celeste">
-                            DK
-                        </div>
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">
-                                DriftKing
-                            </h3>
-                            <p class="persona-info">
-                                Solicitud enviada el 8 nov 2026
-                            </p>
-                        </div>
-                        <span class="etiqueta etiqueta-espera">
-                            Pendiente
-                        </span>
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilDriftKing" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilDriftKing" aria-label="Ver perfil de DriftKing">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-link text-danger btn-cancelar" data-bs-target="#modalCancelar"
-                                data-bs-toggle="modal" type="button">
-                                Cancelar solicitud
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
                 <div class="vacio" hidden="" id="vacioEnviadas">
                     <span aria-hidden="true" class="signo">
@@ -449,79 +330,22 @@
                     Puedes enviar solicitudes a jugadores que aún no sean tus amigos y con quienes no tengas una
                     solicitud pendiente.
                 </div>
+
+                <!-- Indicador de carga de jugadores -->
+                <div id="cargandoJugadores" class="text-center py-4 d-none" role="status">
+
+                    <div class="spinner-border text-primary" aria-hidden="true"></div>
+
+                    <p class="mt-2 mb-0 text-body-secondary">
+                        Buscando jugadores...
+                    </p>
+                </div>
+
+                <!-- Mensaje de error de búsqueda -->
+                <div id="errorJugadores" class="alert alert-danger d-none" role="alert">
+                </div>
+
                 <div class="vstack gap-3 listado-personas" id="listaJugadores">
-                    <div class="persona-card" data-usuario-slug="pixel-nova">
-                        <div aria-hidden="true" class="avatar-persona avatar-violeta">
-                            PN
-                        </div>
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">
-                                PixelNova
-                            </h3>
-                            <p class="persona-info">
-                                Jugador - Le gustan las simulaciones
-                            </p>
-                        </div>
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilPixelNova" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilPixelNova" aria-label="Ver perfil de PixelNova">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
-                                data-bs-toggle="modal" type="button">
-                                + Enviar solicitud
-                            </button>
-                        </div>
-                    </div>
-                    <div class="persona-card" data-usuario-slug="rune-pilot">
-                        <div aria-hidden="true" class="avatar-persona avatar-azul">
-                            RP
-                        </div>
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">
-                                RunePilot
-                            </h3>
-                            <p class="persona-info">
-                                Jugador - Le interesan las aventuras
-                            </p>
-                        </div>
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilRunePilot" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilRunePilot" aria-label="Ver perfil de RunePilot">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
-                                data-bs-toggle="modal" type="button">
-                                + Enviar solicitud
-                            </button>
-                        </div>
-                    </div>
-                    <div class="persona-card" data-usuario-slug="cloud-ninja">
-                        <div aria-hidden="true" class="avatar-persona avatar-verde">
-                            CN
-                        </div>
-                        <div class="persona-datos">
-                            <h3 class="persona-nombre">
-                                CloudNinja
-                            </h3>
-                            <p class="persona-info">
-                                Jugador - Le gustan los juegos de estrategia
-                            </p>
-                        </div>
-                        <div class="persona-acciones">
-                            <button class="btn btn-outline-secondary btn-ver-perfil"
-                                data-bs-target="#modalPerfilCloudNinja" data-bs-toggle="modal" type="button"
-                                id="btnVerPerfilCloudNinja" aria-label="Ver perfil de CloudNinja">
-                                Ver perfil
-                            </button>
-                            <button class="btn btn-primary btn-enviar" data-bs-target="#modalEnviar"
-                                data-bs-toggle="modal" type="button">
-                                + Enviar solicitud
-                            </button>
-                        </div>
-                    </div>
                 </div>
                 <div class="vacio" hidden="" id="vacioJugadores">
                     <strong>
@@ -530,6 +354,29 @@
                     <p class="mb-0">
                         Revisa el nombre de usuario e inténtalo de nuevo.
                     </p>
+                </div>
+
+                <!-- Paginación de búsqueda de jugadores -->
+                <div id="paginacionJugadores" class="mt-3 d-none">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+                        <!-- Cantidad de resultados -->
+                        <p id="resumenPaginacionJugadores" class="text-body-secondary small mb-0" aria-live="polite">
+                        </p>
+                        <!-- Navegación entre páginas -->
+                        <div class="d-flex align-items-center gap-3">
+                            <button id="btnPaginaAnterior" type="button" class="btn btn-outline-secondary btn-sm"
+                                disabled>
+                                Anterior
+                            </button>
+                            <span id="textoPaginaJugadores" class="text-body-secondary small">
+                                Página 1 de 1
+                            </span>
+                            <button id="btnPaginaSiguiente" type="button" class="btn btn-outline-secondary btn-sm"
+                                disabled>
+                                Siguiente
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -948,6 +795,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <script src="/controllers/user_friends.js"></script>
 </body>
 
 </html>

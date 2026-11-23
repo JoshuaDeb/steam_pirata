@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const authRoutes = require("./routes/auth_routes");
 const usersRoutes = require("./routes/users_routes");
+const friendsRoutes = require("./routes/friends_routes");
 const videojuegosRoutes = require("./routes/videojuegos_routes");
 const dlcsRoutes = require("./routes/dlcs_routes");
 const resenasRoutes = require("./routes/resenas_routes");
@@ -18,6 +19,9 @@ app.use("/api/auth", authRoutes);
 
 // Rutas de usuarios
 app.use("/api/users", usersRoutes);
+
+// Rutas de amistades
+app.use("/api/friends", friendsRoutes);
 
 // Rutas de videojuegos y DLC
 app.use("/api/videojuegos", videojuegosRoutes);
