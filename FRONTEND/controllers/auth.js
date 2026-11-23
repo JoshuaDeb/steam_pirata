@@ -47,6 +47,23 @@ if (!sessionStorage.getItem("usuario")) {
     document.documentElement.classList.add("login-listo");
 }
 
+// Mostrar la pestaña indicada en la URL (?tab=registro o ?tab=entrar)
+function mostrarPestanaDesdeURL() {
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    const botones = {
+        registro: "tabRegistro",
+        entrar: "tabEntrar"
+    };
+
+    const boton = document.getElementById(botones[tab]);
+
+    if (boton && window.bootstrap) {
+        bootstrap.Tab.getOrCreateInstance(boton).show();
+    }
+}
+
+mostrarPestanaDesdeURL();
+
 // Mostrar mensajes de éxito o error
 function mostrarMensaje(id, mensaje, tipo) {
     const elemento = document.getElementById(id);
