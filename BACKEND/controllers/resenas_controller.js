@@ -163,4 +163,72 @@ function eliminarResena(req, res) {
     res.status(200).json({ message: "Reseña eliminada" });
 }
 
-module.exports = { listarResenas, crearResena, actualizarResena, eliminarResena };
+// ---------- DESARROLLADOR: ver y responder reseñas de sus juegos ----------
+// req.usuario lo llena requerirDesarrollador
+
+// LEER: las reseñas de los juegos de este desarrollador
+function listarResenasDesarrollador(req, res) {
+    const videojuegos = leerDatos("videojuegos");
+    const usuarios = leerDatos("usuarios");
+
+    // IDs de los juegos de este desarrollador
+    const misJuegos = videojuegos
+        .filter(juego => juego.id_desarrollador === req.usuario.id)
+        .map(juego => juego.id);
+
+    const resenas = leerDatos("resenas")
+        .filter(resena => misJuegos.includes(resena.juego_id))
+        .map(resena => {
+            const autor = usuarios.find(usuario => usuario.id === resena.usuario_id);
+            const juego = videojuegos.find(videojuego => videojuego.id === resena.juego_id);
+
+            return {
+                ...resena,
+                nombre_usuario: autor ? autor.nombre_usuario : "Usuario eliminado",
+                titulo_juego: juego.titulo
+            };
+        });
+
+    res.status(200).json({ resenas: resenas });
+}
+
+
+// RESPONDER una reseña (si ya tenía respuesta, se reemplaza)
+function responderResena(req, res) {
+    const id = Number(req.params.id);
+    const texto = req.body?.texto;
+
+    if (typeof texto !== "string" || !texto.trim()) {
+        return res.status(400).json({ message: "Escribe una respuesta" });
+    }
+
+    if (texto.trim().length > 500) {
+        return res.status(400).json({ message: "La respuesta no puede pasar de 500 caracteres" });
+    }
+
+    const resenas = leerDatos("resenas");
+    const videojuegos = leerDatos("videojuegos");
+
+    const resena = resenas.find(r => r.id === id);
+
+    if (!resena) {
+        return res.status(404).json({ message: "Reseña no encontrada" });
+    }
+
+    // Revisar que la reseña sea de un juego de este desarrollador
+    const juego = videojuegos.find(j => j.id === resena.juego_id);
+
+    if (!juego || juego.id_desarrollador !== req.usuario.id) {
+        return res.status(403).json({ message: "Solo puedes responder reseñas de tus juegos" });
+    }
+
+    resena.respuesta = texto.trim();
+    guardarDatos("resenas", resenas);
+
+    res.status(200).json({ message: "Respuesta guardada", resena: resena });
+}
+
+module.exports = {
+    listarResenas, crearResena, actualizarResena, eliminarResena,
+    listarResenasDesarrollador, responderResena
+};

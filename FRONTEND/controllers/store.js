@@ -424,7 +424,12 @@
                 <strong>${escapar(resena.nombre_usuario)}</strong>
                 <span class="text-warning">${"★".repeat(resena.estrellas)}</span>
                 <p class="mb-0">${escapar(resena.texto)}</p>
-            </div>`).join("");
+                ${resena.respuesta ? `
+                <div class="border-start border-primary border-3 ps-2 mt-2">
+                    <span class="fila-meta">Respuesta del desarrollador</span>
+                    <p class="mb-0">${escapar(resena.respuesta)}</p>
+                </div>` : ""}
+            </div>`).join(""); 
     }
 
     function mostrarMensajeResena(texto, tipo) {

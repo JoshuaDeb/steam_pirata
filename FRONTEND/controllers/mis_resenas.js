@@ -46,6 +46,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 <strong class="fila-valor">${escapar(resena.titulo_juego)}</strong>
                 <select class="form-select estrellas">${opciones}</select>
                 <textarea class="form-control texto" rows="3" maxlength="500">${escapar(resena.texto)}</textarea>
+
+                ${resena.respuesta ? `
+                <div class="border-start border-primary border-3 ps-2">
+                    <span class="fila-meta">Respuesta del desarrollador</span>
+                    <p class="mb-0">${escapar(resena.respuesta)}</p>
+                </div>` : ""}
+                
                 <div class="mensaje"></div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-primary btn-guardar" type="button">Guardar cambios</button>

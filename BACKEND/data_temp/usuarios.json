@@ -14,5 +14,13 @@
     "passwordHash": "$2b$10$iFOvJTr04x3bdsWPwZR4fu1/qtOs3bbtNaHgXrz0urCr2HsCbeXTC",
     "role": "desarrollador",
     "creditos": 0
+  },
+  {
+    "id": 8,
+    "nombre_usuario": "luisd",
+    "correo": "cluisd9beli@gmail.com",
+    "passwordHash": "$2b$10$S6T9BQT/HtL/CfU9nO3KmeUD3kmAhxmnzKb4dWUO31vLkKyyfmFa2",
+    "role": "desarrollador",
+    "creditos": 0
   }
 ]
