@@ -1,1 +1,137 @@
-[]
+[
+  {
+    "id": 1,
+    "usuario_id": 1,
+    "juego_id": 1,
+    "estrellas": 5,
+    "texto": "quiero más créditos",
+    "fecha": "2026-11-23T08:31:55.319Z"
+  },
+  {
+    "id": 2,
+    "usuario_id": 1,
+    "juego_id": 11,
+    "estrellas": 4,
+    "texto": "La propuesta es divertida y las mecánicas resultan fáciles de entender. Muy recomendable.",
+    "fecha": "2026-11-23T09:20:31.872Z"
+  },
+  {
+    "id": 3,
+    "usuario_id": 1,
+    "juego_id": 17,
+    "estrellas": 5,
+    "texto": "Me gustó la variedad de escenarios y el diseño visual. Hay mucho por explorar.",
+    "fecha": "2026-11-23T09:20:31.881Z",
+    "respuesta": "¡Gracias por tu reseña! Tu opinión es muy valiosa para el equipo."
+  },
+  {
+    "id": 4,
+    "usuario_id": 1,
+    "juego_id": 8,
+    "estrellas": 4,
+    "texto": "Una experiencia entretenida, con desafíos que invitan a regresar y mejorar.",
+    "fecha": "2026-11-23T09:43:59.061Z"
+  },
+  {
+    "id": 5,
+    "usuario_id": 1,
+    "juego_id": 16,
+    "estrellas": 4,
+    "texto": "La música y el diseño de niveles están muy bien logrados. Vale la pena probarlo.",
+    "fecha": "2026-11-23T09:20:31.902Z",
+    "respuesta": "¡Gracias por jugar! Nos alegra que disfrutaras la experiencia."
+  },
+  {
+    "id": 6,
+    "usuario_id": 1,
+    "juego_id": 6,
+    "estrellas": 5,
+    "texto": "Disfruté bastante el progreso y las opciones de personalización del juego.",
+    "fecha": "2026-11-23T09:20:31.914Z"
+  },
+  {
+    "id": 7,
+    "usuario_id": 3,
+    "juego_id": 1,
+    "estrellas": 4,
+    "texto": "Una experiencia entretenida, con desafíos que invitan a regresar y mejorar.",
+    "fecha": "2026-11-23T09:20:31.919Z"
+  },
+  {
+    "id": 8,
+    "usuario_id": 3,
+    "juego_id": 11,
+    "estrellas": 5,
+    "texto": "La música y el diseño de niveles están muy bien logrados. Vale la pena probarlo.",
+    "fecha": "2026-11-23T09:20:31.925Z",
+    "respuesta": "¡Gracias por tu reseña! Tu opinión es muy valiosa para el equipo."
+  },
+  {
+    "id": 9,
+    "usuario_id": 3,
+    "juego_id": 17,
+    "estrellas": 3,
+    "texto": "Disfruté bastante el progreso y las opciones de personalización del juego.",
+    "fecha": "2026-11-23T09:20:31.941Z"
+  },
+  {
+    "id": 10,
+    "usuario_id": 3,
+    "juego_id": 8,
+    "estrellas": 4,
+    "texto": "Tiene ideas originales y una historia interesante, aunque algunas partes podrían pulirse.",
+    "fecha": "2026-11-23T09:20:31.947Z",
+    "respuesta": "¡Gracias por jugar! Nos alegra que disfrutaras la experiencia."
+  },
+  {
+    "id": 11,
+    "usuario_id": 5,
+    "juego_id": 11,
+    "estrellas": 5,
+    "texto": "Tiene ideas originales y una historia interesante, aunque algunas partes podrían pulirse.",
+    "fecha": "2026-11-23T09:20:31.957Z",
+    "respuesta": "¡Gracias por tu reseña! Tu opinión es muy valiosa para el equipo."
+  },
+  {
+    "id": 12,
+    "usuario_id": 5,
+    "juego_id": 17,
+    "estrellas": 3,
+    "texto": "Me sorprendió el nivel de detalle de sus escenarios y la sensación de descubrimiento.",
+    "fecha": "2026-11-23T09:20:31.968Z"
+  },
+  {
+    "id": 13,
+    "usuario_id": 5,
+    "juego_id": 8,
+    "estrellas": 4,
+    "texto": "Buen ritmo y una ambientación muy cuidada. Me gustó que cada partida tuviera nuevas sorpresas.",
+    "fecha": "2026-11-23T09:20:31.974Z",
+    "respuesta": "¡Gracias por jugar! Nos alegra que disfrutaras la experiencia."
+  },
+  {
+    "id": 14,
+    "usuario_id": 8,
+    "juego_id": 11,
+    "estrellas": 3,
+    "texto": "La propuesta es divertida y las mecánicas resultan fáciles de entender. Muy recomendable.",
+    "fecha": "2026-11-23T09:20:31.985Z"
+  },
+  {
+    "id": 15,
+    "usuario_id": 8,
+    "juego_id": 17,
+    "estrellas": 4,
+    "texto": "Me gustó la variedad de escenarios y el diseño visual. Hay mucho por explorar.",
+    "fecha": "2026-11-23T09:20:31.990Z",
+    "respuesta": "¡Gracias por jugar! Nos alegra que disfrutaras la experiencia."
+  },
+  {
+    "id": 16,
+    "usuario_id": 8,
+    "juego_id": 8,
+    "estrellas": 5,
+    "texto": "Una experiencia entretenida, con desafíos que invitan a regresar y mejorar.",
+    "fecha": "2026-11-23T09:20:31.999Z"
+  }
+]

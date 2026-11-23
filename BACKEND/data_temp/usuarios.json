@@ -1,1 +1,98 @@
-[]
+[
+  {
+    "id": 1,
+    "nombre_usuario": "Lalo",
+    "correo": "lalo@iteso.com",
+    "passwordHash": "$2b$10$TGnXb4V66FXPtUUohzZZY.XwSNOZB4oXjmHGEQwKYstpHFREmDrCy",
+    "role": "jugador",
+    "creditos": 230,
+    "resenas_premiadas": [
+      1,
+      11,
+      17,
+      8,
+      16,
+      6
+    ],
+    "favoritos_perfil": [
+      6,
+      10,
+      16
+    ],
+    "descripcion_publica": "Esta es mi descripción modificada, para que revisen mi perifl."
+  },
+  {
+    "id": 3,
+    "nombre_usuario": "josh",
+    "correo": "josh@iteso.com",
+    "passwordHash": "$2b$10$O0/7go9RZcglV8vndmR6Xe0q7sKx4Hv5ioh2/h5FdEcPXvS3zUJQO",
+    "role": "jugador",
+    "creditos": 68,
+    "favoritos_perfil": [
+      1,
+      11,
+      17
+    ],
+    "descripcion_publica": "Explorando nuevas aventuras y compartiendo mis juegos favoritos en Steam Pirata.",
+    "resenas_premiadas": [
+      1,
+      11,
+      17,
+      8
+    ]
+  },
+  {
+    "id": 5,
+    "nombre_usuario": "luis",
+    "correo": "luis@iteso.com",
+    "passwordHash": "$2b$10$INGsIP2IXHZ7Qqdg7wWv5enqyeLhZmf8VUx3DUzqw698fEhTOGc6a",
+    "role": "jugador",
+    "creditos": 83,
+    "favoritos_perfil": [
+      11,
+      17,
+      8
+    ],
+    "descripcion_publica": "Explorando nuevas aventuras y compartiendo mis juegos favoritos en Steam Pirata.",
+    "resenas_premiadas": [
+      11,
+      17,
+      8
+    ]
+  },
+  {
+    "id": 6,
+    "nombre_usuario": "lalodev",
+    "correo": "lalodev@iteso.com",
+    "passwordHash": "$2b$10$xZ0GNGUxx0bzaPnVutM3eOk3B9TVdcS8fTblmrMVlh5l6FCAo/yeu",
+    "role": "desarrollador",
+    "creditos": 209
+  },
+  {
+    "id": 7,
+    "nombre_usuario": "JoshiDev",
+    "correo": "joshdev@iteso.com",
+    "passwordHash": "$2b$10$kmaTasM1to5URibSTQULl.eJUS3Ht97wqc9UdVfopmDdL/RMaTiKK",
+    "role": "desarrollador",
+    "creditos": 192
+  },
+  {
+    "id": 8,
+    "nombre_usuario": "David",
+    "correo": "david@iteso.com",
+    "passwordHash": "$2b$10$Twej7XxLtVFBQ1lO8Qoys.dEQc59TFqFWD.vRH8HJzGfUDjfLt3Ji",
+    "role": "jugador",
+    "creditos": 83,
+    "favoritos_perfil": [
+      11,
+      17,
+      8
+    ],
+    "descripcion_publica": "Explorando nuevas aventuras y compartiendo mis juegos favoritos en Steam Pirata.",
+    "resenas_premiadas": [
+      11,
+      17,
+      8
+    ]
+  }
+]
