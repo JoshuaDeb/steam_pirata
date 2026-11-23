@@ -102,6 +102,13 @@
                     data-bs-target="#panelPerfilPublico" aria-controls="panelPerfilPublico" aria-selected="false">Perfil
                     público</button>
             </li>
+            
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tabResenas" type="button" role="tab" data-bs-toggle="pill"
+                    data-bs-target="#panelResenas" aria-controls="panelResenas" aria-selected="false">Mis
+                    reseñas</button>
+            </li>
+
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tabCreditos" type="button" role="tab" data-bs-toggle="pill"
                     data-bs-target="#panelCreditos" aria-controls="panelCreditos"
@@ -336,6 +343,11 @@
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <section class="tab-pane fade" id="panelResenas" role="tabpanel" aria-labelledby="tabResenas"
+                tabindex="0">
+                <div class="list-group tarjeta" id="listaMisResenas"></div>
             </section>
 
             <section class="tab-pane fade" id="panelCreditos" role="tabpanel" aria-labelledby="tabCreditos"
@@ -836,6 +848,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../controllers/user_profile.js"></script>
+    <script src="../controllers/mis_resenas.js"></script>
 </body>
 
 </html>

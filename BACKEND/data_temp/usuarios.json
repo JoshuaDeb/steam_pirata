@@ -14,5 +14,13 @@
     "passwordHash": "$2b$10$iFOvJTr04x3bdsWPwZR4fu1/qtOs3bbtNaHgXrz0urCr2HsCbeXTC",
     "role": "desarrollador",
     "creditos": 0
+  },
+  {
+    "id": 8,
+    "nombre_usuario": "luis",
+    "correo": "luisd.chavez@iteso.mx",
+    "passwordHash": "$2b$10$U9BmcmaP06Al/K2pXGTyBe/5FavXx1DqgB2IYcvXIFTCX/rE4i5bG",
+    "role": "jugador",
+    "creditos": 100
   }
 ]

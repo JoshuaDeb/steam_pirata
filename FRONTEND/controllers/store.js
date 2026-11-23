@@ -256,12 +256,9 @@
                 </dl>
 
                 <section aria-labelledby="resenasTitulo">
-                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
-                        <h3 class="resenas-titulo" id="resenasTitulo">Reseñas</h3>
-                        <span class="fila-meta">Todavía no hay reseñas</span>
-                    </div>
+                    <h3 class="resenas-titulo" id="resenasTitulo">Reseñas</h3>
+                    <div id="zonaResenas" class="d-flex flex-column gap-3"></div>
                 </section>
-            </div>
 
             <div class="modal-footer justify-content-between">
                 <div class="d-flex flex-column">
@@ -347,6 +344,7 @@
         }
 
         modalJuego.querySelector(".modal-content").innerHTML = fichaJuego(juegoActual);
+        cargarResenas();
     });
 
     // Confirmación de adquisición (solo visual)
@@ -360,6 +358,135 @@
             modalAdquirir.querySelector(".modal-content").innerHTML = confirmacionAdquirir(juegoActual);
         });
     }
+
+    // ---------- Reseñas ----------
+
+    let miResena = null;   // Reseña del usuario en el juego abierto (null si no ha escrito)
+
+    // Pedir las reseñas del juego abierto y pintarlas
+    function cargarResenas(mensajeExito) {
+        const zona = el("zonaResenas");
+
+        zona.innerHTML = `<div class="fila-meta">
+            <span class="spinner-border spinner-border-sm"></span> Cargando reseñas...</div>`;
+
+        fetch(`/api/resenas?juego_id=${juegoActual.id}`)
+            .then((response) => response.json())
+            .then((datos) => {
+                // Buscar si el usuario ya escribió una reseña de este juego
+                miResena = esJugador
+                    ? datos.resenas.find((resena) => resena.usuario_id === usuario.id)
+                    : null;
+
+                zona.innerHTML = formularioResena() + listaResenas(datos.resenas);
+
+                if (mensajeExito) mostrarMensajeResena(mensajeExito, "success");
+            })
+            .catch(() => {
+                zona.innerHTML = `<div class="alert alert-danger mb-0">No se pudieron cargar las reseñas</div>`;
+            });
+    }
+
+    // Formulario para escribir (o editar) la reseña. Solo lo ven los jugadores.
+    function formularioResena() {
+        if (!esJugador) return "";
+
+        const opciones = [5, 4, 3, 2, 1].map((numero) =>
+            `<option value="${numero}" ${miResena?.estrellas === numero ? "selected" : ""}>${"★".repeat(numero)}</option>`
+        ).join("");
+
+        return `
+            <form id="formResena" class="d-flex flex-column gap-2">
+                <label class="form-label mb-0" for="estrellasResena">
+                    ${miResena ? "Tu reseña (puedes editarla)" : "Escribe una reseña"}
+                </label>
+                <select class="form-select" id="estrellasResena">${opciones}</select>
+                <textarea class="form-control" id="textoResena" rows="3" maxlength="500"
+                    placeholder="¿Qué te pareció el juego?">${miResena ? escapar(miResena.texto) : ""}</textarea>
+                <div id="mensajeResena"></div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" type="submit">
+                        ${miResena ? "Guardar cambios" : "Publicar reseña"}
+                    </button>
+                    ${miResena ? `<button class="btn btn-outline-danger" type="button" id="btnBorrarResena">Borrar</button>` : ""}
+                </div>
+            </form>`;
+    }
+
+    // Lista con las reseñas de todos
+    function listaResenas(resenas) {
+        if (resenas.length === 0) {
+            return `<span class="fila-meta">Todavía no hay reseñas</span>`;
+        }
+
+        return resenas.map((resena) => `
+            <div class="border rounded p-2">
+                <strong>${escapar(resena.nombre_usuario)}</strong>
+                <span class="text-warning">${"★".repeat(resena.estrellas)}</span>
+                <p class="mb-0">${escapar(resena.texto)}</p>
+            </div>`).join("");
+    }
+
+    function mostrarMensajeResena(texto, tipo) {
+        const mensaje = el("mensajeResena");
+
+        if (mensaje) {
+            mensaje.innerHTML = `<div class="alert alert-${tipo} py-2 mb-0">${escapar(texto)}</div>`;
+        }
+    }
+
+    // Mandar la reseña al servidor (POST = crear, PUT = editar, DELETE = borrar)
+    function enviarResena(url, metodo, datos, mensajeExito) {
+        mostrarMensajeResena("Guardando...", "secondary");
+
+        fetch(url, {
+            method: metodo,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        })
+            .then((response) => response.json().then((respuesta) => {
+                if (!response.ok) {
+                    throw new Error(respuesta.message || "No se pudo guardar la reseña");
+                }
+
+                cargarResenas(mensajeExito);   // Volver a pintar las reseñas
+            }))
+            .catch((error) => mostrarMensajeResena(error.message, "danger"));
+    }
+
+    // Publicar o guardar cambios
+    modalJuego.addEventListener("submit", (event) => {
+        if (event.target.id !== "formResena") return;
+
+        event.preventDefault();
+
+        const datos = {
+            usuario_id: usuario.id,
+            juego_id: juegoActual.id,
+            estrellas: Number(el("estrellasResena").value),
+            texto: el("textoResena").value.trim()
+        };
+
+        if (datos.texto.length < 5) {
+            mostrarMensajeResena("La reseña debe tener al menos 5 caracteres", "danger");
+            return;
+        }
+
+        if (miResena) {
+            enviarResena(`/api/resenas/${miResena.id}`, "PUT", datos, "Reseña actualizada");
+        } else {
+            enviarResena("/api/resenas", "POST", datos, "Reseña publicada");
+        }
+    });
+
+    // Borrar la reseña
+    modalJuego.addEventListener("click", (event) => {
+        if (event.target.id !== "btnBorrarResena") return;
+
+        if (!confirm("¿Seguro que quieres borrar tu reseña?")) return;
+
+        enviarResena(`/api/resenas/${miResena.id}`, "DELETE", { usuario_id: usuario.id }, "Reseña eliminada");
+    });
 
 
     // ---------- Inicio ----------

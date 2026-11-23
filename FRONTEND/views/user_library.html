@@ -205,10 +205,7 @@
                                         data-bs-target="#modalDetalleNebula" data-bs-toggle="modal" type="button">
                                         Ver detalles
                                     </button>
-                                    <button class="btn btn-outline-secondary btn-resena" data-bs-target="#modalResena"
-                                        data-bs-toggle="modal" type="button">
-                                        Reseñar
-                                    </button>
+
                                     <input name="favorito" aria-label="Guardar Nebula Drift en favoritos"
                                         autocomplete="off" checked="" class="btn-check check-favorito"
                                         id="favorito-nebula-drift-1" type="checkbox" value="nebula-drift" />
@@ -243,10 +240,7 @@
                                         data-bs-target="#modalDetallePixel" data-bs-toggle="modal" type="button">
                                         Ver detalles
                                     </button>
-                                    <button class="btn btn-outline-secondary btn-resena" data-bs-target="#modalResena"
-                                        data-bs-toggle="modal" type="button">
-                                        Reseñar
-                                    </button>
+                                    
                                     <input name="favorito" aria-label="Guardar Pixel Harvest en favoritos"
                                         autocomplete="off" checked="" class="btn-check check-favorito"
                                         id="favorito-pixel-harvest-2" type="checkbox" value="pixel-harvest" />
@@ -281,10 +275,7 @@
                                         data-bs-target="#modalDetalleAurora" data-bs-toggle="modal" type="button">
                                         Ver detalles
                                     </button>
-                                    <button class="btn btn-outline-secondary btn-resena" data-bs-target="#modalResena"
-                                        data-bs-toggle="modal" type="button">
-                                        Reseñar
-                                    </button>
+                                    
                                     <input name="favorito" aria-label="Guardar Aurora Protocol en favoritos"
                                         autocomplete="off" class="btn-check check-favorito"
                                         id="favorito-aurora-protocol-3" type="checkbox" value="aurora-protocol" />
@@ -488,85 +479,6 @@
         </div>
     </main>
 
-    <!-- Modal dejar reseña -->
-    <div aria-hidden="true" aria-labelledby="tituloResena" class="modal fade" id="modalResena" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="tituloResena">
-                        Escribir reseña
-                    </h2>
-                    <button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button">
-                    </button>
-                </div>
-
-                <form method="post" id="formResena">
-                    <div class="modal-body d-flex flex-column gap-3">
-                        <p class="fila-meta mb-0" id="nombreJuegoResena">
-                            Comparte tu experiencia con un videojuego adquirido.
-                        </p>
-                        <div>
-                            <fieldset class="border-0 p-0 m-0">
-                                <legend class="form-label fs-6">Calificación</legend>
-                                <div class="calificacion-estrellas">
-
-                                    <input type="radio" class="btn-check" name="calificacion" id="estrella5" value="5"
-                                        required>
-                                    <label for="estrella5" title="5 estrellas">
-                                        <i class="fa-solid fa-star"></i>
-                                        <span class="visually-hidden">5 estrellas</span>
-                                    </label>
-
-                                    <input type="radio" class="btn-check" name="calificacion" id="estrella4" value="4">
-                                    <label for="estrella4" title="4 estrellas">
-                                        <i class="fa-solid fa-star"></i>
-                                        <span class="visually-hidden">4 estrellas</span>
-                                    </label>
-
-                                    <input type="radio" class="btn-check" name="calificacion" id="estrella3" value="3">
-                                    <label for="estrella3" title="3 estrellas">
-                                        <i class="fa-solid fa-star"></i>
-                                        <span class="visually-hidden">3 estrellas</span>
-                                    </label>
-
-                                    <input type="radio" class="btn-check" name="calificacion" id="estrella2" value="2">
-                                    <label for="estrella2" title="2 estrellas">
-                                        <i class="fa-solid fa-star"></i>
-                                        <span class="visually-hidden">2 estrellas</span>
-                                    </label>
-
-                                    <input type="radio" class="btn-check" name="calificacion" id="estrella1" value="1">
-                                    <label for="estrella1" title="1 estrella">
-                                        <i class="fa-solid fa-star"></i>
-                                        <span class="visually-hidden">1 estrella</span>
-                                    </label>
-
-                                </div>
-                            </fieldset>
-                        </div>
-                        <div>
-                            <label class="form-label" for="comentarioResena">
-                                Tu opinión
-                            </label>
-                            <textarea name="comentario" class="form-control" id="comentarioResena" maxlength="600"
-                                minlength="10" placeholder="¿Qué te pareció el videojuego? (mínimo 10 caracteres)"
-                                required="" rows="4"></textarea>
-                            <span class="form-text">
-                                La primera reseña válida por videojuego adquirido otorga 10
-                                créditos, una sola vez.
-                            </span>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">
-                            Cancelar
-                        </button>
-                        <button class="btn btn-primary" type="button">Publicar reseña</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <!-- MODAL DETALLES -->
     <div aria-hidden="true" aria-labelledby="tituloDetalleNebula" class="modal fade" id="modalDetalleNebula"

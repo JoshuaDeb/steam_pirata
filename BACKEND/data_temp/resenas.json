@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": 1,
+    "usuario_id": 8,
+    "juego_id": 1,
+    "estrellas": 5,
+    "texto": "PESIMO JUEGOOO MALIIISIMOOO",
+    "fecha": "2026-11-23T01:10:29.821Z"
+  }
+]
