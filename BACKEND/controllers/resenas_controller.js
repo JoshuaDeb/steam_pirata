@@ -17,7 +17,7 @@ function validarResena(estrellas, texto) {
         return "La reseña no puede pasar de 500 caracteres";
     }
 
-    return null; 
+    return null;
 }
 
 
@@ -97,7 +97,7 @@ function listarResenas(req, res) {
 
 
 function crearResena(req, res) {
-    const usuarioId = Number(req.body.usuario_id);
+    const usuarioId = req.usuario.id;
     const juegoId = Number(req.body.juego_id);
     const estrellas = Number(req.body.estrellas);
     const texto = req.body.texto;
@@ -191,7 +191,7 @@ function crearResena(req, res) {
 
 function actualizarResena(req, res) {
     const id = Number(req.params.id);
-    const usuarioId = Number(req.body.usuario_id);
+    const usuarioId = req.usuario.id;
     const estrellas = Number(req.body.estrellas);
     const texto = req.body.texto;
 
@@ -231,7 +231,7 @@ function actualizarResena(req, res) {
 
 function eliminarResena(req, res) {
     const id = Number(req.params.id);
-    const usuarioId = Number(req.body.usuario_id);
+    const usuarioId = req.usuario.id;
 
     const resenas = leerDatos("resenas");
     const resena = resenas.find(r => r.id === id);

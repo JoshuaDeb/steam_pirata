@@ -1,25 +1,28 @@
 [
   {
     "id": 1,
-    "nombre_usuario": "Lalo",
+    "nombre_usuario": "lalo",
     "correo": "lalo@iteso.com",
-    "passwordHash": "$2b$10$TGnXb4V66FXPtUUohzZZY.XwSNOZB4oXjmHGEQwKYstpHFREmDrCy",
+    "passwordHash": "$2b$10$MWE7./wX8wAv2flC3NcUkOIUz9ak9/vkY9MlP4LhgA6rG//v.Y81q",
     "role": "jugador",
-    "creditos": 229,
+    "creditos": 827,
     "resenas_premiadas": [
       1,
       11,
       17,
       8,
       16,
-      6
+      6,
+      12,
+      3,
+      19
     ],
     "favoritos_perfil": [
       6,
       10,
-      16
+      4
     ],
-    "descripcion_publica": "Esta es mi descripción modificada, para que revisen mi perifl."
+    "descripcion_publica": "Esta es mi descripción frjsvnfsl, para que revisen mi perifl."
   },
   {
     "id": 3,
@@ -66,7 +69,7 @@
     "correo": "lalodev@iteso.com",
     "passwordHash": "$2b$10$xZ0GNGUxx0bzaPnVutM3eOk3B9TVdcS8fTblmrMVlh5l6FCAo/yeu",
     "role": "desarrollador",
-    "creditos": 209
+    "creditos": 306
   },
   {
     "id": 7,
@@ -74,7 +77,7 @@
     "correo": "joshdev@iteso.com",
     "passwordHash": "$2b$10$kmaTasM1to5URibSTQULl.eJUS3Ht97wqc9UdVfopmDdL/RMaTiKK",
     "role": "desarrollador",
-    "creditos": 192
+    "creditos": 227
   },
   {
     "id": 8,

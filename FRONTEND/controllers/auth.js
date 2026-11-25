@@ -20,32 +20,57 @@ function redirigirSegunRol(usuario) {
     return false;
 }
 
-// Evitar acceder al login cuando existe una sesión
-function verificarSesionActiva() {
+// Comprobar si existe una sesión válida
+async function verificarSesionActiva() {
+    const token = sessionStorage.getItem("token");
     const sesion = sessionStorage.getItem("usuario");
 
-    if (!sesion) {
-        return;
+    if (!token || !sesion) {
+        sessionStorage.removeItem("usuario");
+        sessionStorage.removeItem("token");
+        return false;
     }
 
     try {
-        const usuario = JSON.parse(sesion);
+        const response = await fetch("/api/auth/me", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
 
-        if (!redirigirSegunRol(usuario)) {
+        if (response.status === 401) {
             sessionStorage.removeItem("usuario");
+            sessionStorage.removeItem("token");
+            return false;
         }
+
+        if (!response.ok) {
+            return false;
+        }
+
+        const datos = await response.json();
+
+        if (!["jugador", "desarrollador"].includes(datos.user?.role)) {
+            sessionStorage.removeItem("usuario");
+            sessionStorage.removeItem("token");
+            return false;
+        }
+
+        sessionStorage.setItem("usuario", JSON.stringify(datos.user));
+
+        return redirigirSegunRol(datos.user);
+
     } catch (error) {
-        sessionStorage.removeItem("usuario");
+        return false;
     }
 }
 
-// Comprobar si existe una sesión antes de mostrar el login
-verificarSesionActiva();
-
-// Mostrar el formulario solamente si no hay sesión activa
-if (!sessionStorage.getItem("usuario")) {
-    document.documentElement.classList.add("login-listo");
-}
+// Mostrar el formulario si no existe una sesión válida
+verificarSesionActiva().then(sesionActiva => {
+    if (!sesionActiva) {
+        document.documentElement.classList.add("login-listo");
+    }
+});
 
 // Mostrar la pestaña indicada en la URL (?tab=registro o ?tab=entrar)
 function mostrarPestanaDesdeURL() {
@@ -116,6 +141,14 @@ formLogin.addEventListener("submit", (event) => {
                 throw new Error("El servidor devolvió un rol no válido");
             }
 
+            // Verificar que el servidor haya generado un token
+            if (!datos.token) {
+                throw new Error("El servidor no devolvió un token de autenticación");
+            }
+
+            // Guardar el token de autenticación
+            sessionStorage.setItem("token", datos.token);
+
             // Guardar los datos públicos del usuario en la sesión temporalj
             sessionStorage.setItem("usuario", JSON.stringify({
                 id: usuario.id,
@@ -179,13 +212,17 @@ formRegistro.addEventListener("submit", (event) => {
             const usuario = datos.user;
 
             // Validar la información devuelta por el backend
-            if (
-                !usuario ||
-                !usuario.id ||
-                !["jugador", "desarrollador"].includes(usuario.role)
-            ) {
+            if (!usuario || !usuario.id || !["jugador", "desarrollador"].includes(usuario.role)) {
                 throw new Error("El servidor devolvió un usuario inválido");
             }
+
+            // Verificar que el servidor haya generado un token
+            if (!datos.token) {
+                throw new Error("El servidor no devolvió un token de autenticación");
+            }
+
+            // Guardar el token de autenticación
+            sessionStorage.setItem("token", datos.token);
 
             // Iniciar sesión automáticamente
             sessionStorage.setItem("usuario", JSON.stringify({

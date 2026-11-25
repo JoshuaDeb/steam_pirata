@@ -1,3 +1,4 @@
+require("dotenv").config({ quiet: true });
 const express = require("express");
 const path = require("path");
 const authRoutes = require("./routes/auth_routes");
@@ -10,7 +11,10 @@ const comprasRoutes = require("./routes/compras_routes");
 
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+if (!process.env.JWT_SECRET) {
+    throw new Error("La variable JWT_SECRET no está configurada");
+}
 
 // Permitir recibir datos en formato JSON (las portadas llegan en base64, hasta 2 MB)
 app.use(express.json({ limit: "4mb" }));

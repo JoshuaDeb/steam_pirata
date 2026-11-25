@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const videojuegosController = require("../controllers/videojuegos_controller");
-const { requerirDesarrollador } = require("../controllers/auth_controller");
+
+const { autenticarUsuario, requerirDesarrollador } = require("../middlewares/auth_middleware");
 
 // Consultar el catálogo (con filtros opcionales)
 router.get("/", videojuegosController.listarVideojuegos);
@@ -11,12 +12,12 @@ router.get("/", videojuegosController.listarVideojuegos);
 router.get("/:id", videojuegosController.obtenerVideojuego);
 
 // Publicar un videojuego
-router.post("/", requerirDesarrollador, videojuegosController.crearVideojuego);
+router.post("/", autenticarUsuario, requerirDesarrollador, videojuegosController.crearVideojuego);
 
 // Actualizar un videojuego
-router.put("/:id", requerirDesarrollador, videojuegosController.actualizarVideojuego);
+router.put("/:id", autenticarUsuario, requerirDesarrollador, videojuegosController.actualizarVideojuego);
 
 // Retirar un videojuego del catálogo
-router.delete("/:id", requerirDesarrollador, videojuegosController.retirarVideojuego);
+router.delete("/:id", autenticarUsuario, requerirDesarrollador, videojuegosController.retirarVideojuego);
 
 module.exports = router;

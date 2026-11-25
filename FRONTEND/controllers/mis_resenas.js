@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lista.innerHTML = `<div class="list-group-item fila-meta">
             <span class="spinner-border spinner-border-sm"></span> Cargando reseñas...</div>`;
 
-        fetch(`/api/resenas?usuario_id=${usuario.id}`)
+        apiFetch(`/api/resenas?usuario_id=${usuario.id}`)
             .then((response) => response.json())
             .then((datos) => {
                 if (datos.resenas.length === 0) {
@@ -77,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (event.target.classList.contains("btn-guardar")) {
             const datos = {
-                usuario_id: usuario.id,
                 estrellas: Number(tarjeta.querySelector(".estrellas").value),
                 texto: tarjeta.querySelector(".texto").value.trim()
             };
@@ -89,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             mostrarMensaje(tarjeta, "Guardando...", "secondary");
 
-            fetch(`/api/resenas/${id}`, {
+            apiFetch(`/api/resenas/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(datos)
@@ -106,10 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.target.classList.contains("btn-borrar")) {
             if (!confirm("¿Seguro que quieres borrar esta reseña?")) return;
 
-            fetch(`/api/resenas/${id}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ usuario_id: usuario.id })
+            apiFetch(`/api/resenas/${id}`, {
+                method: "DELETE"
             })
                 .then((response) => response.json().then((respuesta) => {
                     if (!response.ok) throw new Error(respuesta.message);

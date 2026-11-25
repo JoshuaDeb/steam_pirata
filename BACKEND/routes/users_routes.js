@@ -3,6 +3,14 @@ const router = express.Router();
 
 const usersController = require("../controllers/users_controller");
 
+const { autenticarUsuario, requerirPropietario } = require("../middlewares/auth_middleware");
+
+// Todas las rutas requieren autenticación
+router.use(autenticarUsuario);
+
+// Verificar que el usuario sea propietario de la cuenta
+router.use("/:id", requerirPropietario);
+
 // Consultar los datos del usuario (saldo de créditos actualizado)
 router.get("/:id", usersController.obtenerUsuario);
 

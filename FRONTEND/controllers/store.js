@@ -87,7 +87,7 @@
 
     // Petición a la API que devuelve el JSON o lanza un Error con el mensaje
     function pedir(url, opciones) {
-        return fetch(url, opciones).then((response) => {
+        return apiFetch(url, opciones).then((response) => {
             return response.json().catch(() => ({})).then((datos) => {
                 if (!response.ok) {
                     throw new Error(datos.message || "Error en la petición");
@@ -153,7 +153,7 @@
             filtros.q || filtros.genero || filtros.clasificacion || filtros.precio_max || filtros.calificacion_min
         );
 
-        return fetch(`/api/videojuegos?${params}`, { credentials: "same-origin" })
+        return apiFetch(`/api/videojuegos?${params}`, { credentials: "same-origin" })
             .then((response) => {
                 return response.json().catch(() => ({})).then((datos) => {
                     if (!response.ok) {
@@ -507,7 +507,7 @@
         zona.innerHTML = `<div class="fila-meta">
             <span class="spinner-border spinner-border-sm"></span> Cargando reseñas...</div>`;
 
-        fetch(`/api/resenas?juego_id=${juegoActual.id}`)
+        apiFetch(`/api/resenas?juego_id=${juegoActual.id}`)
             .then((response) => response.json())
             .then((datos) => {
                 // Buscar si el usuario ya escribió una reseña de este juego
@@ -587,7 +587,7 @@
     function enviarResena(url, metodo, datos, mensajeExito) {
         mostrarMensajeResena("Guardando...", "secondary");
 
-        fetch(url, {
+        apiFetch(url, {
             method: metodo,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos)
@@ -642,7 +642,6 @@
         event.preventDefault();
 
         const datos = {
-            usuario_id: usuario.id,
             juego_id: juegoActual.id,
             estrellas: Number(el("estrellasResena").value),
             texto: el("textoResena").value.trim()
@@ -666,7 +665,7 @@
 
         if (!confirm("¿Seguro que quieres borrar tu reseña?")) return;
 
-        enviarResena(`/api/resenas/${miResena.id}`, "DELETE", { usuario_id: usuario.id }, "Reseña eliminada");
+        enviarResena(`/api/resenas/${miResena.id}`, "DELETE", {}, "Reseña eliminada");
     });
 
 

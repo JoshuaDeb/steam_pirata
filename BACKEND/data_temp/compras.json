@@ -38,5 +38,37 @@
     "monto": 2000,
     "metodo": "transferencia",
     "fecha": "2026-11-23T09:42:31.246Z"
+  },
+  {
+    "id": 6,
+    "usuario_id": 1,
+    "creditos": 100,
+    "monto": 1000,
+    "metodo": "paypal",
+    "fecha": "2026-11-25T19:05:12.787Z"
+  },
+  {
+    "id": 7,
+    "usuario_id": 1,
+    "creditos": 200,
+    "monto": 2000,
+    "metodo": "paypal",
+    "fecha": "2026-11-25T19:05:28.571Z"
+  },
+  {
+    "id": 8,
+    "usuario_id": 1,
+    "creditos": 200,
+    "monto": 2000,
+    "metodo": "transferencia",
+    "fecha": "2026-11-25T19:05:33.271Z"
+  },
+  {
+    "id": 9,
+    "usuario_id": 1,
+    "creditos": 200,
+    "monto": 2000,
+    "metodo": "transferencia",
+    "fecha": "2026-11-25T19:05:42.649Z"
   }
 ]

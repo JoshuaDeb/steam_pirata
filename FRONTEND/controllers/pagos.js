@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
 
     const usuario = JSON.parse(sessionStorage.getItem("usuario"));
@@ -56,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
         el("listaHistorial").innerHTML = `<div class="list-group-item fila-meta">
             <span class="spinner-border spinner-border-sm"></span> Cargando historial...</div>`;
 
-        fetch(`/api/compras?usuario_id=${usuario.id}`)
+        apiFetch("/api/compras")
             .then((response) => response.json())
             .then((datos) => {
                 compras = datos.compras;
@@ -121,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         boton.disabled = true;
 
-        fetch("/api/compras", {
+        apiFetch("/api/compras", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ usuario_id: usuario.id, paquete: paquete, metodo: metodo })

@@ -17,7 +17,7 @@ function obtenerFavoritosPerfil(jugador, videojuegos) {
 }
 
 function buscarJugadores(req, res) {
-    const usuarioId = Number(req.query.usuario_id);
+    const usuarioId = req.usuario.id;
 
     const busqueda = typeof req.query.busqueda === "string" ? req.query.busqueda.trim().toLowerCase() : "";
 
@@ -161,9 +161,9 @@ function buscarJugadores(req, res) {
 }
 
 function enviarSolicitud(req, res) {
-    const { solicitante_id, receptor_id } = req.body || {};
+    const { receptor_id } = req.body || {};
 
-    const solicitanteId = Number(solicitante_id);
+    const solicitanteId = req.usuario.id;
     const receptorId = Number(receptor_id);
 
     // Validar identificadores
@@ -292,7 +292,7 @@ function enviarSolicitud(req, res) {
 }
 
 function listarSolicitudes(req, res) {
-    const usuarioId = Number(req.query.usuario_id);
+    const usuarioId = req.usuario.id;
 
     // Validar identificador
     if (!Number.isSafeInteger(usuarioId) || usuarioId <= 0) {
@@ -375,7 +375,7 @@ function listarSolicitudes(req, res) {
 
 function aceptarSolicitud(req, res) {
     const solicitudId = Number(req.params.id);
-    const receptorId = Number(req.body?.receptor_id);
+    const receptorId = req.usuario.id;
 
     // Validar identificadores
     if (
@@ -464,7 +464,7 @@ function aceptarSolicitud(req, res) {
 
 function eliminarSolicitud(req, res) {
     const solicitudId = Number(req.params.id);
-    const usuarioId = Number(req.body?.usuario_id);
+    const usuarioId = req.usuario.id;
 
     if (
         !Number.isSafeInteger(solicitudId) ||
@@ -526,7 +526,8 @@ function eliminarSolicitud(req, res) {
         guardarDatos("amistades", amistadesActualizadas);
 
         return res.status(200).json({
-            message: esSolicitante ? "Solicitud cancelada correctamente" : "Solicitud rechazada correctamente"});
+            message: esSolicitante ? "Solicitud cancelada correctamente" : "Solicitud rechazada correctamente"
+        });
 
     } catch (error) {
         console.error("Error al eliminar solicitud:", error);
@@ -538,7 +539,7 @@ function eliminarSolicitud(req, res) {
 }
 
 function listarAmigos(req, res) {
-    const usuarioId = Number(req.query.usuario_id);
+    const usuarioId = req.usuario.id;
     const pagina = Number(req.query.pagina || 1);
     const orden = req.query.orden || "nombre";
 
@@ -680,8 +681,7 @@ function listarAmigos(req, res) {
 // Eliminar una amistad aceptada
 function eliminarAmistad(req, res) {
     const amistadId = Number(req.params.id);
-    const usuarioId = Number(req.body?.usuario_id);
-
+    const usuarioId = req.usuario.id;
     if (
         !Number.isSafeInteger(amistadId) || amistadId <= 0 ||
         !Number.isSafeInteger(usuarioId) || usuarioId <= 0
@@ -753,4 +753,4 @@ function eliminarAmistad(req, res) {
     }
 }
 
-module.exports = { buscarJugadores, enviarSolicitud, listarSolicitudes, aceptarSolicitud, eliminarSolicitud, listarAmigos, eliminarAmistad};
+module.exports = { buscarJugadores, enviarSolicitud, listarSolicitudes, aceptarSolicitud, eliminarSolicitud, listarAmigos, eliminarAmistad };

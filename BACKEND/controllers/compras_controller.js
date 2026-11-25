@@ -1,13 +1,12 @@
 const { leerDatos, guardarDatos } = require("../storage");
 
-const PAQUETES = [10, 20, 50, 100, 200];     
+const PAQUETES = [10, 20, 50, 100, 200];
 const METODOS = ["tarjeta", "paypal", "oxxo", "transferencia"];
 const PRECIO_POR_CREDITO = 10;               // 1 crédito = $10 MXN
 
 
 function listarCompras(req, res) {
-    const usuarioId = Number(req.query.usuario_id);
-
+    const usuarioId = req.usuario.id;
     const compras = leerDatos("compras")
         .filter(compra => compra.usuario_id === usuarioId)
         .reverse();
@@ -18,7 +17,7 @@ function listarCompras(req, res) {
 
 
 function crearCompra(req, res) {
-    const usuarioId = Number(req.body.usuario_id);
+    const usuarioId = req.usuario.id;
     const paquete = Number(req.body.paquete);
     const metodo = req.body.metodo;
 

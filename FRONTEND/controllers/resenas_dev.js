@@ -18,9 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lista.innerHTML = `<div class="list-group-item fila-meta">
             <span class="spinner-border spinner-border-sm"></span> Cargando reseñas...</div>`;
 
-        fetch("/api/resenas/desarrollador", {
-            headers: { "X-Usuario-Id": String(usuario.id) }
-        })
+        apiFetch("/api/resenas/desarrollador")
             .then((response) => response.json())
             .then((datos) => {
                 if (datos.resenas.length === 0) {
@@ -78,11 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         mostrarMensaje(tarjeta, "Guardando...", "secondary");
 
-        fetch(`/api/resenas/${tarjeta.dataset.id}/respuesta`, {
+        apiFetch(`/api/resenas/${tarjeta.dataset.id}/respuesta`, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json",
-                "X-Usuario-Id": String(usuario.id)
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({ texto: texto })
         })

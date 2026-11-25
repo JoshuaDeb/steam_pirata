@@ -2,20 +2,25 @@ const express = require("express");
 const router = express.Router();
 
 const resenasController = require("../controllers/resenas_controller");
-const { requerirDesarrollador } = require("../controllers/auth_controller");
 
-router.get("/desarrollador", requerirDesarrollador, resenasController.listarResenasDesarrollador);
-router.put("/:id/respuesta", requerirDesarrollador, resenasController.responderResena);
+const { autenticarUsuario, requerirJugador, requerirDesarrollador} = require("../middlewares/auth_middleware");
 
+// Consultar las reseñas de los juegos del desarrollador
+router.get("/desarrollador", autenticarUsuario, requerirDesarrollador, resenasController.listarResenasDesarrollador);
+
+// Responder una reseña
+router.put("/:id/respuesta", autenticarUsuario, requerirDesarrollador, resenasController.responderResena);
+
+// Consultar reseñas públicas
 router.get("/", resenasController.listarResenas);
 
+// Crear una reseña
+router.post("/", autenticarUsuario, requerirJugador, resenasController.crearResena);
 
-router.post("/", resenasController.crearResena);
+// Actualizar una reseña
+router.put("/:id", autenticarUsuario, requerirJugador, resenasController.actualizarResena);
 
-
-router.put("/:id", resenasController.actualizarResena);
-
-
-router.delete("/:id", resenasController.eliminarResena);
+// Eliminar una reseña
+router.delete("/:id", autenticarUsuario, requerirJugador, resenasController.eliminarResena);
 
 module.exports = router;

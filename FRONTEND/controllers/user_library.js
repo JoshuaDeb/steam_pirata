@@ -49,7 +49,7 @@
     }
 
     function pedir(url, opciones) {
-        return fetch(url, opciones).then((response) => {
+        return apiFetch(url, opciones).then((response) => {
             return response.json().catch(() => ({})).then((datos) => {
                 if (!response.ok) {
                     throw new Error(datos.message || "Error en la petición");
@@ -265,8 +265,8 @@
                 <div>
                     <span class="fila-label">Contenido adicional</span>
                     <div class="fila-valor">${juego.dlcs.length === 0
-                        ? "Sin DLC"
-                        : juego.dlcs.map((dlc) => escapar(dlc.nombre)).join(" · ")}</div>
+                ? "Sin DLC"
+                : juego.dlcs.map((dlc) => escapar(dlc.nombre)).join(" · ")}</div>
                 </div>
                 <p class="fila-meta mb-0">${estado}</p>
             </div>
@@ -496,7 +496,7 @@
         }
 
         const existente = misResenas.get(juegoResena.id);
-        const datos = { usuario_id: usuario.id, juego_id: juegoResena.id, estrellas, texto };
+        const datos = { juego_id: juegoResena.id, estrellas, texto };
 
         if (existente) {
             enviarResena(`/api/resenas/${existente.id}`, "PUT", datos, "Reseña actualizada");
@@ -511,7 +511,7 @@
 
         if (!existente || !confirm("¿Seguro que quieres borrar tu reseña?")) return;
 
-        enviarResena(`/api/resenas/${existente.id}`, "DELETE", { usuario_id: usuario.id }, "Reseña eliminada");
+        enviarResena(`/api/resenas/${existente.id}`, "DELETE", {}, "Reseña eliminada");
     });
 
 

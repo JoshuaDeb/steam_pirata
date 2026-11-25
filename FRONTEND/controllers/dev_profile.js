@@ -127,11 +127,11 @@
         return undefined;
     }
 
-    // Llamar a la API enviando el id del desarrollador de la sesión
+    // Llamar a la API utilizando el token de autenticación
     function api(url, metodo = "GET", cuerpo) {
         const opciones = {
             method: metodo,
-            headers: { "X-Usuario-Id": String(usuario.id) },
+            headers: {},
             credentials: "same-origin"
         };
 
@@ -140,7 +140,7 @@
             opciones.body = JSON.stringify(cuerpo);
         }
 
-        return fetch(url, opciones).then((response) => {
+        return apiFetch(url, opciones).then((response) => {
             return response.json().catch(() => ({})).then((datos) => {
                 if (!response.ok) {
                     throw new Error(datos.message || "Error al procesar la solicitud");

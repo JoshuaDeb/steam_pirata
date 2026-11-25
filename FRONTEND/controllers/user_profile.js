@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         spinner.classList.remove("d-none");
         mensaje.classList.add("d-none");
 
-        fetch(`/api/users/${usuario.id}/name`, {
+        apiFetch(`/api/users/${usuario.id}/name`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
         spinnerCorreo.classList.remove("d-none");
         mensajeCorreo.classList.add("d-none");
 
-        fetch(`/api/users/${usuario.id}/email`, {
+        apiFetch(`/api/users/${usuario.id}/email`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -256,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
         spinnerDescripcion.classList.remove("d-none");
         mensajeDescripcion.classList.add("d-none");
 
-        fetch(`/api/users/${usuario.id}/description`, {
+        apiFetch(`/api/users/${usuario.id}/description`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -341,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function consultar(url) {
-        return fetch(url).then((response) => {
+        return apiFetch(url).then((response) => {
             return response.json().catch(() => ({})).then((datos) => {
                 if (!response.ok) {
                     throw new Error(datos.message || "Error en la petición");
@@ -506,7 +506,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btnCambiarContrasena.disabled = true;
         spinnerContrasena.classList.remove("d-none");
 
-        fetch(`/api/users/${usuario.id}/password`, {
+        apiFetch(`/api/users/${usuario.id}/password`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -589,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btnEliminarCuenta.disabled = true;
         spinnerEliminarCuenta.classList.remove("d-none");
 
-        fetch(`/api/users/${usuario.id}`, {
+        apiFetch(`/api/users/${usuario.id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
@@ -613,6 +613,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(datos => {
                 // Eliminar los datos de la sesión temporal
                 sessionStorage.removeItem("usuario");
+                sessionStorage.removeItem("token");
+
 
                 // Redirigir al inicio de sesión
                 window.location.replace("/login.html");

@@ -98,5 +98,17 @@
   {
     "usuario_id": 1,
     "videojuego_id": 19
+  },
+  {
+    "usuario_id": 1,
+    "videojuego_id": 4
+  },
+  {
+    "usuario_id": 1,
+    "videojuego_id": 5
+  },
+  {
+    "usuario_id": 1,
+    "videojuego_id": 9
   }
 ]

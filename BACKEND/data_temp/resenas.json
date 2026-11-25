@@ -1,19 +1,12 @@
 [
   {
-    "id": 1,
-    "usuario_id": 1,
-    "juego_id": 1,
-    "estrellas": 5,
-    "texto": "quiero más créditos",
-    "fecha": "2026-11-23T08:31:55.319Z"
-  },
-  {
     "id": 2,
     "usuario_id": 1,
     "juego_id": 11,
     "estrellas": 4,
     "texto": "La propuesta es divertida y las mecánicas resultan fáciles de entender. Muy recomendable.",
-    "fecha": "2026-11-23T09:20:31.872Z"
+    "fecha": "2026-11-23T09:20:31.872Z",
+    "respuesta": "ntc, gracias"
   },
   {
     "id": 3,
@@ -133,5 +126,21 @@
     "estrellas": 5,
     "texto": "Una experiencia entretenida, con desafíos que invitan a regresar y mejorar.",
     "fecha": "2026-11-23T09:20:31.999Z"
+  },
+  {
+    "id": 17,
+    "usuario_id": 1,
+    "juego_id": 3,
+    "estrellas": 5,
+    "texto": "ntc despues de un rato te aburre",
+    "fecha": "2026-11-25T18:30:35.675Z"
+  },
+  {
+    "id": 18,
+    "usuario_id": 1,
+    "juego_id": 19,
+    "estrellas": 5,
+    "texto": "fernvlernvlerw.",
+    "fecha": "2026-11-25T19:19:38.136Z"
   }
 ]

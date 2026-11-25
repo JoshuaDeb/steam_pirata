@@ -10,8 +10,8 @@
     "portada": "juego-1-1795421729890.png",
     "id_desarrollador": 2,
     "estado": "retirado",
-    "total_resenas": 2,
-    "calificacion_promedio": 4.5
+    "total_resenas": 1,
+    "calificacion_promedio": 4
   },
   {
     "id": 2,
@@ -38,8 +38,8 @@
     "portada": "juego-3-1795425148183.png",
     "id_desarrollador": 6,
     "estado": "publicado",
-    "total_resenas": 0,
-    "calificacion_promedio": null
+    "total_resenas": 1,
+    "calificacion_promedio": 5
   },
   {
     "id": 4,
@@ -247,6 +247,22 @@
     "especificaciones": "",
     "portada": "juego-18-1795427213187.png",
     "id_desarrollador": 6,
-    "estado": "retirado"
+    "estado": "retirado",
+    "total_resenas": 0,
+    "calificacion_promedio": null
+  },
+  {
+    "id": 19,
+    "titulo": "prueba jueguito",
+    "descripcion": "hola perros",
+    "genero": "Deportes",
+    "clasificacion_edad": "M",
+    "precio_creditos": 5,
+    "especificaciones": "asdfgfdfdsdfds",
+    "portada": "juego-19-1795632862875.png",
+    "id_desarrollador": 6,
+    "estado": "retirado",
+    "total_resenas": 1,
+    "calificacion_promedio": 5
   }
 ]

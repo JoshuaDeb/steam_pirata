@@ -28,10 +28,6 @@
     "videojuego_id": 13
   },
   {
-    "usuario_id": 1,
-    "videojuego_id": 10
-  },
-  {
     "usuario_id": 3,
     "videojuego_id": 1
   },
@@ -97,6 +93,6 @@
   },
   {
     "usuario_id": 1,
-    "videojuego_id": 4
+    "videojuego_id": 19
   }
 ]

@@ -19,16 +19,22 @@ try {
 const pagina = window.location.pathname.split("/").pop();
 
 // Comprobar acceso inmediatamente
-const accesoPermitido = usuario &&
+const tokenSesion = sessionStorage.getItem("token");
+
+const accesoPermitido = tokenSesion &&
+    usuario &&
     usuario.id != null &&
     permisos[pagina]?.includes(usuario.role);
 
 if (!accesoPermitido) {
     let destino = "login.html";
 
-    if (usuario?.id != null && usuario.role === "jugador") {
+    if (!tokenSesion || !usuario?.id) {
+        sessionStorage.removeItem("usuario");
+        sessionStorage.removeItem("token");
+    } else if (usuario.role === "jugador") {
         destino = "user_library.html";
-    } else if (usuario?.id != null && usuario.role === "desarrollador") {
+    } else if (usuario.role === "desarrollador") {
         destino = "dev_profile.html";
     }
 
@@ -119,10 +125,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // cambiar sin que el usuario haga nada (por ejemplo, cuando un jugador compra
     // un videojuego de un desarrollador), así que el valor guardado al iniciar
     // sesión puede estar desactualizado.
-    fetch(`/api/users/${usuario.id}`, { credentials: "same-origin" })
+    apiFetch("/api/auth/me", { credentials: "same-origin" })
         .then(response => response.ok ? response.json() : null)
         .then(datos => {
-            if (!datos || !datos.user || datos.user.id !== usuario.id) return;
+            if (!datos || !datos.user) return;
+
+            // Comprobar que la sesión local coincida con el backend
+            if (
+                datos.user.id !== usuario.id ||
+                datos.user.role !== usuario.role
+            ) {
+                invalidarSesion();
+                return;
+            }
 
             usuario.creditos = datos.user.creditos;
             sessionStorage.setItem("usuario", JSON.stringify(usuario));
@@ -147,10 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnCerrarSesion) {
         btnCerrarSesion.addEventListener("click", (event) => {
             event.preventDefault();
-
-            sessionStorage.removeItem("usuario");
-
-            window.location.replace("login.html");
+            invalidarSesion();
         });
     }
 });
