@@ -53,11 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         nombreNav.textContent = usuario.nombre_usuario;
     }
 
-    if (avatarNav) {
-        avatarNav.textContent = usuario.nombre_usuario
-            .substring(0, 2)
-            .toUpperCase();
-    }
+    pintarAvatar(avatarNav, usuario);
 
     // Adaptar el catálogo según el rol
     if (pagina === "store.html") {
@@ -93,8 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("nombreBanner").textContent = nombre;
         document.getElementById("nombrePerfil").textContent = nombre;
-        document.getElementById("avatarPerfil").textContent =
-            nombre.substring(0, 2).toUpperCase();
+        pintarAvatar(document.getElementById("avatarPerfil"), usuario);
 
         document.getElementById("rolPerfil").textContent = esJugador ? "Jugador" : "Desarrollador";
 
@@ -116,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Mostrar la información del perfil público
         document.getElementById("nombrePerfilPublico").textContent = usuario.nombre_usuario;
-        document.getElementById("avatarPerfilPublico").textContent = usuario.nombre_usuario.substring(0, 2).toUpperCase();
+        pintarAvatar(document.getElementById("avatarPerfilPublico"), usuario);
         document.getElementById("rolPerfilPublico").textContent = esJugador ? "Jugador" : "Desarrollador";
     }
 

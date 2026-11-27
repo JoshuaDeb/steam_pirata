@@ -23,6 +23,10 @@ router.patch("/:id/email", usersController.actualizarCorreo);
 // Actualizar descripción pública
 router.patch("/:id/description", usersController.actualizarDescripcion);
 
+// Subir, cambiar o eliminar la foto de perfil
+router.patch("/:id/photo", usersController.actualizarFoto);
+router.delete("/:id/photo", usersController.eliminarFoto);
+
 // Cambiar contraseña del usuario
 router.patch("/:id/password", usersController.cambiarContrasena);
 

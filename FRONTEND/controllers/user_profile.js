@@ -64,13 +64,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Actualizar encabezado y avatares
                 document.getElementById("nombreUsuarioNav").textContent = nombreActualizado;
 
-                const iniciales = nombreActualizado.substring(0, 2).toUpperCase();
-
-                document.getElementById("avatarUsuarioNav").textContent = iniciales;
-                document.getElementById("avatarPerfil").textContent = iniciales;
+                pintarAvatar(document.getElementById("avatarUsuarioNav"), usuario);
+                pintarAvatar(document.getElementById("avatarPerfil"), usuario);
 
                 document.getElementById("nombrePerfilPublico").textContent = nombreActualizado;
-                document.getElementById("avatarPerfilPublico").textContent = iniciales;
+                pintarAvatar(document.getElementById("avatarPerfilPublico"), usuario);
 
                 // Mostrar confirmación
                 textoMensaje.textContent = datos.message;

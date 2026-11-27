@@ -46,3 +46,23 @@ async function apiFetch(url, opciones = {}) {
 
     return response;
 }
+
+
+function pintarAvatar(elemento, persona) {
+    if (!elemento || !persona) return;
+
+    elemento.textContent = "";
+
+    if (persona.foto_perfil) {
+        const imagen = document.createElement("img");
+
+        imagen.src = persona.foto_perfil;
+        imagen.alt = "";
+        imagen.style.cssText = "width: 100%; height: 100%; object-fit: cover; border-radius: 50%;";
+
+        elemento.style.overflow = "hidden";
+        elemento.appendChild(imagen);
+    } else {
+        elemento.textContent = persona.nombre_usuario.slice(0, 2).toUpperCase();
+    }
+}

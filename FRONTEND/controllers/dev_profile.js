@@ -777,7 +777,7 @@
 
     el("nombreEstudio").textContent = usuario.nombre_usuario;
     el("marcaBanner").textContent = usuario.nombre_usuario;
-    el("avatarEstudio").textContent = usuario.nombre_usuario.substring(0, 2).toUpperCase();
+    pintarAvatar(el("avatarEstudio"), usuario);
     api(`/api/desarrolladores/${usuario.id}`)
         .then((datos) => {
             const total = datos.desarrollador.seguidores;

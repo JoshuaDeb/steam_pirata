@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function mostrarPerfilJugador(jugador) {
         document.getElementById("tituloPerfilJugador").textContent = `Perfil de ${jugador.nombre_usuario}`;
         document.getElementById("nombreJugadorPublico").textContent = jugador.nombre_usuario;
-        document.getElementById("avatarJugadorPublico").textContent = jugador.nombre_usuario.slice(0, 2).toUpperCase();
+        pintarAvatar(document.getElementById("avatarJugadorPublico"), jugador);
         document.getElementById("descripcionJugadorPublico").textContent = jugador.descripcion_publica || "Este jugador todavía no ha agregado una descripción pública.";
         pintarFavoritosJugador(jugador.favoritos_perfil);
         const modal = document.getElementById("modalPerfilJugador");
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
         avatar.className = "avatar-persona avatar-violeta";
         avatar.setAttribute("aria-hidden", "true");
 
-        avatar.textContent = jugador.nombre_usuario.slice(0, 2).toUpperCase();
+        pintarAvatar(avatar, jugador);
 
         // Datos del jugador
         const datos = document.createElement("div");
@@ -283,9 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const avatar = document.createElement("div");
         avatar.className = "avatar-persona avatar-violeta";
         avatar.setAttribute("aria-hidden", "true");
-        avatar.textContent = jugador.nombre_usuario
-            .slice(0, 2)
-            .toUpperCase();
+    pintarAvatar(avatar, jugador);
 
         // Información del jugador
         const datos = document.createElement("div");
@@ -385,7 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const avatar = document.createElement("div");
         avatar.className = "avatar-persona avatar-violeta";
         avatar.setAttribute("aria-hidden", "true");
-        avatar.textContent = jugador.nombre_usuario.slice(0, 2).toUpperCase();
+        pintarAvatar(avatar, jugador);
 
         const datos = document.createElement("div");
         datos.className = "persona-datos";

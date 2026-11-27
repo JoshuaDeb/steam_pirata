@@ -649,6 +649,7 @@
             .then(([perfil, catalogo]) => {
                 juegosDesarrollador = catalogo.videojuegos;
                 contenido.innerHTML = perfilDesarrollador(perfil.desarrollador, juegosDesarrollador);
+                pintarAvatar(contenido.querySelector(".avatar-lg"), perfil.desarrollador);
             })
             .catch((error) => {
                 contenido.innerHTML = `

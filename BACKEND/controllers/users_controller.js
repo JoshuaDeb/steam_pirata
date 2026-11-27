@@ -972,6 +972,94 @@ async function eliminarFavorito(req, res) {
     }
 }
 
+// ---------- Foto de perfil ----------
+
+const TAMANO_MAXIMO_FOTO = 300 * 1024;   // 300 KB
+
+function validarFoto(foto) {
+    if (typeof foto !== "string") {
+        return { error: "Selecciona una imagen" };
+    }
+
+    const coincidencia = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(foto);
+
+    if (!coincidencia) {
+        return { error: "La foto debe ser una imagen PNG, JPG o WEBP" };
+    }
+
+    const bytes = Buffer.from(coincidencia[2], "base64");
+
+    if (bytes.length === 0) {
+        return { error: "La imagen está vacía" };
+    }
+
+    if (bytes.length > TAMANO_MAXIMO_FOTO) {
+        return { error: "La foto no puede superar los 300 KB" };
+    }
+
+    return { foto };
+}
+
+async function guardarFoto(res, id, foto, mensaje) {
+    try {
+        const usuario = await Usuario.findByIdAndUpdate(
+            id,
+            { $set: { foto_perfil: foto } },
+            { returnDocument: "after" }
+        )
+            .select("nombre_usuario correo role creditos descripcion_publica foto_perfil")
+            .lean();
+
+        if (!usuario) {
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
+        }
+
+        res.status(200).json({
+            message: mensaje,
+            user: datosUsuario(usuario)
+        });
+    } catch (error) {
+        console.error("Error al guardar la foto de perfil:", error);
+        res.status(500).json({
+            message: "Error al guardar la foto de perfil"
+        });
+    }
+}
+
+async function actualizarFoto(req, res) {
+    const id = leerId(req.params.id);
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
+    }
+
+    const { error, foto } = validarFoto(req.body?.foto_perfil);
+
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
+
+    await guardarFoto(res, id, foto, "Foto de perfil actualizada");
+}
+
+
+async function eliminarFoto(req, res) {
+    const id = leerId(req.params.id);
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
+    }
+
+    await guardarFoto(res, id, null, "Foto de perfil eliminada");
+}
+
+
 
 module.exports = {
     actualizarNombre,
@@ -984,5 +1072,7 @@ module.exports = {
     agregarABiblioteca,
     listarFavoritos,
     agregarFavorito,
-    eliminarFavorito
+    eliminarFavorito,
+    actualizarFoto,
+    eliminarFoto
 };
