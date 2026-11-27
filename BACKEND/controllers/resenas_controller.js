@@ -1,11 +1,19 @@
-const { leerDatos, guardarDatos } = require("../storage");
+const { getModel } = require("../storage");
+const {leerId, mismoId, contieneId, transaccion } = require("../utils/mongo_utils");
+const { recalcularCalificaciones } = require("../utils/calificaciones");
 
+const Resena = getModel("resenas");
+const Usuario = getModel("usuarios");
+const Jugador = getModel("jugadores");
+const Videojuego = getModel("videojuegos");
 
-// Créditos que se ganan por la primera reseña de cada videojuego de la biblioteca
 const PREMIO_RESENA = 10;
 
+
+// ---------- Utilidades ----------
+// Validar el contenido de una reseña
 function validarResena(estrellas, texto) {
-    if (!Number.isInteger(estrellas) || estrellas < 1 || estrellas > 5) {
+    if (!Number.isInteger(estrellas) || estrellas < 1 ||estrellas > 5) {
         return "Elige de 1 a 5 estrellas";
     }
 
@@ -17,311 +25,543 @@ function validarResena(estrellas, texto) {
         return "La reseña no puede pasar de 500 caracteres";
     }
 
-    return null; 
+    return null;
 }
 
 
-// Recalcular la calificación promedio de los videojuegos a partir de las reseñas.
-// Se guarda en cada videojuego (calificacion_promedio y total_resenas) para que
-// el catálogo la pueda mostrar, filtrar y ordenar sin recorrer las reseñas.
-// Si el videojuego no tiene reseñas, el promedio queda en null.
-function recalcularCalificaciones() {
-    const resenas = leerDatos("resenas");
-    const videojuegos = leerDatos("videojuegos");
-
-    let cambio = false;
-
-    videojuegos.forEach(juego => {
-        const delJuego = resenas.filter(resena => resena.juego_id === juego.id);
-
-        const total = delJuego.length;
-        const promedio = total > 0
-            ? Math.round(delJuego.reduce((suma, resena) => suma + resena.estrellas, 0) / total * 10) / 10
-            : null;
-
-        if (juego.total_resenas !== total || juego.calificacion_promedio !== promedio) {
-            juego.total_resenas = total;
-            juego.calificacion_promedio = promedio;
-            cambio = true;
-        }
-    });
-
-    if (cambio) {
-        guardarDatos("videojuegos", videojuegos);
-    }
-
-    return videojuegos;
+// Preparar una reseña para enviarla al frontend
+function limpiar(resena) {
+    return {
+        id: String(resena._id),
+        usuario_id: String(resena.usuario_id),
+        juego_id: String(resena.juego_id),
+        estrellas: resena.estrellas,
+        texto: resena.texto,
+        fecha: resena.fecha,
+        respuesta: resena.respuesta || null
+    };
 }
 
-// Calificación actual de un videojuego (para devolverla en las respuestas)
-function calificacionDe(videojuegos, juegoId) {
-    const juego = videojuegos.find(item => item.id === juegoId);
 
+// Consultar la calificación actual de un videojuego
+async function calificacionDe(juegoId, session = null) {
+    const juego = await Videojuego.findById(juegoId).select("calificacion_promedio total_resenas").session(session).lean();
     return {
         calificacion_promedio: juego ? juego.calificacion_promedio : null,
         total_resenas: juego ? juego.total_resenas : 0
     };
 }
 
+// Agregar el nombre del autor y título del videojuego
+async function armarResenas(resenas) {
+    const autores = await Usuario.find(
+        {
+            _id: {
+                $in: resenas.map(resena => resena.usuario_id)
+            }
+        },
+        "nombre_usuario"
+    ).lean();
 
-function listarResenas(req, res) {
-    const juegoId = Number(req.query.juego_id);
-    const usuarioId = Number(req.query.usuario_id);
+    const juegos = await Videojuego.find(
+        {
+            _id: {
+                $in: resenas.map(resena => resena.juego_id)
+            }
+        },
+        "titulo"
+    ).lean();
 
-    let resenas = leerDatos("resenas");
-    const usuarios = leerDatos("usuarios");
-    const videojuegos = leerDatos("videojuegos");
+    const nombres = new Map(autores.map(usuario => [String(usuario._id), usuario.nombre_usuario]));
+    const titulos = new Map(juegos.map(juego => [String(juego._id), juego.titulo]));
 
-    if (juegoId) {
-        resenas = resenas.filter(resena => resena.juego_id === juegoId);
-    }
+    return resenas.map(resena => ({
+        ...limpiar(resena),
+        nombre_usuario: nombres.get(String(resena.usuario_id)) || "Usuario eliminado",
 
-    if (usuarioId) {
-        resenas = resenas.filter(resena => resena.usuario_id === usuarioId);
-    }
-
-    const resultado = resenas.map(resena => {
-        const autor = usuarios.find(usuario => usuario.id === resena.usuario_id);
-        const juego = videojuegos.find(videojuego => videojuego.id === resena.juego_id);
-
-        return {
-            ...resena,
-            nombre_usuario: autor ? autor.nombre_usuario : "Usuario eliminado",
-            titulo_juego: juego ? juego.titulo : "Juego eliminado"
-        };
-    });
-
-    res.status(200).json({ resenas: resultado });
+        titulo_juego: titulos.get(String(resena.juego_id)) || "Juego eliminado"
+    }));
 }
 
 
-
-function crearResena(req, res) {
-    const usuarioId = Number(req.body.usuario_id);
-    const juegoId = Number(req.body.juego_id);
-    const estrellas = Number(req.body.estrellas);
-    const texto = req.body.texto;
-
-    const error = validarResena(estrellas, texto);
-
-    if (error) {
-        return res.status(400).json({ message: error });
-    }
-
-    const resenas = leerDatos("resenas");
-    const usuarios = leerDatos("usuarios");
-    const videojuegos = leerDatos("videojuegos");
-
-    const usuario = usuarios.find(u => u.id === usuarioId);
-
-    if (!usuario || usuario.role !== "jugador") {
-        return res.status(403).json({ message: "Solo los jugadores pueden escribir reseñas" });
-    }
-
-    if (!videojuegos.some(juego => juego.id === juegoId)) {
-        return res.status(404).json({ message: "El videojuego no existe" });
-    }
-
-
-    // Solo se pueden reseñar los videojuegos adquiridos (los de la biblioteca)
-    const adquirido = leerDatos("bibliotecas").some(registro =>
-        registro.usuario_id === usuarioId && registro.videojuego_id === juegoId
-    );
-
-    if (!adquirido) {
-        return res.status(403).json({
-            message: "Solo puedes reseñar los videojuegos de tu biblioteca"
+// Manejar errores de escritura
+function manejarError(error, res, mensaje) {
+    if (error.code === 11000) {
+        return res.status(409).json({
+            message: "Ya escribiste una reseña de este juego"
         });
     }
 
-    const yaExiste = resenas.some(resena =>
-        resena.usuario_id === usuarioId && resena.juego_id === juegoId
-    );
-
-    if (yaExiste) {
-        return res.status(409).json({ message: "Ya escribiste una reseña de este juego" });
+    if (
+        error.name === "VersionError" ||
+        error.name === "DocumentNotFoundError"
+    ) {
+        return res.status(409).json({
+            message: "La reseña fue modificada. Intenta nuevamente"
+        });
     }
 
-
-    const nuevoId = resenas.length > 0
-        ? Math.max(...resenas.map(resena => resena.id)) + 1
-        : 1;
-
-    const nuevaResena = {
-        id: nuevoId,
-        usuario_id: usuarioId,
-        juego_id: juegoId,
-        estrellas: estrellas,
-        texto: texto.trim(),
-        fecha: new Date().toISOString()
-    };
-
-    resenas.push(nuevaResena);
-    guardarDatos("resenas", resenas);
-
-    // Actualizar el promedio del videojuego
-    const actualizados = recalcularCalificaciones();
-
-    // Premio por la primera reseña del videojuego. Los juegos premiados se
-    // guardan en el usuario (resenas_premiadas) para que borrar la reseña y
-    // volver a escribirla no entregue el premio otra vez.
-    const premiadas = Array.isArray(usuario.resenas_premiadas) ? usuario.resenas_premiadas : [];
-    let premio = 0;
-
-    if (!premiadas.includes(juegoId)) {
-        premio = PREMIO_RESENA;
-        usuario.creditos += premio;
-        usuario.resenas_premiadas = [...premiadas, juegoId];
-
-        guardarDatos("usuarios", usuarios);
+    if (error.name === "ValidationError") {
+        return res.status(400).json({
+            message: error.message
+        });
     }
 
-    res.status(201).json({
-        message: premio > 0
-            ? `Reseña publicada. ¡Ganaste ${premio} créditos!`
-            : "Reseña publicada",
-        resena: nuevaResena,
-        premio: premio,
-        creditos: usuario.creditos,
-        ...calificacionDe(actualizados, juegoId)
+    console.error(mensaje, error);
+
+    return res.status(500).json({
+        message: mensaje
     });
 }
 
+// ---------- Consultas públicas ----------
+// GET /api/resenas
+async function listarResenas(req, res) {
+    const filtro = {};
+    if (req.query.juego_id !== undefined) {
 
+        const juegoId = leerId(req.query.juego_id);
 
-function actualizarResena(req, res) {
-    const id = Number(req.params.id);
-    const usuarioId = Number(req.body.usuario_id);
-    const estrellas = Number(req.body.estrellas);
-    const texto = req.body.texto;
+        if (!juegoId) {
+            return res.status(400).json({
+                message: "Identificador de videojuego inválido"
+            });
+        }
 
-    const error = validarResena(estrellas, texto);
-
-    if (error) {
-        return res.status(400).json({ message: error });
+        filtro.juego_id = juegoId;
     }
 
-    const resenas = leerDatos("resenas");
-    const resena = resenas.find(r => r.id === id);
+    if (req.query.usuario_id !== undefined) {
 
-    if (!resena) {
-        return res.status(404).json({ message: "Reseña no encontrada" });
+        const usuarioId = leerId(req.query.usuario_id);
+
+        if (!usuarioId) {
+            return res.status(400).json({
+                message: "Identificador de usuario inválido"
+            });
+        }
+
+        filtro.usuario_id = usuarioId;
     }
 
-    if (resena.usuario_id !== usuarioId) {
-        return res.status(403).json({ message: "Solo puedes editar tus propias reseñas" });
+    try {
+        const resenas = await Resena.find(filtro).sort({ _id: 1 }).lean();
+
+        res.status(200).json({
+            resenas: await armarResenas(resenas)
+        });
+
+    } catch (error) {
+        return manejarError(
+            error,
+            res,
+            "Error al consultar las reseñas"
+        );
     }
-
-    resena.estrellas = estrellas;
-    resena.texto = texto.trim();
-    resena.fecha = new Date().toISOString();
-
-    guardarDatos("resenas", resenas);
-
-    const actualizados = recalcularCalificaciones();
-
-    res.status(200).json({
-        message: "Reseña actualizada",
-        resena: resena,
-        ...calificacionDe(actualizados, resena.juego_id)
-    });
 }
 
 
+// ---------- Jugador ----------
+// POST /api/resenas
+async function crearResena(req, res) {
+    const usuarioId = req.usuario.id;
 
-function eliminarResena(req, res) {
-    const id = Number(req.params.id);
-    const usuarioId = Number(req.body.usuario_id);
+    const juegoId = leerId(req.body?.juego_id);
+    const estrellas = Number(req.body?.estrellas);
+    const texto = req.body?.texto;
 
-    const resenas = leerDatos("resenas");
-    const resena = resenas.find(r => r.id === id);
-
-    if (!resena) {
-        return res.status(404).json({ message: "Reseña no encontrada" });
+    if (!juegoId) {
+        return res.status(400).json({
+            message: "Identificador de videojuego inválido"
+        });
     }
 
-    if (resena.usuario_id !== usuarioId) {
-        return res.status(403).json({ message: "Solo puedes borrar tus propias reseñas" });
+    const errorValidacion = validarResena(estrellas, texto);
+
+    if (errorValidacion) {
+        return res.status(400).json({
+            message: errorValidacion
+        });
     }
 
-    const restantes = resenas.filter(r => r.id !== id);
-    guardarDatos("resenas", restantes);
+    try {
+        const resultado = await transaccion(async session => {
 
-    const actualizados = recalcularCalificaciones();
+            // Consultar exclusivamente jugadores
+            const jugador = await Jugador.findById(usuarioId)
+                .select(
+                    "creditos atributos.biblioteca atributos.resenas_premiadas"
+                )
+                .session(session)
+                .lean();
 
-    res.status(200).json({
-        message: "Reseña eliminada",
-        ...calificacionDe(actualizados, resena.juego_id)
-    });
-}
+            if (!jugador) {
+                return {
+                    status: 403,
+                    message: "Solo los jugadores pueden escribir reseñas"
+                };
+            }
 
-// ---------- DESARROLLADOR: ver y responder reseñas de sus juegos ----------
-// req.usuario lo llena requerirDesarrollador
+            const juegoExiste = await Videojuego.exists({
+                _id: juegoId
+            }).session(session);
 
-// LEER: las reseñas de los juegos de este desarrollador
-function listarResenasDesarrollador(req, res) {
-    const videojuegos = leerDatos("videojuegos");
-    const usuarios = leerDatos("usuarios");
+            if (!juegoExiste) {
+                return {
+                    status: 404,
+                    message: "El videojuego no existe"
+                };
+            }
 
-    // IDs de los juegos de este desarrollador
-    const misJuegos = videojuegos
-        .filter(juego => juego.id_desarrollador === req.usuario.id)
-        .map(juego => juego.id);
+            // Solo se pueden reseñar juegos adquiridos
+            if (!contieneId(jugador.atributos.biblioteca,juegoId)) {
+                return {
+                    status: 403,
+                    message: "Solo puedes reseñar los videojuegos de tu biblioteca"
+                };
+            }
 
-    const resenas = leerDatos("resenas")
-        .filter(resena => misJuegos.includes(resena.juego_id))
-        .map(resena => {
-            const autor = usuarios.find(usuario => usuario.id === resena.usuario_id);
-            const juego = videojuegos.find(videojuego => videojuego.id === resena.juego_id);
+            // Impedir reseñas duplicadas
+            const resenaExiste = await Resena.exists({
+                usuario_id: usuarioId,
+                juego_id: juegoId
+            }).session(session);
+
+            if (resenaExiste) {
+                return {
+                    status: 409,
+                    message: "Ya escribiste una reseña de este juego"
+                };
+            }
+
+            // Crear la reseña dentro de la transacción
+            const [nuevaResena] = await Resena.create(
+                [{
+                    usuario_id: usuarioId,
+                    juego_id: juegoId,
+                    estrellas,
+                    texto: texto.trim(),
+                    fecha: new Date()
+                }],
+                { session }
+            );
+
+            // Comprobar si ya recibió la recompensa
+            const yaPremiado = contieneId(
+                jugador.atributos.resenas_premiadas,
+                juegoId
+            );
+
+            const premio = yaPremiado ? 0 : PREMIO_RESENA;
+
+            const filtro = {
+                _id: usuarioId,
+                "atributos.biblioteca": juegoId
+            };
+
+            const actualizacion = {
+                $inc: { __v: 1 }
+            };
+
+            // Entregar la recompensa únicamente una vez
+            if (!yaPremiado) {
+                filtro["atributos.resenas_premiadas"] = {
+                    $ne: juegoId
+                };
+
+                actualizacion.$inc.creditos = premio;
+
+                actualizacion.$addToSet = {
+                    "atributos.resenas_premiadas": juegoId
+                };
+            }
+
+            const jugadorActualizado =
+                await Jugador.findOneAndUpdate(
+                    filtro,
+                    actualizacion,
+                    {
+                        new: true,
+                        session,
+                        runValidators: true
+                    }
+                ).select("creditos").lean();
+
+            if (!jugadorActualizado) {
+                throw new Error("No se pudo actualizar el jugador");
+            }
+
+            // Actualizar el promedio y total de reseñas
+            await recalcularCalificaciones([juegoId], session);
 
             return {
-                ...resena,
-                nombre_usuario: autor ? autor.nombre_usuario : "Usuario eliminado",
-                titulo_juego: juego.titulo
+                status: 201,
+                message: premio > 0 ? `Reseña publicada. ¡Ganaste ${premio} créditos!` : "Reseña publicada",
+                resena: limpiar(nuevaResena),
+                premio,
+                creditos: jugadorActualizado.creditos,
+                ...(await calificacionDe(juegoId, session))
             };
         });
 
-    res.status(200).json({ resenas: resenas });
+        const { status, ...respuesta } = resultado;
+        res.status(status).json(respuesta);
+
+    } catch (error) {
+        return manejarError(
+            error,
+            res,
+            "Error al publicar la reseña"
+        );
+    }
 }
 
 
-// RESPONDER una reseña (si ya tenía respuesta, se reemplaza)
-function responderResena(req, res) {
-    const id = Number(req.params.id);
+// PUT /api/resenas/:id
+async function actualizarResena(req, res) {
+    const id = leerId(req.params.id);
+    const usuarioId = req.usuario.id;
+
+    const estrellas = Number(req.body?.estrellas);
     const texto = req.body?.texto;
 
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de reseña inválido"
+        });
+    }
+
+    const errorValidacion = validarResena(estrellas, texto);
+
+    if (errorValidacion) {
+        return res.status(400).json({
+            message: errorValidacion
+        });
+    }
+
+    try {
+        const resultado = await transaccion(async session => {
+
+            const resena = await Resena.findById(id)
+                .session(session);
+
+            if (!resena) {
+                return {
+                    status: 404,
+                    message: "Reseña no encontrada"
+                };
+            }
+
+            if (!mismoId(resena.usuario_id, usuarioId)) {
+                return {
+                    status: 403,
+                    message: "Solo puedes editar tus propias reseñas"
+                };
+            }
+
+            resena.estrellas = estrellas;
+            resena.texto = texto.trim();
+            resena.fecha = new Date();
+
+            await resena.save({ session });
+
+            await recalcularCalificaciones(
+                [resena.juego_id],
+                session
+            );
+
+            return {
+                status: 200,
+                message: "Reseña actualizada",
+                resena: limpiar(resena),
+                premio: 0,
+
+                ...(await calificacionDe(
+                    resena.juego_id,
+                    session
+                ))
+            };
+        });
+
+        const { status, ...respuesta } = resultado;
+        res.status(status).json(respuesta);
+
+    } catch (error) {
+        return manejarError(
+            error,
+            res,
+            "Error al actualizar la reseña"
+        );
+    }
+}
+
+// DELETE /api/resenas/:id
+async function eliminarResena(req, res) {
+    const id = leerId(req.params.id);
+    const usuarioId = req.usuario.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de reseña inválido"
+        });
+    }
+
+    try {
+        const resultado = await transaccion(async session => {
+            const resena = await Resena.findById(id).session(session).lean();
+
+            if (!resena) {
+                return {
+                    status: 404,
+                    message: "Reseña no encontrada"
+                };
+            }
+
+            if (!mismoId(resena.usuario_id, usuarioId)) {
+                return {
+                    status: 403,
+                    message: "Solo puedes borrar tus propias reseñas"
+                };
+            }
+
+            const eliminacion = await Resena.deleteOne(
+                { _id: id, usuario_id: usuarioId },
+                { session }
+            );
+
+            if (eliminacion.deletedCount !== 1) {
+                throw new Error(
+                    "No se pudo eliminar la reseña"
+                );
+            }
+
+            // NO eliminar el juego de resenas_premiadas
+
+            await recalcularCalificaciones(
+                [resena.juego_id],
+                session
+            );
+
+            return {
+                status: 200,
+                message: "Reseña eliminada",
+                premio: 0,
+
+                ...(await calificacionDe(
+                    resena.juego_id,
+                    session
+                ))
+            };
+        });
+
+        const { status, ...respuesta } = resultado;
+        res.status(status).json(respuesta);
+
+    } catch (error) {
+        return manejarError(
+            error,
+            res,
+            "Error al eliminar la reseña"
+        );
+    }
+}
+
+// ---------- Desarrollador ----------
+// GET /api/resenas/desarrollador
+async function listarResenasDesarrollador(req, res) {
+    try {
+        // Obtener los ObjectId de sus videojuegos
+        const misJuegos = await Videojuego.distinct(
+            "_id",
+            { id_desarrollador: req.usuario.id }
+        );
+
+        const resenas = await Resena.find({
+            juego_id: { $in: misJuegos }
+        }).sort({ _id: 1 }).lean();
+
+        res.status(200).json({
+            resenas: await armarResenas(resenas)
+        });
+
+    } catch (error) {
+        return manejarError(
+            error,
+            res,
+            "Error al consultar las reseñas"
+        );
+    }
+}
+
+// PUT /api/resenas/:id/respuesta
+async function responderResena(req, res) {
+    const id = leerId(req.params.id);
+    const texto = req.body?.texto;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de reseña inválido"
+        });
+    }
+
     if (typeof texto !== "string" || !texto.trim()) {
-        return res.status(400).json({ message: "Escribe una respuesta" });
+        return res.status(400).json({
+            message: "Escribe una respuesta"
+        });
     }
 
     if (texto.trim().length > 500) {
-        return res.status(400).json({ message: "La respuesta no puede pasar de 500 caracteres" });
+        return res.status(400).json({
+            message: "La respuesta no puede pasar de 500 caracteres"
+        });
     }
 
-    const resenas = leerDatos("resenas");
-    const videojuegos = leerDatos("videojuegos");
+    try {
+        const resena = await Resena.findById(id);
 
-    const resena = resenas.find(r => r.id === id);
+        if (!resena) {
+            return res.status(404).json({
+                message: "Reseña no encontrada"
+            });
+        }
 
-    if (!resena) {
-        return res.status(404).json({ message: "Reseña no encontrada" });
+        // Verificar que el juego pertenezca al desarrollador
+        const esSuJuego = await Videojuego.exists({
+            _id: resena.juego_id,
+            id_desarrollador: req.usuario.id
+        });
+
+        if (!esSuJuego) {
+            return res.status(403).json({
+                message: "Solo puedes responder reseñas de tus juegos"
+            });
+        }
+
+        // Crear o reemplazar la respuesta existente
+        resena.respuesta = texto.trim();
+
+        await resena.save();
+
+        res.status(200).json({
+            message: "Respuesta guardada",
+            resena: limpiar(resena)
+        });
+
+    } catch (error) {
+        return manejarError(
+            error,
+            res,
+            "Error al guardar la respuesta"
+        );
     }
-
-    // Revisar que la reseña sea de un juego de este desarrollador
-    const juego = videojuegos.find(j => j.id === resena.juego_id);
-
-    if (!juego || juego.id_desarrollador !== req.usuario.id) {
-        return res.status(403).json({ message: "Solo puedes responder reseñas de tus juegos" });
-    }
-
-    resena.respuesta = texto.trim();
-    guardarDatos("resenas", resenas);
-
-    res.status(200).json({ message: "Respuesta guardada", resena: resena });
 }
 
 module.exports = {
     recalcularCalificaciones,
-    listarResenas, crearResena, actualizarResena, eliminarResena,
-    listarResenasDesarrollador, responderResena
+    listarResenas,
+    crearResena,
+    actualizarResena,
+    eliminarResena,
+    listarResenasDesarrollador,
+    responderResena
 };

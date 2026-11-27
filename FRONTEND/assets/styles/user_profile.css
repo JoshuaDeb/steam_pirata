@@ -884,3 +884,15 @@ body:has(#paq200:checked) .c200 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+.enlace-juego {
+  color: var(--sp-acento-hover, #5a80ff);
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.enlace-juego:hover,
+.enlace-juego:focus-visible {
+  text-decoration: underline;
+}

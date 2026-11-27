@@ -1,24 +1,31 @@
-const fs = require("fs");
-const path = require("path");
+const Usuario = require("./models/usuario");
+const Videojuego = require("./models/videojuego");
+const Amistad = require("./models/amistad");
+const Resena = require("./models/resena");
 
-// Leer datos de una colección JSON
-function leerDatos(coleccion) {
-    const ruta = path.join(__dirname, "data_temp", `${coleccion}.json`);
+// Obtener los discriminadores del modelo Usuario
+const Jugador = Usuario.discriminators.jugador;
+const Desarrollador = Usuario.discriminators.desarrollador;
 
-    const contenido = fs.readFileSync(ruta, "utf8");
+// ---------- Diccionario de modelos ----------
 
-    return JSON.parse(contenido);
+const modelos = {
+    usuarios: Usuario,
+    jugadores: Jugador,
+    desarrolladores: Desarrollador,
+    videojuegos: Videojuego,
+    amistades: Amistad,
+    resenas: Resena
+};
+
+
+// ---------- Obtener modelo ----------
+function getModel(coleccion) {
+    if (!Object.hasOwn(modelos, coleccion)) {
+        throw new Error(`El modelo "${coleccion}" no existe`);
+    }
+
+    return modelos[coleccion];
 }
 
-// Guardar datos de una colección JSON
-function guardarDatos(coleccion, datos) {
-    const ruta = path.join(__dirname, "data_temp", `${coleccion}.json`);
-
-    fs.writeFileSync(
-        ruta,
-        JSON.stringify(datos, null, 2),
-        "utf8"
-    );
-}
-
-module.exports = { leerDatos, guardarDatos };
+module.exports = { getModel };

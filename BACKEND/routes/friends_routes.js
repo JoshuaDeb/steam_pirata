@@ -3,6 +3,12 @@ const router = express.Router();
 
 const friendsController = require("../controllers/friends_controller");
 
+const { autenticarUsuario, requerirJugador } = require("../middlewares/auth_middleware");
+
+// Todas las rutas requieren un jugador autenticado
+router.use(autenticarUsuario);
+router.use(requerirJugador);
+
 // Buscar jugadores registrados
 router.get("/search", friendsController.buscarJugadores);
 

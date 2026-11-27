@@ -291,6 +291,19 @@
   border-color: #694456;
   color: #ffbacd;
 }
+
+.chip-adquirido {
+  background: rgba(126, 226, 184, 0.12);
+  border-color: rgba(126, 226, 184, 0.45);
+  color: #7ee2b8;
+}
+.chip-pendiente {
+  background: rgba(63, 107, 255, 0.14);
+  border-color: rgba(63, 107, 255, 0.55);
+  color: #a9bcff;
+}
+
+
 .tarjeta-acciones {
   display: flex;
   align-items: center;

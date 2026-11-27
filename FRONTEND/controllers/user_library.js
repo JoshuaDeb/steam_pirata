@@ -49,7 +49,7 @@
     }
 
     function pedir(url, opciones) {
-        return fetch(url, opciones).then((response) => {
+        return apiFetch(url, opciones).then((response) => {
             return response.json().catch(() => ({})).then((datos) => {
                 if (!response.ok) {
                     throw new Error(datos.message || "Error en la petición");
@@ -88,7 +88,7 @@
     function portada(juego) {
         if (juego.portada) {
             return `<img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                src="/assets/images/${encodeURIComponent(juego.portada)}" alt="${escapar(juego.titulo)}">`;
+                src="${escapar(juego.portada)}" alt="${escapar(juego.titulo)}">`;
         }
 
         return `<span class="juego-marca" aria-hidden="true">${escapar(iniciales(juego.titulo))}</span>`;
@@ -148,7 +148,7 @@
                         <p class="metadatos mb-2">
                             ${escapar(juego.desarrollador)} - ${juego.precio_creditos} créditos - ${textoCalificacion(juego)}
                         </p>
-                        <span class="chip">${adquirido ? "Ya adquirido" : "Por adquirir"}</span>
+                        <span class="chip ${adquirido ? "chip-adquirido" : "chip-pendiente"}">${adquirido ? "Ya adquirido" : "Por adquirir"}</span>
                         <div class="tarjeta-acciones">
                             <button class="btn btn-primary flex-grow-1 btn-detalle" data-accion="detalle"
                                 type="button">Ver detalles</button>
@@ -265,8 +265,8 @@
                 <div>
                     <span class="fila-label">Contenido adicional</span>
                     <div class="fila-valor">${juego.dlcs.length === 0
-                        ? "Sin DLC"
-                        : juego.dlcs.map((dlc) => escapar(dlc.nombre)).join(" · ")}</div>
+                ? "Sin DLC"
+                : juego.dlcs.map((dlc) => escapar(dlc.nombre)).join(" · ")}</div>
                 </div>
                 <p class="fila-meta mb-0">${estado}</p>
             </div>
@@ -336,7 +336,7 @@
 
         if (!boton) return;
 
-        const juego = buscarJuego(Number(boton.closest("[data-juego-id]")?.dataset.juegoId));
+        const juego = buscarJuego(boton.closest("[data-juego-id]")?.dataset.juegoId);
 
         if (!juego) return;
 
@@ -355,7 +355,7 @@
 
         if (!casilla) return;
 
-        const id = Number(casilla.value);
+        const id = casilla.value;
         const agregar = casilla.checked;
         const juego = buscarJuego(id);
 
@@ -496,7 +496,7 @@
         }
 
         const existente = misResenas.get(juegoResena.id);
-        const datos = { usuario_id: usuario.id, juego_id: juegoResena.id, estrellas, texto };
+        const datos = { juego_id: juegoResena.id, estrellas, texto };
 
         if (existente) {
             enviarResena(`/api/resenas/${existente.id}`, "PUT", datos, "Reseña actualizada");
@@ -511,7 +511,7 @@
 
         if (!existente || !confirm("¿Seguro que quieres borrar tu reseña?")) return;
 
-        enviarResena(`/api/resenas/${existente.id}`, "DELETE", { usuario_id: usuario.id }, "Reseña eliminada");
+        enviarResena(`/api/resenas/${existente.id}`, "DELETE", {}, "Reseña eliminada");
     });
 
 

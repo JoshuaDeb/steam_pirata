@@ -59,15 +59,15 @@
         return letras.toUpperCase();
     }
 
-    // Contenido de una portada: la imagen guardada en assets/images o, si no hay, las iniciales
     function contenidoPortada(juego) {
         if (juego.portada) {
-            return `<img src="/assets/images/${encodeURIComponent(juego.portada)}" alt="">`;
+            const version = encodeURIComponent(juego.updatedAt || "");
+            const url = `${juego.portada}?v=${version}`;
+            return `<img src="${escapar(url)}" alt="">`;
         }
 
         return escapar(iniciales(juego.titulo));
     }
-
     // Leer la imagen elegida y convertirla a data URL para enviarla al servidor.
     // Devuelve null si no se eligió archivo.
     function leerPortada(input) {
@@ -94,7 +94,8 @@
 
     // Color de portada (portada-1 ... portada-4)
     function colorPortada(id) {
-        return `portada-${((id - 1) % 4) + 1}`;
+        const numero = parseInt(String(id).slice(-2), 16);
+        return `portada-${(numero % 4) + 1}`;
     }
 
     function opcionesTexto(lista, seleccionado) {
@@ -127,12 +128,13 @@
         return undefined;
     }
 
-    // Llamar a la API enviando el id del desarrollador de la sesión
+    // Llamar a la API utilizando el token de autenticación
     function api(url, metodo = "GET", cuerpo) {
         const opciones = {
             method: metodo,
-            headers: { "X-Usuario-Id": String(usuario.id) },
-            credentials: "same-origin"
+            headers: {},
+            credentials: "same-origin",
+            cache: "no-store"
         };
 
         if (cuerpo !== undefined) {
@@ -140,7 +142,7 @@
             opciones.body = JSON.stringify(cuerpo);
         }
 
-        return fetch(url, opciones).then((response) => {
+        return apiFetch(url, opciones).then((response) => {
             return response.json().catch(() => ({})).then((datos) => {
                 if (!response.ok) {
                     throw new Error(datos.message || "Error al procesar la solicitud");
@@ -569,8 +571,7 @@
 
     // Detalle de un videojuego
     modalDetalle.addEventListener("show.bs.modal", (event) => {
-        const juego = buscarJuego(Number(event.relatedTarget?.dataset.id));
-
+        const juego = buscarJuego(event.relatedTarget?.dataset.id);
         if (!juego) {
             event.preventDefault();
             return;
@@ -620,7 +621,7 @@
 
         const form = event.target.closest("form[data-juego-id]");
         const miniatura = form?.querySelector(".portada");
-        const juego = buscarJuego(Number(form?.dataset.juegoId));
+        const juego = buscarJuego(form?.dataset.juegoId);
 
         if (!miniatura || !juego) return;
 
@@ -646,21 +647,21 @@
 
         if (!form) return;
 
-        const id = Number(form.dataset.juegoId);
+        const id = form.dataset.juegoId;
 
         enviarFormulario(
             form,
             () => leerDatosJuego(form, false).then((datos) => api(`/api/videojuegos/${id}`, "PUT", datos)),
-            (respuesta) => {
+            async (respuesta) => {
+                await cargarJuegos();
                 mostrarAlerta(`"${respuesta.videojuego.titulo}" se actualizó correctamente.`);
-                cargarJuegos();
             }
         );
     });
 
     // Retirar un videojuego: se recuerda cuál se eligió al abrir la confirmación
     modalRetirar.addEventListener("show.bs.modal", (event) => {
-        juegoPorRetirar = buscarJuego(Number(event.relatedTarget?.dataset.id));
+        juegoPorRetirar = buscarJuego(event.relatedTarget?.dataset.id);
 
         if (!juegoPorRetirar) {
             event.preventDefault();
@@ -694,9 +695,8 @@
             });
     });
 
-    // Recordar la pestaña de DLC abierta
     chipsDlc.addEventListener("shown.bs.tab", (event) => {
-        juegoDlcActivo = Number(event.target.dataset.juegoId);
+        juegoDlcActivo = event.target.dataset.juegoId;
     });
 
     // Agregar o editar un DLC
@@ -710,7 +710,7 @@
         const datos = leerDatosDlc(form);
 
         if (form.dataset.nuevoDlcJuego) {
-            const idJuego = Number(form.dataset.nuevoDlcJuego);
+            const idJuego = form.dataset.nuevoDlcJuego;
             const juego = buscarJuego(idJuego);
 
             enviarFormulario(
@@ -722,7 +722,7 @@
                 }
             );
         } else if (form.dataset.dlcId) {
-            const idDlc = Number(form.dataset.dlcId);
+            const idDlc = form.dataset.dlcId;
 
             enviarFormulario(
                 form,
@@ -737,7 +737,7 @@
 
     // Eliminar un DLC
     modalEliminarDlc.addEventListener("show.bs.modal", (event) => {
-        dlcPorEliminar = buscarDlc(Number(event.relatedTarget?.dataset.id));
+        dlcPorEliminar = buscarDlc(event.relatedTarget?.dataset.id);
 
         if (!dlcPorEliminar) {
             event.preventDefault();

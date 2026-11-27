@@ -105,11 +105,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (juego && juego.portada) {
                 const imagen = document.createElement("img");
                 imagen.className = "position-absolute top-0 start-0 w-100 h-100 object-fit-cover";
-                imagen.src = `/assets/images/${encodeURIComponent(juego.portada)}`;
+                imagen.src = juego.portada;
                 imagen.alt = "";
                 portada.appendChild(imagen);
             } else {
-                portada.textContent = juego ? juego.titulo.slice(0, 2).toUpperCase() : "–";
+                portada.textContent = juego ? juego.titulo.slice(0, 2).toUpperCase() : "-";
             }
 
             const detalle = document.createElement("div");
@@ -228,13 +228,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let solicitudEnviada = false;
 
-        fetch("/api/friends/request", {
+        apiFetch("/api/friends/request", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                solicitante_id: usuario.id,
                 receptor_id: jugador.id
             })
         })
@@ -447,7 +446,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const numeroConsulta = ++ultimaConsultaAmigos;
 
         const parametros = new URLSearchParams({
-            usuario_id: usuario.id,
             busqueda: buscarAmigos.value.trim(),
             orden: ordenAmigos.value,
             pagina: paginaAmigos
@@ -462,7 +460,7 @@ document.addEventListener("DOMContentLoaded", () => {
         siguienteAmigos.disabled = true;
         listaAmigos.replaceChildren();
 
-        fetch(`/api/friends/friends?${parametros.toString()}`)
+        apiFetch(`/api/friends/friends?${parametros.toString()}`)
             .then(response => response.json().then(datos => {
                 if (!response.ok) {
                     throw new Error(datos.message || "Error al consultar amigos");
@@ -529,14 +527,8 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmarEliminarAmigo.textContent = "Eliminando...";
         errorAmigos.classList.add("d-none");
 
-        fetch(`/api/friends/friend/${amistadAEliminar.id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                usuario_id: usuario.id
-            })
+        apiFetch(`/api/friends/friend/${amistadAEliminar.id}`, {
+            method: "DELETE"
         })
             .then(response => response.json().then(datos => {
                 if (!response.ok) {
@@ -572,14 +564,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let aceptada = false;
 
-        fetch(`/api/friends/request/${solicitud.id}/accept`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                receptor_id: usuario.id
-            })
+        apiFetch(`/api/friends/request/${solicitud.id}/accept`, {
+            method: "PATCH"
         })
             .then(response => {
                 return response.json().then(datos => {
@@ -621,14 +607,8 @@ document.addEventListener("DOMContentLoaded", () => {
         boton.disabled = true;
         boton.textContent = "Procesando...";
 
-        fetch(`/api/friends/request/${solicitud.id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                usuario_id: usuario.id
-            })
+        apiFetch(`/api/friends/request/${solicitud.id}`, {
+            method: "DELETE"
         })
             .then(response => {
                 return response.json().then(datos => {
@@ -677,7 +657,7 @@ document.addEventListener("DOMContentLoaded", () => {
         listaRecibidas.replaceChildren();
         listaEnviadas.replaceChildren();
 
-        fetch(`/api/friends/requests?usuario_id=${usuario.id}`)
+        apiFetch("/api/friends/requests")
             .then(response => {
                 return response.json().then(datos => {
                     if (!response.ok) {
@@ -742,7 +722,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Preparar parámetros para el backend
         const parametros = new URLSearchParams({
-            usuario_id: usuario.id,
             busqueda: busqueda,
             pagina: paginaActual,
             orden: ordenJugadores.value === "reciente" ? "reciente" : "az"
@@ -760,7 +739,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btnAnterior.disabled = true;
         btnSiguiente.disabled = true;
 
-        fetch(`/api/friends/search?${parametros.toString()}`)
+        apiFetch(`/api/friends/search?${parametros.toString()}`)
             .then(response => {
                 return response.json().then(datos => {
                     if (!response.ok) {

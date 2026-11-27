@@ -1,45 +1,78 @@
-const fs = require("fs");
-const path = require("path");
-const { leerDatos, guardarDatos } = require("../storage");
+const { getModel } = require("../storage");
 
-// Las portadas se guardan en el frontend, en assets/images
-const CARPETA_PORTADAS = path.join(__dirname, "../../FRONTEND/assets/images");
+const { leerId, mismoId } = require("../utils/mongo_utils");
+
+const Videojuego = getModel("videojuegos");
+const Usuario = getModel("usuarios");
+
 const PORTADA_MAX_BYTES = 2 * 1024 * 1024;
-const FORMATOS_PORTADA = {
-    "image/png": "png",
-    "image/jpeg": "jpg",
-    "image/webp": "webp"
-};
-// Solo se borran archivos creados por este módulo (nunca imágenes del proyecto)
-const NOMBRE_PORTADA_PROPIA = /^juego-\d+-\d+\.(png|jpg|webp)$/;
 
-const GENEROS = [
-    "Acción", "Aventura", "Carreras", "Deportes",
-    "Estrategia", "RPG", "Simulación", "Terror"
-];
-const CLASIFICACIONES = ["E", "T", "M"];
+const GENEROS = Videojuego.GENEROS;
+const CLASIFICACIONES = Videojuego.CLASIFICACIONES;
 
 const LIMITE_POR_DEFECTO = 12;
 const LIMITE_MAXIMO = 50;
 
-// Convertir un valor en un ID válido (entero positivo) o null
-function leerId(valor) {
-    const id = Number(valor);
+const COLACION_TITULO = { locale: "es", strength: 2 };
 
-    return Number.isInteger(id) && id > 0 ? id : null;
+// ---------- Utilidades ----------
+
+// Validar números enteros positivos para la paginación
+function leerEnteroPositivo(valor) {
+    const numero = Number(valor);
+    return Number.isSafeInteger(numero) && numero > 0 ? numero : null;
 }
 
 // Quitar acentos y mayúsculas para comparar textos
 function normalizar(texto) {
     return texto
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[̀-ͯ]/g, "")
         .toLowerCase();
 }
 
 // Leer un parámetro de la URL como texto (ignora arreglos u otros tipos)
 function leerTexto(valor) {
     return typeof valor === "string" ? valor.trim() : "";
+}
+
+// Convertir la búsqueda en una expresión regular que ignore acentos y mayúsculas.
+// "accion" encuentra "Acción"; los caracteres especiales se escapan.
+function regexSinAcentos(texto) {
+    const variantes = {
+        a: "[aáàäâ]", e: "[eéèëê]", i: "[iíìïî]",
+        o: "[oóòöô]", u: "[uúùüû]", n: "[nñ]"
+    };
+
+    const patron = normalizar(texto)
+        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+        .replace(/[aeioun]/g, letra => variantes[letra]);
+
+    return new RegExp(patron, "i");
+}
+
+// Preparar un videojuego para enviarlo al frontend
+function limpiar(documento) {
+    const objeto = documento.toObject ? documento.toObject() : { ...documento };
+
+    objeto.id = String(objeto._id);
+    objeto.id_desarrollador = String(objeto.id_desarrollador);
+
+    // Enviar una URL en lugar de toda la imagen Base64
+    objeto.portada = objeto.portada ? `/api/videojuegos/${objeto.id}/portada` : null;
+
+    objeto.dlcs = (objeto.dlcs || []).map(dlc => ({
+        id: String(dlc._id),
+        id_videojuego: objeto.id,
+        nombre: dlc.nombre,
+        tipo_contenido: dlc.tipo_contenido,
+        descripcion: dlc.descripcion
+    }));
+
+    delete objeto._id;
+    delete objeto.__v;
+
+    return objeto;
 }
 
 // Validar los datos de un videojuego (se usa al publicar y al actualizar)
@@ -146,59 +179,59 @@ function validarPortada(portada) {
         return { error: "El archivo no es una imagen válida" };
     }
 
-    return { buffer, extension: FORMATOS_PORTADA[tipo] };
-}
-
-// Guardar la portada en assets/images y devolver el nombre del archivo
-function guardarPortada(idJuego, imagen) {
-    const nombre = `juego-${idJuego}-${Date.now()}.${imagen.extension}`;
-
-    fs.writeFileSync(path.join(CARPETA_PORTADAS, nombre), imagen.buffer);
-
-    return nombre;
-}
-
-function borrarPortada(nombre) {
-    if (typeof nombre !== "string" || !NOMBRE_PORTADA_PROPIA.test(nombre)) return;
-
-    try {
-        fs.unlinkSync(path.join(CARPETA_PORTADAS, nombre));
-    } catch (error) {
-        if (error.code !== "ENOENT") {
-            console.error("Error al borrar la portada:", error);
-        }
-    }
-}
-
-// Comprobar si ya existe otro videojuego publicado con el mismo título
-function tituloEnUso(videojuegos, titulo, idExcluido = null) {
-    return videojuegos.some(juego =>
-        juego.estado === "publicado" &&
-        juego.id !== idExcluido &&
-        juego.titulo.toLowerCase() === titulo.toLowerCase()
-    );
-}
-
-// Agregar el nombre del desarrollador y los DLC de un videojuego
-function armarVideojuego(juego, usuarios, dlcs) {
-    const desarrollador = usuarios.find(usuario =>
-        usuario.id === juego.id_desarrollador
-    );
-
     return {
-        ...juego,
-        desarrollador: desarrollador
-            ? desarrollador.nombre_usuario
-            : "Desarrollador desconocido",
-        dlcs: dlcs.filter(dlc => dlc.id_videojuego === juego.id)
+        dataUrl: `data:${tipo};base64,${buffer.toString("base64")}`
     };
 }
 
+// Comprobar títulos publicados duplicados
+async function tituloEnUso(titulo, idExcluido = null) {
+    const filtro = {
+        estado: "publicado",
+        titulo
+    };
 
-function listarVideojuegos(req, res) {
+    if (idExcluido !== null) {
+        filtro._id = { $ne: idExcluido };
+    }
+
+    return Boolean(
+        await Videojuego.exists(filtro).collation(COLACION_TITULO)
+    );
+}
+
+// Agregar el nombre del desarrollador a los videojuegos
+async function armarVideojuegos(videojuegos) {
+    const desarrolladores = await Usuario.find(
+        {
+            _id: {
+                $in: videojuegos.map(
+                    juego => juego.id_desarrollador
+                )
+            }
+        },
+        "nombre_usuario"
+    ).lean();
+
+    const nombres = new Map(
+        desarrolladores.map(usuario => [
+            String(usuario._id),
+            usuario.nombre_usuario
+        ])
+    );
+
+    return videojuegos.map(juego => ({
+        ...limpiar(juego),
+        desarrollador: nombres.get(String(juego.id_desarrollador)) || "Desarrollador desconocido"
+    }));
+}
+
+// ---------- Endpoints ----------
+// GET /api/videojuegos → catálogo con búsqueda, filtros, orden y paginación
+async function listarVideojuegos(req, res) {
     const consulta = req.query;
 
-    const busqueda = normalizar(leerTexto(consulta.q));
+    const busqueda = leerTexto(consulta.q);
     const genero = leerTexto(consulta.genero);
     const clasificacion = leerTexto(consulta.clasificacion);
     const orden = leerTexto(consulta.orden);
@@ -215,9 +248,7 @@ function listarVideojuegos(req, res) {
         precioMax = Number(consulta.precio_max);
 
         if (!Number.isInteger(precioMax) || precioMax < 1) {
-            return res.status(400).json({
-                message: "El precio máximo debe ser un número entero mayor a 0"
-            });
+            return res.status(400).json({ message: "El precio máximo debe ser un número entero mayor a 0" });
         }
     }
 
@@ -227,9 +258,7 @@ function listarVideojuegos(req, res) {
         calificacionMin = Number(consulta.calificacion_min);
 
         if (!Number.isFinite(calificacionMin) || calificacionMin < 1 || calificacionMin > 5) {
-            return res.status(400).json({
-                message: "La calificación mínima debe estar entre 1 y 5"
-            });
+            return res.status(400).json({ message: "La calificación mínima debe estar entre 1 y 5" });
         }
     }
 
@@ -239,360 +268,347 @@ function listarVideojuegos(req, res) {
         idDesarrollador = leerId(consulta.id_desarrollador);
 
         if (idDesarrollador === null) {
-            return res.status(400).json({
-                message: "El ID del desarrollador no es válido"
-            });
+            return res.status(400).json({ message: "El ID del desarrollador no es válido" });
         }
     }
 
-    let videojuegos;
-    let usuarios;
-    let dlcs;
+    // Construir el filtro de MongoDB
+    const filtro = {};
 
-    try {
-        videojuegos = leerDatos("videojuegos");
-        usuarios = leerDatos("usuarios");
-        dlcs = leerDatos("dlcs");
-    } catch (error) {
-        console.error("Error al leer videojuegos:", error);
+    if (estado !== "todos") filtro.estado = estado;
+    if (idDesarrollador !== null) filtro.id_desarrollador = idDesarrollador;
+    if (genero) filtro.genero = genero;
+    if (clasificacion) filtro.clasificacion_edad = clasificacion;
+    if (precioMax !== null) filtro.precio_creditos = { $lte: precioMax };
+    if (busqueda) filtro.titulo = regexSinAcentos(busqueda);
+    // $gte deja fuera automáticamente a los juegos sin reseñas (promedio null)
+    if (calificacionMin !== null) filtro.calificacion_promedio = { $gte: calificacionMin };
 
-        return res.status(500).json({
-            message: "Error al consultar los videojuegos"
-        });
-    }
+    // Ordenamiento (los juegos sin reseñas quedan al final al ordenar por calificación,
+    // porque en MongoDB null es menor que cualquier número)
+    let ordenMongo;
 
-    let resultado = videojuegos.filter(juego => {
-        if (estado !== "todos" && juego.estado !== estado) return false;
-        if (idDesarrollador !== null && juego.id_desarrollador !== idDesarrollador) return false;
-        if (genero && juego.genero !== genero) return false;
-        if (clasificacion && juego.clasificacion_edad !== clasificacion) return false;
-        if (precioMax !== null && juego.precio_creditos > precioMax) return false;
-        if (busqueda && !normalizar(juego.titulo).includes(busqueda)) return false;
-        if (calificacionMin !== null &&
-            !(typeof juego.calificacion_promedio === "number" && juego.calificacion_promedio >= calificacionMin)) return false;
-
-        return true;
-    });
-
-    const porNombre = (a, b) =>
-        a.titulo.localeCompare(b.titulo, "es", { sensitivity: "base" });
-
-    // Los juegos sin reseñas quedan al final al ordenar por calificación
     if (orden === "calificacion") {
-        resultado.sort((a, b) =>
-            (b.calificacion_promedio ?? -1) - (a.calificacion_promedio ?? -1) ||
-            (b.total_resenas ?? 0) - (a.total_resenas ?? 0) ||
-            porNombre(a, b));
+        ordenMongo = {
+            calificacion_promedio: -1,
+            total_resenas: -1,
+            titulo: 1,
+            _id: 1
+        };
     } else if (orden === "precio_asc") {
-        resultado.sort((a, b) => a.precio_creditos - b.precio_creditos || porNombre(a, b));
+        ordenMongo = {
+            precio_creditos: 1,
+            titulo: 1,
+            _id: 1
+        };
     } else if (orden === "precio_desc") {
-        resultado.sort((a, b) => b.precio_creditos - a.precio_creditos || porNombre(a, b));
+        ordenMongo = {
+            precio_creditos: -1,
+            titulo: 1,
+            _id: 1
+        };
     } else {
-        resultado.sort(porNombre);
+        ordenMongo = {
+            titulo: 1,
+            _id: 1
+        };
     }
+    try {
+        const total = await Videojuego.countDocuments(filtro);
+        const respuesta = { total };
 
-    const respuesta = { total: resultado.length };
+        // Orden alfabético en español: sin importar acentos ni mayúsculas
+        let consultaMongo = Videojuego.find(filtro)
+            .sort(ordenMongo)
+            .collation({ locale: "es", strength: 1 });
 
-    // La paginación es opcional: solo se aplica si se piden "pagina" o "limite"
-    if (consulta.pagina !== undefined || consulta.limite !== undefined) {
-        const limite = Math.min(leerId(consulta.limite) ?? LIMITE_POR_DEFECTO, LIMITE_MAXIMO);
-        const totalPaginas = Math.max(1, Math.ceil(resultado.length / limite));
-        const pagina = Math.min(leerId(consulta.pagina) ?? 1, totalPaginas);
+        // La paginación es opcional: solo se aplica si se piden "pagina" o "limite"
+        if (consulta.pagina !== undefined || consulta.limite !== undefined) {
+            const limite = Math.min(leerEnteroPositivo(consulta.limite) ?? LIMITE_POR_DEFECTO, LIMITE_MAXIMO);
+            const totalPaginas = Math.max(1, Math.ceil(total / limite));
+            const pagina = Math.min(leerEnteroPositivo(consulta.pagina) ?? 1, totalPaginas);
 
-        resultado = resultado.slice((pagina - 1) * limite, pagina * limite);
+            consultaMongo = consultaMongo.skip((pagina - 1) * limite).limit(limite);
 
-        respuesta.pagina = pagina;
-        respuesta.limite = limite;
-        respuesta.total_paginas = totalPaginas;
+            respuesta.pagina = pagina;
+            respuesta.limite = limite;
+            respuesta.total_paginas = totalPaginas;
+        }
+
+        const videojuegos = await consultaMongo.lean();
+
+        respuesta.videojuegos = await armarVideojuegos(videojuegos);
+
+        res.status(200).json(respuesta);
+    } catch (error) {
+        console.error("Error al consultar videojuegos:", error);
+        res.status(500).json({ message: "Error al consultar los videojuegos" });
     }
-
-    respuesta.videojuegos = resultado.map(juego =>
-        armarVideojuego(juego, usuarios, dlcs)
-    );
-
-    res.status(200).json(respuesta);
 }
 
-
-function obtenerVideojuego(req, res) {
+// GET /api/videojuegos/:id → detalle de un videojuego
+async function obtenerVideojuego(req, res) {
     const id = leerId(req.params.id);
 
     if (id === null) {
-        return res.status(400).json({
-            message: "El ID del videojuego no es válido"
-        });
+        return res.status(400).json({ message: "El ID del videojuego no es válido" });
     }
-
-    let videojuegos;
-    let usuarios;
-    let dlcs;
 
     try {
-        videojuegos = leerDatos("videojuegos");
-        usuarios = leerDatos("usuarios");
-        dlcs = leerDatos("dlcs");
+        const juego = await Videojuego.findById(id).lean();
+
+        if (!juego) {
+            return res.status(404).json({ message: "Videojuego no encontrado" });
+        }
+
+        const [videojuego] = await armarVideojuegos([juego]);
+
+        res.status(200).json({ videojuego });
     } catch (error) {
-        console.error("Error al leer videojuegos:", error);
-
-        return res.status(500).json({
-            message: "Error al consultar los videojuegos"
-        });
+        console.error("Error al consultar el videojuego:", error);
+        res.status(500).json({ message: "Error al consultar los videojuegos" });
     }
-
-    const juego = videojuegos.find(item => item.id === id);
-
-    if (!juego) {
-        return res.status(404).json({
-            message: "Videojuego no encontrado"
-        });
-    }
-
-    res.status(200).json({
-        videojuego: armarVideojuego(juego, usuarios, dlcs)
-    });
 }
 
-
-function crearVideojuego(req, res) {
+async function crearVideojuego(req, res) {
     const { error, datos } = validarVideojuego(req.body);
 
     if (error) {
-        return res.status(400).json({ message: error });
+        return res.status(400).json({
+            message: error
+        });
     }
 
-    // Al publicar, la portada es obligatoria
     const portada = validarPortada(req.body.portada);
 
     if (portada.error) {
-        return res.status(400).json({ message: portada.error });
-    }
-
-    let videojuegos;
-
-    try {
-        videojuegos = leerDatos("videojuegos");
-    } catch (error) {
-        console.error("Error al leer videojuegos:", error);
-
-        return res.status(500).json({
-            message: "Error al consultar los videojuegos"
+        return res.status(400).json({
+            message: portada.error
         });
     }
 
-    if (tituloEnUso(videojuegos, datos.titulo)) {
-        return res.status(409).json({
-            message: "Ya existe un videojuego publicado con ese título"
-        });
-    }
-
-    // Generar un ID consecutivo
-    const nuevoId = videojuegos.length > 0
-        ? Math.max(...videojuegos.map(juego => juego.id)) + 1
-        : 1;
-
-    let nombrePortada;
-
     try {
-        nombrePortada = guardarPortada(nuevoId, portada);
-    } catch (error) {
-        console.error("Error al guardar la portada:", error);
+        if (await tituloEnUso(datos.titulo)) {
+            return res.status(409).json({
+                message: "Ya existe un videojuego publicado con ese título"
+            });
+        }
 
-        return res.status(500).json({
-            message: "Error al guardar la portada"
+        const nuevoVideojuego = await Videojuego.create({
+            ...datos,
+            portada: portada.dataUrl,
+            id_desarrollador: req.usuario.id,
+            estado: "publicado"
         });
-    }
 
-    const nuevoVideojuego = {
-        id: nuevoId,
-        ...datos,
-        portada: nombrePortada,
-        id_desarrollador: req.usuario.id,
-        estado: "publicado"
-    };
+        res.status(201).json({
+            message: "Videojuego publicado correctamente",
+            videojuego: limpiar(nuevoVideojuego)
+        });
 
-    videojuegos.push(nuevoVideojuego);
-
-    try {
-        guardarDatos("videojuegos", videojuegos);
     } catch (error) {
-        console.error("Error al guardar el videojuego:", error);
-        borrarPortada(nombrePortada);
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: "Ya existe un videojuego publicado con ese título"
+            });
+        }
 
-        return res.status(500).json({
+        if (error.name === "ValidationError") {
+            return res.status(400).json({
+                message: error.message
+            });
+        }
+
+        console.error("Error al publicar el videojuego:", error);
+
+        res.status(500).json({
             message: "Error al publicar el videojuego"
         });
     }
-
-    res.status(201).json({
-        message: "Videojuego publicado correctamente",
-        videojuego: nuevoVideojuego
-    });
 }
 
-
-function actualizarVideojuego(req, res) {
+async function actualizarVideojuego(req, res) {
     const id = leerId(req.params.id);
 
-    if (id === null) {
+    if (!id) {
         return res.status(400).json({
             message: "El ID del videojuego no es válido"
         });
     }
 
-    let videojuegos;
-
     try {
-        videojuegos = leerDatos("videojuegos");
-    } catch (error) {
-        console.error("Error al leer videojuegos:", error);
+        const juego = await Videojuego.findById(id);
 
-        return res.status(500).json({
-            message: "Error al consultar los videojuegos"
-        });
-    }
-
-    const juego = videojuegos.find(item => item.id === id);
-
-    if (!juego) {
-        return res.status(404).json({
-            message: "Videojuego no encontrado"
-        });
-    }
-
-    if (juego.id_desarrollador !== req.usuario.id) {
-        return res.status(403).json({
-            message: "No puedes modificar videojuegos de otro desarrollador"
-        });
-    }
-
-    if (juego.estado !== "publicado") {
-        return res.status(409).json({
-            message: "Un videojuego retirado no se puede editar"
-        });
-    }
-
-    const { error, datos } = validarVideojuego(req.body);
-
-    if (error) {
-        return res.status(400).json({ message: error });
-    }
-
-    if (tituloEnUso(videojuegos, datos.titulo, juego.id)) {
-        return res.status(409).json({
-            message: "Ya existe un videojuego publicado con ese título"
-        });
-    }
-
-    // Al editar, la portada es opcional: solo se reemplaza si se envía una nueva
-    let portadaNueva = null;
-    const portadaAnterior = juego.portada;
-
-    if (req.body.portada !== undefined && req.body.portada !== null && req.body.portada !== "") {
-        const portada = validarPortada(req.body.portada);
-
-        if (portada.error) {
-            return res.status(400).json({ message: portada.error });
-        }
-
-        try {
-            portadaNueva = guardarPortada(juego.id, portada);
-        } catch (error) {
-            console.error("Error al guardar la portada:", error);
-
-            return res.status(500).json({
-                message: "Error al guardar la portada"
+        if (!juego) {
+            return res.status(404).json({
+                message: "Videojuego no encontrado"
             });
         }
-    }
 
-    Object.assign(juego, datos);
+        if (!mismoId(juego.id_desarrollador, req.usuario.id)) {
+            return res.status(403).json({
+                message: "No puedes modificar videojuegos de otro desarrollador"
+            });
+        }
 
-    if (portadaNueva) {
-        juego.portada = portadaNueva;
-    }
+        if (juego.estado !== "publicado") {
+            return res.status(409).json({
+                message: "Un videojuego retirado no se puede editar"
+            });
+        }
 
-    try {
-        guardarDatos("videojuegos", videojuegos);
+        const { error, datos } = validarVideojuego(req.body);
+
+        if (error) {
+            return res.status(400).json({
+                message: error
+            });
+        }
+
+        if (await tituloEnUso(datos.titulo, juego._id)) {
+            return res.status(409).json({
+                message: "Ya existe un videojuego publicado con ese título"
+            });
+        }
+
+        // Al editar, la portada sigue siendo opcional
+        if (
+            req.body.portada !== undefined &&
+            req.body.portada !== null &&
+            req.body.portada !== ""
+        ) {
+            const portada = validarPortada(req.body.portada);
+
+            if (portada.error) {
+                return res.status(400).json({
+                    message: portada.error
+                });
+            }
+
+            juego.portada = portada.dataUrl;
+        }
+
+        Object.assign(juego, datos);
+
+        await juego.save();
+
+        res.status(200).json({
+            message: "Videojuego actualizado correctamente",
+            videojuego: limpiar(juego)
+        });
+
     } catch (error) {
-        console.error("Error al guardar el videojuego:", error);
-        borrarPortada(portadaNueva);
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: "Ya existe un videojuego publicado con ese título"
+            });
+        }
 
-        return res.status(500).json({
+        if (error.name === "VersionError") {
+            return res.status(409).json({
+                message: "El videojuego fue modificado. Intenta nuevamente"
+            });
+        }
+
+        if (error.name === "ValidationError") {
+            return res.status(400).json({
+                message: error.message
+            });
+        }
+
+        console.error("Error al actualizar el videojuego:", error);
+
+        res.status(500).json({
             message: "Error al actualizar el videojuego"
         });
     }
-
-    // La portada anterior ya no se usa
-    if (portadaNueva) {
-        borrarPortada(portadaAnterior);
-    }
-
-    res.status(200).json({
-        message: "Videojuego actualizado correctamente",
-        videojuego: juego
-    });
 }
-
 
 // "Eliminar" un videojuego lo retira del catálogo: deja de poder adquirirse,
 // pero el registro se conserva porque sigue en las bibliotecas de los jugadores.
-function retirarVideojuego(req, res) {
+async function retirarVideojuego(req, res) {
     const id = leerId(req.params.id);
 
     if (id === null) {
-        return res.status(400).json({
-            message: "El ID del videojuego no es válido"
-        });
+        return res.status(400).json({ message: "El ID del videojuego no es válido" });
     }
-
-    let videojuegos;
 
     try {
-        videojuegos = leerDatos("videojuegos");
+        const juego = await Videojuego.findById(id);
+
+        if (!juego) {
+            return res.status(404).json({ message: "Videojuego no encontrado" });
+        }
+
+        if (!mismoId(juego.id_desarrollador, req.usuario.id)) {
+            return res.status(403).json({ message: "No puedes retirar videojuegos de otro desarrollador" });
+        }
+
+        if (juego.estado === "retirado") {
+            return res.status(409).json({ message: "El videojuego ya está retirado del catálogo" });
+        }
+
+        juego.estado = "retirado";
+        await juego.save();
+
+        res.status(200).json({
+            message: "Videojuego retirado del catálogo",
+            videojuego: limpiar(juego)
+        });
     } catch (error) {
-        console.error("Error al leer videojuegos:", error);
-
-        return res.status(500).json({
-            message: "Error al consultar los videojuegos"
-        });
-    }
-
-    const juego = videojuegos.find(item => item.id === id);
-
-    if (!juego) {
-        return res.status(404).json({
-            message: "Videojuego no encontrado"
-        });
-    }
-
-    if (juego.id_desarrollador !== req.usuario.id) {
-        return res.status(403).json({
-            message: "No puedes retirar videojuegos de otro desarrollador"
-        });
-    }
-
-    if (juego.estado === "retirado") {
-        return res.status(409).json({
-            message: "El videojuego ya está retirado del catálogo"
-        });
-    }
-
-    juego.estado = "retirado";
-
-    try {
-        guardarDatos("videojuegos", videojuegos);
-    } catch (error) {
+        if (error.name === "VersionError") {
+            return res.status(409).json({
+                message: "El videojuego fue modificado. Intenta nuevamente"
+            });
+        }
         console.error("Error al retirar el videojuego:", error);
+        res.status(500).json({ message: "Error al retirar el videojuego" });
+    }
+}
 
-        return res.status(500).json({
-            message: "Error al retirar el videojuego"
+// GET /api/videojuegos/:id/portada
+async function obtenerPortada(req, res) {
+    const id = leerId(req.params.id);
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de videojuego inválido"
         });
     }
 
-    res.status(200).json({
-        message: "Videojuego retirado del catálogo",
-        videojuego: juego
-    });
+    try {
+        const juego = await Videojuego.findById(id).select("portada").lean();
+
+        if (!juego || !juego.portada) {
+            return res.status(404).json({
+                message: "Portada no encontrada"
+            });
+        }
+
+        const coincidencia = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(juego.portada);
+
+        if (!coincidencia) {
+            return res.status(404).json({
+                message: "Portada no disponible"
+            });
+        }
+
+        const tipo = coincidencia[1];
+        const imagen = Buffer.from(coincidencia[2], "base64");
+
+        res.set("Content-Type", tipo);
+        res.set("X-Content-Type-Options", "nosniff");
+        res.set("Cache-Control", "no-cache");
+
+        res.status(200).send(imagen);
+
+    } catch (error) {
+        console.error("Error al consultar portada:", error);
+
+        res.status(500).json({
+            message: "Error al consultar la portada"
+        });
+    }
 }
 
 module.exports = {
@@ -600,5 +616,6 @@ module.exports = {
     obtenerVideojuego,
     crearVideojuego,
     actualizarVideojuego,
-    retirarVideojuego
+    retirarVideojuego,
+    obtenerPortada
 };
