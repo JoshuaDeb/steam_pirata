@@ -156,7 +156,8 @@ formLogin.addEventListener("submit", (event) => {
                 correo: usuario.correo,
                 role: usuario.role,
                 creditos: usuario.creditos,
-                descripcion_publica: usuario.descripcion_publica || ""
+                descripcion_publica: usuario.descripcion_publica || "",
+                foto_perfil: usuario.foto_perfil || null
             }));
 
             // Redirigir según el rol
@@ -231,7 +232,8 @@ formRegistro.addEventListener("submit", (event) => {
                 correo: usuario.correo,
                 role: usuario.role,
                 creditos: usuario.creditos,
-                descripcion_publica: usuario.descripcion_publica || ""
+                descripcion_publica: usuario.descripcion_publica || "",
+                foto_perfil: usuario.foto_perfil || null
             }));
 
             // Redirigir según el rol

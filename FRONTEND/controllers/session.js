@@ -135,6 +135,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             usuario.creditos = datos.user.creditos;
+            usuario.foto_perfil = datos.user.foto_perfil || null;
+            pintarAvatar(document.getElementById("avatarUsuarioNav"), usuario);
             sessionStorage.setItem("usuario", JSON.stringify(usuario));
 
             const saldoCatalogo = document.getElementById("saldoCreditosCatalogo");
