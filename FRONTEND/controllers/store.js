@@ -58,11 +58,12 @@
         return letras.toUpperCase();
     }
 
-    // Portada: la imagen guardada en assets/images o, si no hay, las iniciales
+    // Mostrar la portada almacenada en MongoDB
     function contenidoPortada(juego) {
         if (juego.portada) {
             return `<img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                src="/assets/images/${encodeURIComponent(juego.portada)}" alt="Portada de ${escapar(juego.titulo)}">`;
+            src="${escapar(juego.portada)}"
+            alt="Portada de ${escapar(juego.titulo)}">`;
         }
 
         return `<span class="juego-marca" aria-hidden="true">${escapar(iniciales(juego.titulo))}</span>`;
@@ -79,9 +80,9 @@
         return `★ ${juego.calificacion_promedio.toFixed(1)} (${total} ${total === 1 ? "reseña" : "reseñas"})`;
     }
 
-    // Color de portada (portada-1 ... portada-4)
     function colorPortada(id) {
-        return `portada-${((id - 1) % 4) + 1}`;
+        const numero = parseInt(String(id).slice(-2), 16);
+        return `portada-${(numero % 4) + 1}`;
     }
 
 
@@ -195,8 +196,8 @@
             listaJuegos.innerHTML = `
                 <li class="col-12 fila-meta text-center py-5">
                     ${hayFiltros
-                        ? "Ningún videojuego coincide con tu búsqueda."
-                        : "Todavía no hay videojuegos publicados."}
+                    ? "Ningún videojuego coincide con tu búsqueda."
+                    : "Todavía no hay videojuegos publicados."}
                 </li>`;
             return;
         }
@@ -339,8 +340,8 @@
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                     ${esJugador && enBiblioteca.has(juego.id)
-                        ? `<button type="button" class="btn btn-primary btn-grande" disabled>En tu biblioteca</button>`
-                        : ""}
+                ? `<button type="button" class="btn btn-primary btn-grande" disabled>En tu biblioteca</button>`
+                : ""}
                     ${esJugador && !enBiblioteca.has(juego.id) ? `<button type="button" class="btn btn-primary btn-grande" data-bs-toggle="modal"
                         data-bs-target="#modalAdquirir">Adquirir</button>` : ""}
                     ${esPublico ? `<button type="button" class="btn btn-primary btn-grande" data-bs-toggle="modal"
@@ -396,7 +397,7 @@
     });
 
 
-   
+
     formFiltros.addEventListener("change", (event) => {
         if (event.target.name === "q" || event.target.name === "precio_max") return;
 
@@ -429,10 +430,7 @@
     // Abrir la ficha del videojuego pulsado
     modalJuego.addEventListener("show.bs.modal", (event) => {
         const tarjeta = event.relatedTarget?.closest("[data-juego-id]");
-
-                juegoActual = [...juegosCargados, ...juegosDesarrollador].find((juego) =>
-            juego.id === Number(tarjeta?.dataset.juegoId)
-        );
+        juegoActual = [...juegosCargados, ...juegosDesarrollador].find((juego) => juego.id === tarjeta?.dataset.juegoId);
 
         if (!juegoActual) {
             event.preventDefault();
@@ -449,7 +447,7 @@
 
         if (!casilla || !esJugador) return;
 
-        const idJuego = Number(casilla.value);
+        const idJuego = casilla.value;
         const agregar = casilla.checked;
 
         casilla.disabled = true;
@@ -603,7 +601,7 @@
     // Abrir el perfil del desarrollador pulsado en la ficha de un videojuego
     modalDesarrollador.addEventListener("show.bs.modal", (event) => {
         const boton = event.relatedTarget?.closest("[data-desarrollador-id]");
-        const idDesarrollador = Number(boton?.dataset.desarrolladorId);
+        const idDesarrollador = boton?.dataset.desarrolladorId;
 
         if (!idDesarrollador) {
             event.preventDefault();
@@ -715,7 +713,7 @@
                     <span class="fila-meta">Respuesta del desarrollador</span>
                     <p class="mb-0">${escapar(resena.respuesta)}</p>
                 </div>` : ""}
-            </div>`).join(""); 
+            </div>`).join("");
     }
 
     function mostrarMensajeResena(texto, tipo) {
@@ -813,21 +811,19 @@
 
 
     function abrirJuegoDesdeUrl() {
-        const idJuego = Number(new URLSearchParams(window.location.search).get("juego"));
+        const idJuego = new URLSearchParams(window.location.search).get("juego");
 
-        if (!idJuego) return;
+        // Validar el formato del ObjectId
+        if (!idJuego || !/^[a-fA-F0-9]{24}$/.test(idJuego)) {
+            return;
+        }
 
         history.replaceState(null, "", window.location.pathname);
-
-        pedir(`/api/videojuegos/${idJuego}`)
+        pedir(`/api/videojuegos/${idJuego.toLowerCase()}`)
             .then((datos) => {
-
                 juegosDesarrollador = [datos.videojuego];
-
-              
                 const origen = document.createElement("span");
-                origen.dataset.juegoId = idJuego;
-
+                origen.dataset.juegoId = datos.videojuego.id;
                 bootstrap.Modal.getOrCreateInstance(modalJuego).show(origen);
             })
             .catch((error) => alert(error.message));
@@ -835,7 +831,7 @@
 
     // ---------- Inicio ----------
 
- cargarRelaciones()
+    cargarRelaciones()
         .then(() => cargarCatalogo(1))
         .then(abrirJuegoDesdeUrl);
 })();

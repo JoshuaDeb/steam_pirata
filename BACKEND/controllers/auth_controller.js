@@ -1,28 +1,25 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const Usuario = require("../models/usuario");
-const { siguienteId } = require("../models/contador");
+const { getModel } = require("../storage");
+const { datosUsuario } = require("../utils/mongo_utils");
+
+const Usuario = getModel("usuarios");
+const Jugador = getModel("jugadores");
+const Desarrollador = getModel("desarrolladores");
 
 // Generar token de autenticación
 function generarToken(usuario) {
     return jwt.sign(
-        { id: usuario.id, role: usuario.role },
+        {
+            id: String(usuario._id),
+            role: usuario.role
+        },
         process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN || "24h" }
+        {
+            algorithm: "HS256",
+            expiresIn: process.env.JWT_EXPIRES_IN || "24h"
+        }
     );
-}
-
-// Datos del usuario que se envían al frontend (sin passwordHash)
-function datosPublicos(usuario) {
-    return {
-        id: usuario.id,
-        nombre_usuario: usuario.nombre_usuario,
-        correo: usuario.correo,
-        role: usuario.role,
-        creditos: usuario.creditos,
-        descripcion_publica: usuario.descripcion_publica || "",
-        foto_perfil: usuario.foto_perfil || null
-    };
 }
 
 async function registrarUsuario(req, res) {
@@ -76,12 +73,14 @@ async function registrarUsuario(req, res) {
 
         const hash = await bcrypt.hash(contrasena, 10);
 
-        const nuevoUsuario = await Usuario.create({
-            id: await siguienteId("usuarios"),
+        // Seleccionar el discriminador correspondiente
+        const ModeloUsuario = role === "jugador" ? Jugador : Desarrollador;
+
+        // Crear usuario con su estructura correspondiente
+        const nuevoUsuario = await ModeloUsuario.create({
             nombre_usuario: nombre,
             correo: email,
             passwordHash: hash,
-            role: role,
             creditos: role === "jugador" ? 100 : 0
         });
 
@@ -89,7 +88,7 @@ async function registrarUsuario(req, res) {
         res.status(201).json({
             message: "Usuario registrado correctamente",
             token: generarToken(nuevoUsuario),
-            user: datosPublicos(nuevoUsuario)
+            user: datosUsuario(nuevoUsuario)
         });
     } catch (error) {
         // Por si dos personas se registran con los mismos datos al mismo tiempo
@@ -120,9 +119,10 @@ async function iniciarSesion(req, res) {
     }
 
     try {
-        // passwordHash tiene select:false, así que hay que pedirlo explícitamente
-        const usuario = await Usuario.findOne({ correo: correo.trim().toLowerCase() })
-            .select("+passwordHash")
+        const usuario = await Usuario.findOne({
+            correo: correo.trim().toLowerCase()
+        })
+            .select("nombre_usuario correo role creditos descripcion_publica foto_perfil +passwordHash")
             .lean();
 
         if (!usuario || !(await bcrypt.compare(contrasena, usuario.passwordHash))) {
@@ -132,7 +132,7 @@ async function iniciarSesion(req, res) {
         res.status(200).json({
             message: "Credenciales correctas",
             token: generarToken(usuario),
-            user: datosPublicos(usuario)
+            user: datosUsuario(usuario)
         });
     } catch (error) {
         console.error("Error al iniciar sesión:", error);

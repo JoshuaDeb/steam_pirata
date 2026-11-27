@@ -1,5 +1,13 @@
 const jwt = require("jsonwebtoken");
-const Usuario = require("../models/usuario");
+const { getModel } = require("../storage");
+
+const {
+    leerId,
+    mismoId,
+    datosUsuario
+} = require("../utils/mongo_utils");
+
+const Usuario = getModel("usuarios");
 
 // Verificar que el usuario esté autenticado
 async function autenticarUsuario(req, res, next) {
@@ -14,6 +22,7 @@ async function autenticarUsuario(req, res, next) {
     }
 
     const token = authorization.split(" ")[1];
+
     let datosToken;
 
     // Verificar la firma y vigencia del token
@@ -28,13 +37,27 @@ async function autenticarUsuario(req, res, next) {
         });
     }
 
+    // Validar el identificador contenido en el token
+    const usuarioId = leerId(datosToken?.id);
+
+    if (!usuarioId) {
+        return res.status(401).json({
+            code: "AUTH_REQUIRED",
+            message: "Token inválido o expirado"
+        });
+    }
+
     let usuario;
 
-    // Verificar que el usuario todavía exista en la base de datos
+    // Verificar que el usuario todavía exista
     try {
-        usuario = await Usuario.findOne({ id: datosToken.id }).lean();
+        usuario = await Usuario.findById(usuarioId)
+            .select("nombre_usuario correo role creditos descripcion_publica foto_perfil")
+            .lean();
+
     } catch (error) {
         console.error("Error al consultar usuario:", error);
+
         return res.status(500).json({
             message: "Error al consultar los usuarios"
         });
@@ -47,31 +70,23 @@ async function autenticarUsuario(req, res, next) {
         });
     }
 
-    // Guardar la información del usuario autenticado
-    req.usuario = {
-        id: usuario.id,
-        nombre_usuario: usuario.nombre_usuario,
-        correo: usuario.correo,
-        role: usuario.role,
-        creditos: usuario.creditos,
-        descripcion_publica: usuario.descripcion_publica || "",
-        foto_perfil: usuario.foto_perfil || null
-    };
+    // Guardar únicamente los datos necesarios
+    req.usuario = datosUsuario(usuario);
 
     next();
 }
 
-// Verificar que el usuario solo pueda acceder a su propia cuenta
+// Verificar que el usuario sea propietario de la cuenta
 function requerirPropietario(req, res, next) {
-    const id = Number(req.params.id);
+    const id = leerId(req.params.id);
 
-    if (!Number.isSafeInteger(id) || id <= 0) {
+    if (!id) {
         return res.status(400).json({
             message: "Identificador de usuario inválido"
         });
     }
 
-    if (req.usuario.id !== id) {
+    if (!mismoId(req.usuario.id, id)) {
         return res.status(403).json({
             message: "No tienes permiso para realizar esta acción"
         });

@@ -88,7 +88,7 @@
     function portada(juego) {
         if (juego.portada) {
             return `<img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                src="/assets/images/${encodeURIComponent(juego.portada)}" alt="${escapar(juego.titulo)}">`;
+                src="${escapar(juego.portada)}" alt="${escapar(juego.titulo)}">`;
         }
 
         return `<span class="juego-marca" aria-hidden="true">${escapar(iniciales(juego.titulo))}</span>`;
@@ -336,7 +336,7 @@
 
         if (!boton) return;
 
-        const juego = buscarJuego(Number(boton.closest("[data-juego-id]")?.dataset.juegoId));
+        const juego = buscarJuego(boton.closest("[data-juego-id]")?.dataset.juegoId);
 
         if (!juego) return;
 
@@ -355,7 +355,7 @@
 
         if (!casilla) return;
 
-        const id = Number(casilla.value);
+        const id = casilla.value;
         const agregar = casilla.checked;
         const juego = buscarJuego(id);
 

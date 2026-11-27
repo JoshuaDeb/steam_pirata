@@ -1,7 +1,13 @@
 const Stripe = require("stripe");
 
-if (!process.env.STRIPE_SECRET_KEY) {
+const clave = process.env.STRIPE_SECRET_KEY;
+
+if (!clave) {
     throw new Error("La variable STRIPE_SECRET_KEY no está configurada");
 }
 
-module.exports = new Stripe(process.env.STRIPE_SECRET_KEY);
+if (!clave.startsWith("sk_test_")) {
+    throw new Error("SteamPirata solo permite claves de prueba de Stripe");
+}
+
+module.exports = new Stripe(clave);

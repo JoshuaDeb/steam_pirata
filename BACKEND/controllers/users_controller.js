@@ -1,144 +1,176 @@
 const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
 
-const Usuario = require("../models/usuario");
-const Videojuego = require("../models/videojuego");
-const Dlc = require("../models/dlc");
-const Resena = require("../models/resena");
-const Amistad = require("../models/amistad");
-const Biblioteca = require("../models/biblioteca");
-const Favorito = require("../models/favorito");
-const Compra = require("../models/compra");
-const { recalcularCalificaciones } = require("../utils/calificaciones");
+const { getModel } = require("../storage");
 
+const {
+    leerId,
+    contieneId,
+    datosUsuario,
+    transaccion
+} = require("../utils/mongo_utils");
 
-// ---------- Utilidades ----------
+const {
+    recalcularCalificaciones
+} = require("../utils/calificaciones");
 
-// Convertir un valor en un ID válido (entero positivo) o null
-function leerIdPositivo(valor) {
-    const id = Number(valor);
-
-    return Number.isSafeInteger(id) && id > 0 ? id : null;
-}
-
-// Datos públicos del usuario (sin passwordHash)
-function usuarioPublico(usuario) {
-    return {
-        id: usuario.id,
-        nombre_usuario: usuario.nombre_usuario,
-        correo: usuario.correo,
-        role: usuario.role,
-        creditos: usuario.creditos,
-        descripcion_publica: usuario.descripcion_publica || "",
-        foto_perfil: usuario.foto_perfil || null
-    };
-}
-
+const Usuario = getModel("usuarios");
+const Jugador = getModel("jugadores");
+const Desarrollador = getModel("desarrolladores");
+const Videojuego = getModel("videojuegos");
+const Resena = getModel("resenas");
+const Amistad = getModel("amistades");
 
 // ---------- Datos de la cuenta ----------
-
 async function actualizarNombre(req, res) {
-    const id = Number(req.params.id);
-    const { nombre_usuario } = req.body;
+    const id = leerId(req.params.id);
+    const { nombre_usuario } = req.body || {};
 
-    if (!Number.isSafeInteger(id) || id <= 0) {
-        return res.status(400).json({ message: "Identificador de usuario inválido" });
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
     }
 
-    if (typeof nombre_usuario !== "string" ||
+    if (
+        typeof nombre_usuario !== "string" ||
         nombre_usuario.trim().length < 3 ||
-        nombre_usuario.trim().length > 30) {
-        return res.status(400).json({ message: "El nombre debe tener entre 3 y 30 caracteres" });
+        nombre_usuario.trim().length > 30
+    ) {
+        return res.status(400).json({
+            message: "El nombre debe tener entre 3 y 30 caracteres"
+        });
     }
 
     const nombre = nombre_usuario.trim();
 
     try {
-        // Comprobar que el nombre no esté ocupado por otro usuario (sin importar mayúsculas)
-        const nombreExiste = await Usuario.exists({ id: { $ne: id }, nombre_usuario: nombre })
-            .collation({ locale: "es", strength: 2 });
+        // Comprobar que el nombre no pertenezca a otro usuario
+        const nombreExiste = await Usuario.exists({
+            _id: { $ne: id },
+            nombre_usuario: nombre
+        }).collation({
+            locale: "es",
+            strength: 2
+        });
 
         if (nombreExiste) {
-            return res.status(409).json({ message: "El nombre de usuario ya está registrado" });
+            return res.status(409).json({
+                message: "El nombre de usuario ya está registrado"
+            });
         }
 
-        const usuario = await Usuario.findOneAndUpdate(
-            { id },
+        const usuario = await Usuario.findByIdAndUpdate(
+            id,
             { nombre_usuario: nombre },
             { new: true, runValidators: true }
         ).lean();
 
         if (!usuario) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
         }
 
         res.status(200).json({
             message: "Nombre actualizado correctamente",
-            user: usuarioPublico(usuario)
+            user: datosUsuario(usuario)
         });
+
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(409).json({ message: "El nombre de usuario ya está registrado" });
+            return res.status(409).json({
+                message: "El nombre de usuario ya está registrado"
+            });
         }
 
         console.error("Error al actualizar usuario:", error);
-        res.status(500).json({ message: "Error al actualizar el usuario" });
+
+        res.status(500).json({
+            message: "Error al actualizar el usuario"
+        });
     }
 }
 
 async function actualizarCorreo(req, res) {
-    const id = Number(req.params.id);
-    const { correo } = req.body;
+    const id = leerId(req.params.id);
+    const { correo } = req.body || {};
 
-    if (!Number.isSafeInteger(id) || id <= 0) {
-        return res.status(400).json({ message: "Identificador de usuario inválido" });
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
     }
 
     if (typeof correo !== "string") {
-        return res.status(400).json({ message: "El correo electrónico no es válido" });
+        return res.status(400).json({
+            message: "El correo electrónico no es válido"
+        });
     }
 
     const email = correo.trim().toLowerCase();
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return res.status(400).json({ message: "El correo electrónico no es válido" });
+        return res.status(400).json({
+            message: "El correo electrónico no es válido"
+        });
     }
 
     try {
-        if (await Usuario.exists({ id: { $ne: id }, correo: email })) {
-            return res.status(409).json({ message: "El correo electrónico ya está registrado" });
+        const correoExiste = await Usuario.exists({
+            _id: { $ne: id },
+            correo: email
+        });
+
+        if (correoExiste) {
+            return res.status(409).json({
+                message: "El correo electrónico ya está registrado"
+            });
         }
 
-        const usuario = await Usuario.findOneAndUpdate(
-            { id },
+        const usuario = await Usuario.findByIdAndUpdate(
+            id,
             { correo: email },
             { new: true, runValidators: true }
         ).lean();
 
         if (!usuario) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
         }
 
         res.status(200).json({
             message: "Correo actualizado correctamente",
-            user: usuarioPublico(usuario)
+            user: datosUsuario(usuario)
         });
+
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(409).json({ message: "El correo electrónico ya está registrado" });
+            return res.status(409).json({
+                message: "El correo electrónico ya está registrado"
+            });
         }
 
         console.error("Error al actualizar correo:", error);
-        res.status(500).json({ message: "Error al actualizar el correo electrónico" });
+
+        res.status(500).json({
+            message: "Error al actualizar el correo electrónico"
+        });
     }
 }
 
 async function actualizarDescripcion(req, res) {
-    const id = Number(req.params.id);
-    const { descripcion_publica, favoritos_perfil } = req.body;
+    const id = leerId(req.params.id);
 
-    if (!Number.isSafeInteger(id) || id <= 0) {
-        return res.status(400).json({ message: "Identificador de usuario inválido" });
+    const {
+        descripcion_publica,
+        favoritos_perfil
+    } = req.body || {};
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
     }
 
     if (
@@ -146,64 +178,114 @@ async function actualizarDescripcion(req, res) {
         descripcion_publica.trim().length < 1 ||
         descripcion_publica.trim().length > 300
     ) {
-        return res.status(400).json({ message: "La descripción debe tener entre 1 y 300 caracteres" });
+        return res.status(400).json({
+            message: "La descripción debe tener entre 1 y 300 caracteres"
+        });
     }
 
     try {
-        const usuario = await Usuario.findOne({ id });
+        const usuario = await Usuario.findById(id);
 
         if (!usuario) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
         }
 
-        // Validar los tres videojuegos destacados del perfil
+        // Validar los videojuegos destacados
         if (favoritos_perfil !== undefined) {
-            if (usuario.role !== "jugador" || !Array.isArray(favoritos_perfil) || favoritos_perfil.length !== 3) {
-                return res.status(400).json({ message: "La selección de favoritos no es válida" });
+
+            if (
+                usuario.role !== "jugador" ||
+                !Array.isArray(favoritos_perfil) ||
+                favoritos_perfil.length !== 3
+            ) {
+                return res.status(400).json({
+                    message: "La selección de favoritos no es válida"
+                });
             }
 
-            // Permitir posiciones vacías y validar los IDs
-            const idsElegidos = favoritos_perfil.filter(idJuego => idJuego !== null);
+            // Normalizar los ObjectId seleccionados
+            const seleccion = [];
 
-            if (idsElegidos.some(idJuego => !Number.isSafeInteger(idJuego) || idJuego <= 0) ||
-                new Set(idsElegidos).size !== idsElegidos.length) {
-                return res.status(400).json({ message: "Los videojuegos seleccionados deben ser distintos" });
+            for (const valor of favoritos_perfil) {
+                if (valor === null) {
+                    seleccion.push(null);
+                    continue;
+                }
+
+                const idJuego = leerId(valor);
+
+                if (!idJuego) {
+                    return res.status(400).json({
+                        message: "Identificador de videojuego inválido"
+                    });
+                }
+
+                seleccion.push(idJuego);
             }
 
-            // Solo se pueden destacar videojuegos adquiridos
-            const adquiridos = await Biblioteca.countDocuments({
-                usuario_id: id,
-                videojuego_id: { $in: idsElegidos }
-            });
+            const idsElegidos = seleccion.filter(
+                idJuego => idJuego !== null
+            );
 
-            if (adquiridos !== idsElegidos.length) {
-                return res.status(400).json({ message: "Solo puedes destacar videojuegos de tu biblioteca" });
+            // Impedir videojuegos repetidos
+            if (new Set(idsElegidos).size !== idsElegidos.length) {
+                return res.status(400).json({
+                    message: "Los videojuegos seleccionados deben ser distintos"
+                });
             }
 
-            usuario.favoritos_perfil = favoritos_perfil;
+            // Solo destacar videojuegos adquiridos
+            const biblioteca = usuario.atributos.biblioteca;
+
+            if (
+                !idsElegidos.every(idJuego =>
+                    contieneId(biblioteca, idJuego)
+                )
+            ) {
+                return res.status(400).json({
+                    message: "Solo puedes destacar videojuegos de tu biblioteca"
+                });
+            }
+
+            usuario.atributos.favoritos_perfil = seleccion;
         }
 
         usuario.descripcion_publica = descripcion_publica.trim();
+
         await usuario.save();
 
         res.status(200).json({
             message: "Descripción pública actualizada correctamente",
             user: {
-                ...usuarioPublico(usuario),
-                favoritos_perfil: usuario.favoritos_perfil.length ? usuario.favoritos_perfil : [null, null, null]
+                ...datosUsuario(usuario),
+
+                favoritos_perfil:
+                    usuario.role === "jugador" ? usuario.atributos.favoritos_perfil.map(id => id === null ? null : String(id)) : [null, null, null]
             }
         });
+
     } catch (error) {
+        if (error.name === "VersionError") {
+            return res.status(409).json({
+                message: "El perfil fue modificado. Intenta nuevamente"
+            });
+        }
+
         console.error("Error al actualizar descripción:", error);
-        res.status(500).json({ message: "Error al actualizar la descripción pública" });
+
+        res.status(500).json({
+            message: "Error al actualizar la descripción pública"
+        });
     }
 }
 
 async function cambiarContrasena(req, res) {
-    const id = Number(req.params.id);
-    const { contrasena_actual, contrasena_nueva, confirmar_contrasena } = req.body;
+    const id = leerId(req.params.id);
+    const { contrasena_actual, contrasena_nueva, confirmar_contrasena } = req.body || {};
 
-    if (!Number.isSafeInteger(id) || id <= 0) {
+    if (!id) {
         return res.status(400).json({ message: "Identificador de usuario inválido" });
     }
 
@@ -228,7 +310,7 @@ async function cambiarContrasena(req, res) {
 
     try {
         // passwordHash tiene select:false, hay que pedirlo
-        const usuario = await Usuario.findOne({ id }).select("+passwordHash");
+        const usuario = await Usuario.findById(id).select("+passwordHash");
 
         if (!usuario) {
             return res.status(404).json({ message: "Usuario no encontrado" });
@@ -253,101 +335,203 @@ async function cambiarContrasena(req, res) {
 }
 
 async function eliminarCuenta(req, res) {
-    const id = Number(req.params.id);
+    const id = leerId(req.params.id);
     const { contrasena_actual, confirmacion } = req.body || {};
 
-    if (!Number.isSafeInteger(id) || id <= 0) {
-        return res.status(400).json({ message: "Identificador de usuario inválido" });
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
     }
 
-    if (typeof contrasena_actual !== "string" || !contrasena_actual) {
-        return res.status(400).json({ message: "Debes introducir tu contraseña actual" });
+    if (
+        typeof contrasena_actual !== "string" ||
+        !contrasena_actual
+    ) {
+        return res.status(400).json({
+            message: "Debes introducir tu contraseña actual"
+        });
     }
 
     if (confirmacion !== "ELIMINAR") {
-        return res.status(400).json({ message: "Debes escribir ELIMINAR para confirmar" });
+        return res.status(400).json({
+            message: "Debes escribir ELIMINAR para confirmar"
+        });
     }
 
-    let sesion;
-
     try {
-        const usuario = await Usuario.findOne({ id }).select("+passwordHash").lean();
+        const resultado = await transaccion(async (session) => {
 
-        if (!usuario) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
+            const usuario = await Usuario.findById(id)
+                .select("+passwordHash")
+                .session(session);
 
-        if (!(await bcrypt.compare(contrasena_actual, usuario.passwordHash))) {
-            return res.status(401).json({ message: "La contraseña actual es incorrecta" });
-        }
-
-        // Todo se borra junto o no se borra nada (transacción)
-        sesion = await mongoose.startSession();
-        let totalRetirados = 0;
-
-        await sesion.withTransaction(async () => {
-            if (usuario.role === "desarrollador") {
-                // Retirar del catálogo sus juegos, conservando juegos, DLC, bibliotecas y reseñas
-                const resultado = await Videojuego.updateMany(
-                    { id_desarrollador: id, estado: "publicado" },
-                    { estado: "retirado" },
-                    { session: sesion }
-                );
-                totalRetirados = resultado.modifiedCount;
-            } else {
-                // Juegos que tenían reseñas de este jugador (para recalcular su promedio)
-                const juegosResenados = await Resena.distinct("juego_id", { usuario_id: id }).session(sesion);
-
-                await Biblioteca.deleteMany({ usuario_id: id }, { session: sesion });
-                await Favorito.deleteMany({ usuario_id: id }, { session: sesion });
-                await Resena.deleteMany({ usuario_id: id }, { session: sesion });
-                await Compra.deleteMany({ usuario_id: id }, { session: sesion });
-                await Amistad.deleteMany(
-                    { $or: [{ solicitante_id: id }, { receptor_id: id }] },
-                    { session: sesion }
-                );
-
-                await recalcularCalificaciones(juegosResenados, sesion);
+            if (!usuario) {
+                return {
+                    status: 404,
+                    message: "Usuario no encontrado"
+                };
             }
 
-            // Eliminar al usuario al final
-            await Usuario.deleteOne({ id }, { session: sesion });
+            if (!(await bcrypt.compare(
+                contrasena_actual,
+                usuario.passwordHash
+            ))) {
+                return {
+                    status: 401,
+                    message: "La contraseña actual es incorrecta"
+                };
+            }
+
+            let totalRetirados = 0;
+
+            if (usuario.role === "desarrollador") {
+
+                // Retirar videojuegos sin eliminarlos
+                const retiro = await Videojuego.updateMany(
+                    {
+                        id_desarrollador: id,
+                        estado: "publicado"
+                    },
+                    {
+                        $set: { estado: "retirado" }
+                    },
+                    { session }
+                );
+
+                totalRetirados = retiro.modifiedCount;
+
+                // Eliminar al desarrollador de los jugadores que lo siguen
+                await Jugador.updateMany(
+                    {
+                        "atributos.desarrolladores_seguidos": id
+                    },
+                    {
+                        $pull: {
+                            "atributos.desarrolladores_seguidos": id
+                        }
+                    },
+                    { session }
+                );
+
+            } else {
+
+                // Identificar los juegos reseñados
+                const juegosResenados = await Resena.distinct(
+                    "juego_id",
+                    { usuario_id: id }
+                ).session(session);
+
+                // Eliminar sus reseñas
+                await Resena.deleteMany(
+                    { usuario_id: id },
+                    { session }
+                );
+
+                // Eliminar amistades y solicitudes
+                await Amistad.deleteMany(
+                    {
+                        $or: [
+                            { solicitante_id: id },
+                            { receptor_id: id }
+                        ]
+                    },
+                    { session }
+                );
+
+                // Actualizar los contadores de seguidores
+                const seguidos =
+                    usuario.atributos.desarrolladores_seguidos;
+
+                if (seguidos.length > 0) {
+                    await Desarrollador.updateMany(
+                        {
+                            _id: { $in: seguidos },
+                            "atributos.seguidor_count": { $gt: 0 }
+                        },
+                        {
+                            $inc: {
+                                "atributos.seguidor_count": -1
+                            }
+                        },
+                        { session }
+                    );
+                }
+
+                // Recalcular calificaciones afectadas
+                await recalcularCalificaciones(
+                    juegosResenados,
+                    session
+                );
+            }
+
+            // Eliminar finalmente el documento del usuario
+            const eliminacion = await Usuario.deleteOne(
+                { _id: id },
+                { session }
+            );
+
+            if (eliminacion.deletedCount !== 1) {
+                throw new Error("No se pudo eliminar el usuario");
+            }
+
+            const respuesta = {
+                status: 200,
+                message: "Cuenta eliminada correctamente"
+            };
+
+            if (usuario.role === "desarrollador") {
+                respuesta.videojuegos_retirados = totalRetirados;
+            }
+
+            return respuesta;
         });
 
-        const respuesta = { message: "Cuenta eliminada correctamente" };
+        const { status, ...respuesta } = resultado;
 
-        if (usuario.role === "desarrollador") {
-            respuesta.videojuegos_retirados = totalRetirados;
-        }
+        res.status(status).json(respuesta);
 
-        res.status(200).json(respuesta);
     } catch (error) {
         console.error("Error al eliminar cuenta:", error);
-        res.status(500).json({ message: "Error al eliminar la cuenta" });
-    } finally {
-        if (sesion) await sesion.endSession();
+
+        res.status(500).json({
+            message: "Error al eliminar la cuenta"
+        });
     }
 }
 
-// Consultar los datos públicos del usuario (incluye el saldo de créditos actualizado)
 async function obtenerUsuario(req, res) {
-    const id = leerIdPositivo(req.params.id);
+    const id = leerId(req.params.id);
 
-    if (id === null) {
-        return res.status(400).json({ message: "Identificador de usuario inválido" });
+    if (!id) {
+        return res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
     }
 
     try {
-        const usuario = await Usuario.findOne({ id }).lean();
+        const usuario = await Usuario.findById(id)
+            .select(
+                "nombre_usuario correo role creditos descripcion_publica foto_perfil"
+            )
+            .lean();
 
         if (!usuario) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
         }
 
-        res.status(200).json({ user: usuarioPublico(usuario) });
+        res.status(200).json({
+            user: datosUsuario(usuario)
+        });
+
     } catch (error) {
         console.error("Error al consultar el usuario:", error);
-        res.status(500).json({ message: "Error al consultar el usuario" });
+
+        res.status(500).json({
+            message: "Error al consultar el usuario"
+        });
     }
 }
 
@@ -357,240 +541,434 @@ async function obtenerUsuario(req, res) {
 // { usuario_id, videojuego_id }. Se ordenan por _id para conservar el orden
 // en que se agregaron.
 
-// Combinar los registros (solo IDs) con los datos del videojuego, su desarrollador y sus DLC
-async function armarJuegos(registros) {
-    const ids = registros.map(registro => registro.videojuego_id);
+async function armarJuegos(ids) {
+    const videojuegos = await Videojuego.find({
+        _id: { $in: ids }
+    }).lean();
 
-    const videojuegos = await Videojuego.find({ id: { $in: ids } }).select("-_id").lean();
-    const desarrolladores = await Usuario.find(
-        { id: { $in: videojuegos.map(juego => juego.id_desarrollador) } },
-        "id nombre_usuario"
+    const desarrolladores = await Desarrollador.find(
+        {
+            _id: {
+                $in: videojuegos.map(
+                    juego => juego.id_desarrollador
+                )
+            }
+        },
+        "nombre_usuario"
     ).lean();
-    const dlcs = await Dlc.find({ id_videojuego: { $in: ids } }).select("-_id").lean();
 
-    return registros
-        .map(registro => {
-            const juego = videojuegos.find(item => item.id === registro.videojuego_id);
+    const juegosPorId = new Map(
+        videojuegos.map(juego => [
+            String(juego._id),
+            juego
+        ])
+    );
 
-            if (!juego) return null;
+    const nombresDesarrolladores = new Map(
+        desarrolladores.map(usuario => [
+            String(usuario._id),
+            usuario.nombre_usuario
+        ])
+    );
 
-            const desarrollador = desarrolladores.find(user => user.id === juego.id_desarrollador);
+    // Conservar el orden de adquisición o agregado
+    return ids.map(id => {
+        const juego = juegosPorId.get(String(id));
 
-            return {
-                ...juego,
-                desarrollador: desarrollador ? desarrollador.nombre_usuario : "Desarrollador desconocido",
-                dlcs: dlcs.filter(dlc => dlc.id_videojuego === juego.id)
-            };
-        })
-        .filter(Boolean);
+        if (!juego) return null;
+
+        const resultado = {
+            ...juego,
+            id: String(juego._id),
+            id_desarrollador: String(juego.id_desarrollador),
+            desarrollador: nombresDesarrolladores.get(String(juego.id_desarrollador)) || "Desarrollador desconocido",
+            portada: juego.portada ? `/api/videojuegos/${juego._id}/portada` : null,
+
+            dlcs: (juego.dlcs || []).map(dlc => ({
+                id: String(dlc._id),
+                id_videojuego: String(juego._id),
+                nombre: dlc.nombre,
+                tipo_contenido: dlc.tipo_contenido,
+                descripcion: dlc.descripcion
+            }))
+        };
+
+        delete resultado._id;
+        delete resultado.__v;
+
+        return resultado;
+
+    }).filter(Boolean);
 }
 
 // Leer un usuario jugador a partir del :id de la URL.
-// Devuelve el usuario o responde con el error y devuelve null.
 async function obtenerJugador(req, res) {
-    const id = leerIdPositivo(req.params.id);
+    const id = leerId(req.params.id);
 
-    if (id === null) {
-        res.status(400).json({ message: "Identificador de usuario inválido" });
+    if (!id) {
+        res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
+
         return null;
     }
 
-    const usuario = await Usuario.findOne({ id }).lean();
+    if (req.usuario.role !== "jugador") {
+        res.status(403).json({
+            message: "Solo los jugadores tienen biblioteca y favoritos"
+        });
 
-    if (!usuario) {
-        res.status(404).json({ message: "Usuario no encontrado" });
         return null;
     }
 
-    if (usuario.role !== "jugador") {
-        res.status(403).json({ message: "Solo los jugadores tienen biblioteca y favoritos" });
+    const jugador = await Jugador.findById(id).select("creditos atributos.biblioteca atributos.favoritos atributos.favoritos_perfil").lean();
+
+    if (!jugador) {
+        res.status(404).json({
+            message: "Usuario no encontrado"
+        });
+
         return null;
     }
 
-    return usuario;
+    return jugador;
 }
 
-// Consultar la biblioteca del usuario
 async function listarBiblioteca(req, res) {
     try {
-        const usuario = await obtenerJugador(req, res);
-        if (!usuario) return;
+        const jugador = await obtenerJugador(req, res);
 
-        const registros = await Biblioteca.find({ usuario_id: usuario.id }).sort({ _id: 1 }).lean();
-        const videojuegos = await armarJuegos(registros);
+        if (!jugador) return;
 
-        res.status(200).json({ total: videojuegos.length, videojuegos });
+        const videojuegos = await armarJuegos(
+            jugador.atributos.biblioteca
+        );
+
+        res.status(200).json({
+            total: videojuegos.length,
+            videojuegos
+        });
+
     } catch (error) {
         console.error("Error al consultar la biblioteca:", error);
-        res.status(500).json({ message: "Error al consultar la biblioteca" });
+
+        res.status(500).json({
+            message: "Error al consultar la biblioteca"
+        });
     }
 }
 
 // Adquirir un videojuego: lo agrega a la biblioteca y transfiere los créditos al desarrollador
 async function agregarABiblioteca(req, res) {
-    const idJuego = leerIdPositivo(req.body?.videojuego_id);
+    const idJuego = leerId(req.body?.videojuego_id);
+    const idJugador = req.usuario.id;
 
-    if (idJuego === null) {
-        return res.status(400).json({ message: "Identificador de videojuego inválido" });
+    if (!idJuego) {
+        return res.status(400).json({
+            message: "Identificador de videojuego inválido"
+        });
     }
 
-    let sesion;
+    if (req.usuario.role !== "jugador") {
+        return res.status(403).json({
+            message: "Solo los jugadores pueden adquirir videojuegos"
+        });
+    }
 
     try {
-        const usuario = await obtenerJugador(req, res);
-        if (!usuario) return;
+        const resultado = await transaccion(async session => {
 
-        const juego = await Videojuego.findOne({ id: idJuego }).lean();
+            // Consultar el videojuego dentro de la transacción
+            const juego = await Videojuego.findById(idJuego)
+                .select("precio_creditos estado id_desarrollador")
+                .session(session)
+                .lean();
 
-        if (!juego) {
-            return res.status(404).json({ message: "Videojuego no encontrado" });
-        }
+            if (!juego) {
+                return {
+                    status: 404,
+                    message: "Videojuego no encontrado"
+                };
+            }
 
-        if (juego.estado !== "publicado") {
-            return res.status(409).json({ message: "Este videojuego ya no está disponible en el catálogo" });
-        }
+            if (juego.estado !== "publicado") {
+                return {
+                    status: 409,
+                    message: "Este videojuego ya no está disponible en el catálogo"
+                };
+            }
 
-        if (await Biblioteca.exists({ usuario_id: usuario.id, videojuego_id: idJuego })) {
-            return res.status(409).json({ message: "Ya tienes este videojuego en tu biblioteca" });
-        }
+            // Consultar el jugador
+            const jugador = await Jugador.findById(idJugador)
+                .select("creditos atributos.biblioteca")
+                .session(session)
+                .lean();
 
-        const desarrollador = await Usuario.exists({ id: juego.id_desarrollador, role: "desarrollador" });
+            if (!jugador) {
+                return {
+                    status: 404,
+                    message: "Jugador no encontrado"
+                };
+            }
 
-        if (!desarrollador) {
-            return res.status(409).json({ message: "El videojuego no tiene un desarrollador válido" });
-        }
+            // Evitar adquisiciones duplicadas
+            if (contieneId(jugador.atributos.biblioteca, idJuego)) {
+                return {
+                    status: 409,
+                    message: "Ya tienes este videojuego en tu biblioteca"
+                };
+            }
 
-        if (!Number.isSafeInteger(juego.precio_creditos) || juego.precio_creditos < 1) {
-            return res.status(500).json({ message: "Datos de créditos inválidos" });
-        }
+            const precio = juego.precio_creditos;
 
-        if (usuario.creditos < juego.precio_creditos) {
-            return res.status(409).json({ message: "No tienes créditos suficientes para adquirir este videojuego" });
-        }
+            if (!Number.isSafeInteger(precio) || precio < 1) {
+                throw new Error("Precio de videojuego inválido");
+            }
 
-        // Transferencia atómica: o se hace todo o no se hace nada
-        sesion = await mongoose.startSession();
-        let jugadorActualizado = null;
+            // Comprobar saldo
+            if (jugador.creditos < precio) {
+                return {
+                    status: 409,
+                    message: "No tienes créditos suficientes para adquirir este videojuego"
+                };
+            }
 
-        await sesion.withTransaction(async () => {
-            // Descontar solo si todavía le alcanza (evita saldo negativo con dos clics rápidos)
-            jugadorActualizado = await Usuario.findOneAndUpdate(
-                { id: usuario.id, creditos: { $gte: juego.precio_creditos } },
-                { $inc: { creditos: -juego.precio_creditos } },
-                { new: true, session: sesion }
-            ).lean();
+            // Descontar créditos y agregar a la biblioteca
+            const jugadorActualizado = await Jugador.findOneAndUpdate(
+                {
+                    _id: idJugador,
+                    creditos: { $gte: precio },
+                    "atributos.biblioteca": { $ne: idJuego }
+                },
+                {
+                    $inc: {
+                        creditos: -precio,
+                        __v: 1
+                    },
+                    $addToSet: {
+                        "atributos.biblioteca": idJuego
+                    }
+                },
+                {
+                    new: true,
+                    session,
+                    runValidators: true
+                }
+            )
+                .select(
+                    "nombre_usuario correo role creditos descripcion_publica foto_perfil"
+                )
+                .lean();
 
-            if (!jugadorActualizado) return;
+            if (!jugadorActualizado) {
+                return {
+                    status: 409,
+                    message: "No fue posible realizar la adquisición"
+                };
+            }
 
-            await Usuario.updateOne(
-                { id: juego.id_desarrollador },
-                { $inc: { creditos: juego.precio_creditos } },
-                { session: sesion }
+            // Transferir el 100% de los créditos al desarrollador
+            const transferencia = await Desarrollador.updateOne(
+                {
+                    _id: juego.id_desarrollador
+                },
+                {
+                    $inc: {
+                        creditos: precio,
+                        __v: 1
+                    }
+                },
+                { session }
             );
 
-            await Biblioteca.create(
-                [{ usuario_id: usuario.id, videojuego_id: idJuego }],
-                { session: sesion }
+            // Si el desarrollador no existe, revertir la transacción
+            if (transferencia.matchedCount !== 1) {
+                const error = new Error(
+                    "El videojuego no tiene un desarrollador válido"
+                );
+
+                error.status = 409;
+
+                throw error;
+            }
+
+            // Detectar cambios concurrentes en el videojuego
+            const comprobacion = await Videojuego.updateOne(
+                {
+                    _id: idJuego,
+                    estado: "publicado"
+                },
+                {
+                    $inc: { __v: 1 }
+                },
+                { session }
             );
+
+            if (comprobacion.matchedCount !== 1) {
+                const error = new Error(
+                    "El videojuego ya no está disponible"
+                );
+
+                error.status = 409;
+
+                throw error;
+            }
+
+            return {
+                status: 201,
+                message: "Videojuego agregado a tu biblioteca",
+                user: datosUsuario(jugadorActualizado)
+            };
         });
 
-        if (!jugadorActualizado) {
-            return res.status(409).json({ message: "No tienes créditos suficientes para adquirir este videojuego" });
-        }
+        const { status, ...respuesta } = resultado;
 
-        res.status(201).json({
-            message: "Videojuego agregado a tu biblioteca",
-            user: usuarioPublico(jugadorActualizado)
-        });
+        res.status(status).json(respuesta);
+
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(409).json({ message: "Ya tienes este videojuego en tu biblioteca" });
+        if (error.status === 409) {
+            return res.status(409).json({
+                message: error.message
+            });
         }
 
-        console.error("Error al agregar a la biblioteca:", error);
-        res.status(500).json({ message: "Error al adquirir el videojuego" });
-    } finally {
-        if (sesion) await sesion.endSession();
+        console.error("Error al adquirir videojuego:", error);
+
+        res.status(500).json({
+            message: "Error al adquirir el videojuego"
+        });
     }
 }
 
 // Consultar los favoritos del usuario
 async function listarFavoritos(req, res) {
     try {
-        const usuario = await obtenerJugador(req, res);
-        if (!usuario) return;
+        const jugador = await obtenerJugador(req, res);
 
-        const registros = await Favorito.find({ usuario_id: usuario.id }).sort({ _id: 1 }).lean();
-        const videojuegos = await armarJuegos(registros);
+        if (!jugador) return;
+
+        const videojuegos = await armarJuegos(
+            jugador.atributos.favoritos
+        );
+
+        const favoritosPerfil =
+            jugador.atributos.favoritos_perfil;
 
         res.status(200).json({
             total: videojuegos.length,
             videojuegos,
-            favoritos_perfil: usuario.favoritos_perfil && usuario.favoritos_perfil.length
-                ? usuario.favoritos_perfil
-                : [null, null, null]
+
+            favoritos_perfil: favoritosPerfil.map(id => id === null ? null : String(id))
         });
+
     } catch (error) {
-        console.error("Error al consultar los favoritos:", error);
-        res.status(500).json({ message: "Error al consultar los favoritos" });
+        console.error("Error al consultar favoritos:", error);
+
+        res.status(500).json({
+            message: "Error al consultar los favoritos"
+        });
     }
 }
 
 // Agregar un videojuego a favoritos (no requiere haberlo adquirido)
 async function agregarFavorito(req, res) {
-    const idJuego = leerIdPositivo(req.body?.videojuego_id);
+    const idJuego = leerId(req.body?.videojuego_id);
 
-    if (idJuego === null) {
-        return res.status(400).json({ message: "Identificador de videojuego inválido" });
+    if (!idJuego) {
+        return res.status(400).json({
+            message: "Identificador de videojuego inválido"
+        });
     }
 
     try {
-        const usuario = await obtenerJugador(req, res);
-        if (!usuario) return;
+        const jugador = await obtenerJugador(req, res);
 
-        if (!(await Videojuego.exists({ id: idJuego }))) {
-            return res.status(404).json({ message: "Videojuego no encontrado" });
+        if (!jugador) return;
+
+        if (!(await Videojuego.exists({ _id: idJuego }))) {
+            return res.status(404).json({
+                message: "Videojuego no encontrado"
+            });
         }
 
-        if (await Favorito.exists({ usuario_id: usuario.id, videojuego_id: idJuego })) {
-            return res.status(200).json({ message: "El videojuego ya estaba en tus favoritos" });
+        // Agregar solamente si todavía no existe
+        const resultado = await Jugador.updateOne(
+            {
+                _id: jugador._id,
+                "atributos.favoritos": { $ne: idJuego }
+            },
+            {
+                $addToSet: {
+                    "atributos.favoritos": idJuego
+                },
+                $inc: { __v: 1 }
+            },
+            { runValidators: true }
+        );
+
+        if (resultado.matchedCount === 0) {
+            return res.status(200).json({
+                message: "El videojuego ya estaba en tus favoritos"
+            });
         }
 
-        await Favorito.create({ usuario_id: usuario.id, videojuego_id: idJuego });
+        res.status(201).json({
+            message: "Videojuego agregado a favoritos"
+        });
 
-        res.status(201).json({ message: "Videojuego agregado a favoritos" });
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(200).json({ message: "El videojuego ya estaba en tus favoritos" });
-        }
-
         console.error("Error al agregar favorito:", error);
-        res.status(500).json({ message: "Error al agregar a favoritos" });
+
+        res.status(500).json({
+            message: "Error al agregar a favoritos"
+        });
     }
 }
 
 // Quitar un videojuego de favoritos
 async function eliminarFavorito(req, res) {
-    const idJuego = leerIdPositivo(req.params.juegoId);
+    const idJuego = leerId(req.params.juegoId);
 
-    if (idJuego === null) {
-        return res.status(400).json({ message: "Identificador de videojuego inválido" });
+    if (!idJuego) {
+        return res.status(400).json({
+            message: "Identificador de videojuego inválido"
+        });
     }
 
     try {
-        const usuario = await obtenerJugador(req, res);
-        if (!usuario) return;
+        const jugador = await obtenerJugador(req, res);
 
-        const resultado = await Favorito.deleteOne({ usuario_id: usuario.id, videojuego_id: idJuego });
+        if (!jugador) return;
 
-        if (resultado.deletedCount === 0) {
-            return res.status(404).json({ message: "El videojuego no está en tus favoritos" });
+        const resultado = await Jugador.updateOne(
+            {
+                _id: jugador._id,
+                "atributos.favoritos": idJuego
+            },
+            {
+                $pull: {
+                    "atributos.favoritos": idJuego
+                },
+                $inc: { __v: 1 }
+            }
+        );
+
+        if (resultado.matchedCount === 0) {
+            return res.status(404).json({
+                message: "El videojuego no está en tus favoritos"
+            });
         }
 
-        res.status(200).json({ message: "Videojuego quitado de favoritos" });
+        res.status(200).json({
+            message: "Videojuego quitado de favoritos"
+        });
+
     } catch (error) {
         console.error("Error al quitar favorito:", error);
-        res.status(500).json({ message: "Error al quitar de favoritos" });
+
+        res.status(500).json({
+            message: "Error al quitar de favoritos"
+        });
     }
 }
 

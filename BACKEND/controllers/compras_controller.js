@@ -1,151 +1,199 @@
-const mongoose = require("mongoose");
 const stripe = require("../config/stripe");
-const Compra = require("../models/compra");
-const Usuario = require("../models/usuario");
-const { siguienteId } = require("../models/contador");
+const { getModel } = require("../storage");
+const { leerId, mismoId } = require("../utils/mongo_utils");
 const { PAQUETES, buscarPaquete } = require("../config/paquetes");
+const Jugador = getModel("jugadores");
 
-
-// GET /api/compras → historial del jugador (más reciente primero)
+// ---------- Historial de compras ----------
+// GET /api/compras
 async function listarCompras(req, res) {
     try {
-        const compras = await Compra.find({ usuario_id: req.usuario.id })
-            .sort({ fecha: -1 })
-            .select("-_id")
-            .lean();
+        const jugador = await Jugador.findById(req.usuario.id).select("atributos.compras").lean();
 
+        if (!jugador) {
+            return res.status(404).json({
+                message: "Jugador no encontrado"
+            });
+        }
+
+        const compras = (jugador.atributos.compras || [])
+            .map(compra => ({
+                id: String(compra._id),
+                usuario_id: String(jugador._id),
+                creditos: compra.creditos,
+                monto: compra.monto,
+                metodo: compra.metodo,
+                fecha: compra.fecha
+            })).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
         res.status(200).json({ compras });
+
     } catch (error) {
         console.error("Error al listar compras:", error);
-        res.status(500).json({ message: "Error al consultar el historial" });
+        res.status(500).json({
+            message: "Error al consultar el historial"
+        });
     }
 }
 
 
-// GET /api/compras/paquetes → paquetes y precios disponibles
+// ---------- Paquetes disponibles ----------
+// GET /api/compras/paquetes
 function listarPaquetes(req, res) {
-    res.status(200).json({ paquetes: PAQUETES });
+    res.status(200).json({
+        paquetes: PAQUETES
+    });
 }
 
-
-// POST /api/compras/checkout → crea la sesión de Stripe Checkout
+// ---------- Stripe Checkout ----------
+// POST /api/compras/checkout
 async function crearSesionCheckout(req, res) {
     const paquete = buscarPaquete(Number(req.body?.paquete));
 
     if (!paquete) {
-        return res.status(400).json({ message: "Elige un paquete de créditos válido" });
+        return res.status(400).json({
+            message: "Elige un paquete de créditos válido"
+        });
     }
 
     try {
         const sesion = await stripe.checkout.sessions.create({
             mode: "payment",
+            allowed_payment_method_types: ["card"],
             line_items: [{
                 quantity: 1,
                 price_data: {
                     currency: "mxn",
                     unit_amount: paquete.precio_centavos,
-                    product_data: { name: `${paquete.creditos} créditos SteamPirata` }
+                    product_data: {
+                        name: `${paquete.creditos} créditos SteamPirata`
+                    }
                 }
             }],
             customer_email: req.usuario.correo,
             client_reference_id: String(req.usuario.id),
             metadata: {
+                aplicacion: "SteamPirata",
                 usuario_id: String(req.usuario.id),
                 creditos: String(paquete.creditos)
             },
             success_url: `${process.env.FRONTEND_URL}/user_profile.html?pago=exito&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/user_profile.html?pago=cancelado`,
-            expires_at: Math.floor(Date.now() / 1000) + 30 * 60   // expira en 30 minutos
+            expires_at: Math.floor(Date.now() / 1000) + 30 * 60
+        });
+        res.status(201).json({
+            url: sesion.url
         });
 
-        res.status(201).json({ url: sesion.url });
     } catch (error) {
         console.error("Error al crear sesión de Stripe:", error);
-        res.status(502).json({ message: "No se pudo iniciar el pago con Stripe" });
+        res.status(502).json({
+            message: "No se pudo iniciar el pago con Stripe"
+        });
     }
 }
 
 
-// Acredita los créditos UNA sola vez por sesión de Stripe.
-// La compra y la suma de créditos van en una transacción: o se guardan las dos o ninguna.
-// El índice único de stripe_session_id impide registrar la misma sesión dos veces.
+// ---------- Acreditación de créditos ----------
 async function acreditarCompra(sesionStripe) {
+    const usuarioId = leerId(sesionStripe.metadata?.usuario_id);
     const paquete = buscarPaquete(Number(sesionStripe.metadata?.creditos));
-    const usuarioId = Number(sesionStripe.metadata?.usuario_id);
 
-    // Validar que lo cobrado coincida con el paquete
-    if (!paquete ||
-        !Number.isSafeInteger(usuarioId) ||
-        sesionStripe.currency !== "mxn" ||
-        sesionStripe.amount_total !== paquete.precio_centavos) {
+    // Verificar que sea un pago de prueba
+    // correspondiente a SteamPirata
+    if (sesionStripe.livemode !== false || sesionStripe.mode !== "payment" || sesionStripe.payment_status !== "paid" || sesionStripe.metadata?.aplicacion !== "SteamPirata") {
+        return;
+    }
+
+    // Verificar el usuario, paquete y monto pagado
+    if (!usuarioId || !paquete || !mismoId(sesionStripe.client_reference_id, usuarioId) || sesionStripe.currency !== "mxn" || sesionStripe.amount_total !== paquete.precio_centavos
+    ) {
         console.warn("Sesión de Stripe con datos inconsistentes:", sesionStripe.id);
         return;
     }
 
-    // Si ya se registró, no hacer nada (Stripe puede mandar el mismo evento varias veces)
-    if (await Compra.exists({ stripe_session_id: sesionStripe.id })) {
+    // Preparar el subdocumento de la compra
+    const compra = {
+        creditos: paquete.creditos,
+        monto: sesionStripe.amount_total / 100,
+        metodo: "card",
+        stripe_session_id: sesionStripe.id,
+        fecha: new Date()
+    };
+
+    // Incrementar el saldo y registrar la compra
+    // únicamente si la sesión no fue acreditada antes
+    const resultado = await Jugador.updateOne(
+        {
+            _id: usuarioId,
+
+            "atributos.compras.stripe_session_id": {
+                $ne: sesionStripe.id
+            }
+        },
+        {
+            $inc: {
+                creditos: paquete.creditos,
+                __v: 1
+            },
+
+            $push: {
+                "atributos.compras": compra
+            }
+        },
+        {
+            runValidators: true
+        }
+    );
+
+    if (resultado.modifiedCount === 1) {
+        console.log("Créditos acreditados correctamente:", paquete.creditos);
         return;
     }
 
-    const sesionDb = await mongoose.startSession();
+    // Distinguir una compra duplicada de una cuenta eliminada
+    const jugadorExiste = await Jugador.exists({
+        _id: usuarioId
+    });
 
-    try {
-        const idCompra = await siguienteId("compras");
-
-        await sesionDb.withTransaction(async () => {
-            const resultado = await Usuario.updateOne(
-                { id: usuarioId, role: "jugador" },
-                { $inc: { creditos: paquete.creditos } },
-                { session: sesionDb }
-            );
-
-            if (resultado.matchedCount === 0) {
-                throw new Error("USUARIO_NO_EXISTE");
-            }
-
-            await Compra.create([{
-                id: idCompra,
-                usuario_id: usuarioId,
-                creditos: paquete.creditos,
-                monto: sesionStripe.amount_total / 100,
-                metodo: sesionStripe.payment_method_types?.[0] || "card",
-                stripe_session_id: sesionStripe.id,
-                fecha: new Date()
-            }], { session: sesionDb });
-        });
-    } catch (error) {
-        if (error.code === 11000) return;   // otro aviso igual ya la registró
-
-        if (error.message === "USUARIO_NO_EXISTE") {
-            console.warn("Pago de un usuario que ya no existe:", sesionStripe.id);
-            return;
-        }
-
-        throw error;   // → 500 y Stripe reintenta más tarde
-    } finally {
-        await sesionDb.endSession();
+    if (!jugadorExiste) {
+        console.warn("Pago de prueba de un usuario que ya no existe:", sesionStripe.id);
+        return;
     }
+
+    console.log("Compra previamente acreditada:", sesionStripe.id);
 }
 
 
-// POST /api/stripe/webhook → ÚNICO lugar donde se suman créditos
+// ---------- Webhook de Stripe ----------
+// POST /api/stripe/webhook
 async function webhookStripe(req, res) {
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+        return res.status(503).json({
+            message: "Webhook de Stripe no configurado"
+        });
+    }
+
     let evento;
 
-    // Verificar que el aviso realmente venga de Stripe
+    // Verificar la autenticidad del evento
     try {
-        evento = stripe.webhooks.constructEvent(
-            req.body,
-            req.get("stripe-signature"),
-            process.env.STRIPE_WEBHOOK_SECRET
-        );
+        evento = stripe.webhooks.constructEvent(req.body, req.get("stripe-signature"), process.env.STRIPE_WEBHOOK_SECRET);
+
     } catch (error) {
-        return res.status(400).send(`Firma de webhook inválida: ${error.message}`);
+        return res.status(400).json({
+            message: "Firma de webhook inválida"
+        });
+    }
+
+    // No procesar eventos de pagos reales
+    if (evento.livemode !== false) {
+        return res.status(400).json({
+            message: "Solo se permiten eventos de prueba"
+        });
     }
 
     try {
         const sesion = evento.data.object;
-
         switch (evento.type) {
             case "checkout.session.completed":
             case "checkout.session.async_payment_succeeded":
@@ -153,57 +201,92 @@ async function webhookStripe(req, res) {
                     await acreditarCompra(sesion);
                 }
                 break;
-
             case "checkout.session.async_payment_failed":
                 console.log("Pago fallido:", sesion.id);
                 break;
-
             case "checkout.session.expired":
-                console.log("Sesión expirada sin pago:", sesion.id);
+                console.log("Sesión expirada:", sesion.id);
                 break;
         }
 
-        res.status(200).json({ received: true });
+        res.status(200).json({
+            received: true
+        });
+
     } catch (error) {
         console.error("Error al procesar webhook:", error);
+
+        // Stripe podrá reintentar la entrega del evento
         res.status(500).end();
     }
 }
 
-
-// GET /api/compras/checkout/:sessionId → el frontend pregunta cómo quedó el pago
+// ---------- Consultar estado del pago ----------
+// GET /api/compras/checkout/:sessionId
 async function estadoSesion(req, res) {
     const { sessionId } = req.params;
 
-    if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(sessionId)) {
-        return res.status(400).json({ message: "Sesión inválida" });
+    if (!/^cs_test_[A-Za-z0-9]+$/.test(sessionId)) {
+        return res.status(400).json({
+            message: "Sesión inválida"
+        });
     }
 
     try {
         const sesion = await stripe.checkout.sessions.retrieve(sessionId);
 
-        if (sesion.metadata?.usuario_id !== String(req.usuario.id)) {
-            return res.status(403).json({ message: "Esta sesión no te pertenece" });
+        if (sesion.livemode !== false || sesion.metadata?.aplicacion !== "SteamPirata" || !mismoId(sesion.metadata?.usuario_id, req.usuario.id)) {
+            return res.status(403).json({
+                message: "Esta sesión no te pertenece"
+            });
         }
 
-        const acreditada = await Compra.exists({ stripe_session_id: sessionId });
-        const usuario = await Usuario.findOne({ id: req.usuario.id }, "creditos").lean();
+        const jugador = await Jugador.findById(req.usuario.id).select("creditos atributos.compras").lean();
+
+        if (!jugador) {
+            return res.status(404).json({
+                message: "Jugador no encontrado"
+            });
+        }
+
+        const acreditada = (jugador.atributos.compras || []).some(compra => compra.stripe_session_id === sessionId);
 
         let estado;
-        if (acreditada) estado = "acreditada";
-        else if (sesion.payment_status === "paid") estado = "procesando";   // webhook en camino
-        else if (sesion.status === "complete") estado = "pendiente";        // ej. OXXO sin pagar
-        else if (sesion.status === "expired") estado = "expirada";
-        else estado = "fallida";
+
+        if (acreditada) {
+            estado = "acreditada";
+        } else if (sesion.payment_status === "paid") {
+            estado = "procesando";
+        } else if (sesion.status === "complete") {
+            estado = "pendiente";
+        } else if (sesion.status === "expired") {
+            estado = "expirada";
+        } else {
+            estado = "fallida";
+        }
 
         res.status(200).json({
             estado,
             creditos: Number(sesion.metadata.creditos),
-            saldo: usuario ? usuario.creditos : null
+            saldo: jugador.creditos
         });
+
     } catch (error) {
-        console.error("Error al consultar la sesión de Stripe:", error);
-        res.status(500).json({ message: "No se pudo verificar el pago" });
+
+        if (error.code === "resource_missing") {
+            return res.status(404).json({
+                message: "Sesión de pago no encontrada"
+            });
+        }
+
+        console.error(
+            "Error al consultar la sesión de Stripe:",
+            error
+        );
+
+        res.status(500).json({
+            message: "No se pudo verificar el pago"
+        });
     }
 }
 

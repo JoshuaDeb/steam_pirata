@@ -1,7 +1,6 @@
-{ 
+{
   "scripts": {
-    "start": "node server.js",
-    "seed": "node scripts/seed.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

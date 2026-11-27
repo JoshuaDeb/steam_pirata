@@ -1,4 +1,5 @@
 require("dotenv").config({ quiet: true });
+const mongoose = require("mongoose");
 const express = require("express");
 const path = require("path");
 const authRoutes = require("./routes/auth_routes");
@@ -67,14 +68,41 @@ app.use((error, req, res, next) => {
     res.status(500).json({ message: "Error interno del servidor" });
 });
 
-// Conectar a MongoDB y después iniciar el servidor
-conectarDB()
-    .then(() => {
+// Conectar a MongoDB, preparar modelos e iniciar el servidor
+async function iniciarServidor() {
+    try {
+        await conectarDB();
+
+        // Esperar la inicialización de todos los modelos
+        for (const nombre of mongoose.modelNames()) {
+            const modelo = mongoose.model(nombre);
+            await modelo.init();
+            console.log(`Modelo preparado: ${nombre}`);
+        }
+
+        // Consultar las colecciones reales de MongoDB
+        const colecciones = await mongoose.connection.db.listCollections({}, { nameOnly: true }).toArray();
+
+        const nombres = colecciones.map(coleccion => coleccion.name).sort();
+        const esperadas = ["amistades","resenas","usuarios","videojuegos"];
+        console.log("Colecciones:", nombres);
+
+        if (nombres.join(",") !== esperadas.join(",")) {
+            throw new Error("La base de datos no tiene las cuatro colecciones esperadas");
+        }
+
+        console.log("Arquitectura de MongoDB verificada");
+        console.log("Modelos e índices preparados");
+
         app.listen(PORT, () => {
             console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
         });
-    })
-    .catch((error) => {
-        console.error("No se pudo conectar a MongoDB:", error.message);
+
+    } catch (error) {
+        console.error("No se pudo iniciar el servidor:", error.message);
+        await mongoose.disconnect();
         process.exit(1);
-    });
+    }
+}
+
+iniciarServidor();

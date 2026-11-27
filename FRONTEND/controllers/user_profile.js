@@ -226,9 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Obtener los tres videojuegos seleccionados, respetando el orden
-        const idsElegidos = selectsFavoritos.map(select =>
-            select.value ? Number(select.value) : null
-        );
+        const idsElegidos = selectsFavoritos.map(select => select.value ? select.value : null);
 
         const idsNoVacios = idsElegidos.filter(id => id !== null);
 
@@ -403,7 +401,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const portada = juego.portada
                 ? `<img class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                        src="/assets/images/${encodeURIComponent(juego.portada)}" alt="">`
+            src="${escaparHtml(juego.portada)}" alt="">`
                 : escaparHtml(inicialesJuego(juego.titulo));
 
             return `

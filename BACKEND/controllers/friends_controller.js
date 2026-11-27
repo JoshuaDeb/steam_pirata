@@ -1,19 +1,17 @@
-const Usuario = require("../models/usuario");
-const Amistad = require("../models/amistad");
-const Videojuego = require("../models/videojuego");
-const { siguienteId } = require("../models/contador");
+const { getModel } = require("../storage");
+
+const { leerId, mismoId, escaparRegex } = require("../utils/mongo_utils");
+
+const Usuario = getModel("usuarios");
+const Jugador = getModel("jugadores");
+const Amistad = getModel("amistades");
+const Videojuego = getModel("videojuegos");
 
 const POR_PAGINA = 10;
 
 
 // ---------- Utilidades ----------
-
-// Escapar caracteres especiales para usar un texto dentro de una expresión regular
-function escaparRegex(texto) {
-    return texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-// Filtro de MongoDB para encontrar la relación entre dos jugadores (en cualquier dirección)
+// Encontrar una relación en cualquier dirección
 function filtroRelacion(idA, idB) {
     return {
         $or: [
@@ -23,113 +21,163 @@ function filtroRelacion(idA, idB) {
     };
 }
 
-// Buscar los videojuegos destacados de varios jugadores en una sola consulta
-async function cargarJuegosDestacados(jugadores) {
-    const ids = jugadores.flatMap(jugador => jugador.favoritos_perfil || []).filter(id => id !== null);
 
-    return Videojuego.find({ id: { $in: ids } }, "id titulo portada").lean();
+// Consultar los videojuegos destacados de varios jugadores
+async function cargarJuegosDestacados(jugadores) {
+    const ids = jugadores
+        .flatMap(jugador =>
+            jugador.atributos?.favoritos_perfil || []
+        )
+        .filter(id => id !== null);
+
+    return Videojuego.find(
+        { _id: { $in: ids } },
+        "titulo portada"
+    ).lean();
 }
 
-// Videojuegos destacados en el perfil público de un jugador.
-// Siempre devuelve 3 posiciones: { id, titulo, portada } o null si está vacía.
+
+// Obtener los tres videojuegos destacados
 function obtenerFavoritosPerfil(jugador, videojuegos) {
-    const ids = Array.isArray(jugador.favoritos_perfil) ? jugador.favoritos_perfil : [];
+    const ids = jugador.atributos?.favoritos_perfil || [];
 
     return [0, 1, 2].map(posicion => {
-        const juego = videojuegos.find(item => item.id === ids[posicion]);
+        const juego = videojuegos.find(item => mismoId(item._id, ids[posicion]));
 
         return juego
-            ? { id: juego.id, titulo: juego.titulo, portada: juego.portada || "" }
+            ? {
+                id: String(juego._id),
+                titulo: juego.titulo,
+                portada: juego.portada ? `/api/videojuegos/${juego._id}/portada` : ""
+            }
             : null;
     });
 }
 
-// Datos públicos de un jugador para las listas de amistades
+
+// Preparar los datos públicos de un jugador
 function jugadorPublico(jugador, videojuegos) {
     return {
-        id: jugador.id,
+        id: String(jugador._id),
         nombre_usuario: jugador.nombre_usuario,
         descripcion_publica: jugador.descripcion_publica || "",
         foto_perfil: jugador.foto_perfil || null,
-        favoritos_perfil: obtenerFavoritosPerfil(jugador, videojuegos)
+
+        favoritos_perfil: obtenerFavoritosPerfil(
+            jugador,
+            videojuegos
+        )
     };
 }
 
-// Quitar campos internos de MongoDB antes de responder
-function limpiar(documento) {
-    const objeto = documento.toObject ? documento.toObject() : { ...documento };
 
-    delete objeto._id;
-    delete objeto.__v;
+// Consultar exclusivamente los campos públicos
+function consultarJugadores(filtro) {
+    return Jugador.find(filtro).select(
+        "nombre_usuario descripcion_publica foto_perfil atributos.favoritos_perfil"
+    );
+}
 
-    return objeto;
+
+// Preparar una amistad para enviarla al frontend
+function limpiar(amistad) {
+    return {
+        id: String(amistad._id),
+        solicitante_id: String(amistad.solicitante_id),
+        receptor_id: String(amistad.receptor_id),
+        estado: amistad.estado,
+        fecha_creacion: amistad.fecha_creacion,
+        fecha_aceptacion: amistad.fecha_aceptacion
+    };
 }
 
 
 // ---------- Endpoints ----------
-
-// GET /api/friends/search → buscar jugadores para agregar
+// GET /api/friends/search
 async function buscarJugadores(req, res) {
     const usuarioId = req.usuario.id;
     const busqueda = typeof req.query.busqueda === "string" ? req.query.busqueda.trim() : "";
+
     const pagina = Number(req.query.pagina || 1);
     const orden = req.query.orden || "az";
 
     if (busqueda.length > 50) {
-        return res.status(400).json({ message: "La búsqueda no puede superar 50 caracteres" });
+        return res.status(400).json({
+            message: "La búsqueda no puede superar 50 caracteres"
+        });
     }
 
     if (!Number.isSafeInteger(pagina) || pagina < 1) {
-        return res.status(400).json({ message: "Número de página inválido" });
+        return res.status(400).json({
+            message: "Número de página inválido"
+        });
     }
 
-    if (orden !== "az" && orden !== "reciente") {
-        return res.status(400).json({ message: "Ordenamiento inválido" });
+    if (!["az", "reciente"].includes(orden)) {
+        return res.status(400).json({
+            message: "Ordenamiento inválido"
+        });
     }
 
     try {
-        // Jugadores registrados, excepto el usuario actual
-        const filtro = { role: "jugador", id: { $ne: usuarioId } };
+        // Excluir al usuario autenticado
+        const filtro = {
+            _id: { $ne: usuarioId }
+        };
 
         if (busqueda) {
-            filtro.nombre_usuario = new RegExp(escaparRegex(busqueda), "i");
+            filtro.nombre_usuario = new RegExp(
+                escaparRegex(busqueda),
+                "i"
+            );
         }
 
-        const totalResultados = await Usuario.countDocuments(filtro);
+        const totalResultados = await Jugador.countDocuments(filtro);
+
         const totalPaginas = Math.max(1, Math.ceil(totalResultados / POR_PAGINA));
 
-        const encontrados = await Usuario.find(filtro)
-            .sort(orden === "reciente" ? { id: -1 } : { nombre_usuario: 1 })
+        const encontrados = await consultarJugadores(filtro)
+            .sort(orden === "reciente" ? { createdAt: -1, _id: -1 } : { nombre_usuario: 1, _id: 1 })
             .collation({ locale: "es" })
             .skip((pagina - 1) * POR_PAGINA)
             .limit(POR_PAGINA)
             .lean();
 
-        // Relaciones entre el usuario actual y los jugadores de esta página
-        const idsPagina = encontrados.map(jugador => jugador.id);
+        const idsPagina = encontrados.map(
+            jugador => jugador._id
+        );
 
+        // Consultar relaciones de los jugadores encontrados
         const relaciones = await Amistad.find({
             $or: [
-                { solicitante_id: usuarioId, receptor_id: { $in: idsPagina } },
-                { receptor_id: usuarioId, solicitante_id: { $in: idsPagina } }
+                {
+                    solicitante_id: usuarioId,
+                    receptor_id: { $in: idsPagina }
+                },
+                {
+                    receptor_id: usuarioId,
+                    solicitante_id: { $in: idsPagina }
+                }
             ]
         }).lean();
 
-        const videojuegos = await cargarJuegosDestacados(encontrados);
+        const videojuegos =
+            await cargarJuegosDestacados(encontrados);
 
         const jugadores = encontrados.map(jugador => {
+
             const relacion = relaciones.find(amistad =>
-                amistad.solicitante_id === jugador.id || amistad.receptor_id === jugador.id
+                mismoId(amistad.solicitante_id, jugador._id) ||
+                mismoId(amistad.receptor_id, jugador._id)
             );
 
             let estadoRelacion = "ninguna";
 
-            if (relacion && relacion.estado === "aceptada") {
+            if (relacion?.estado === "aceptada") {
                 estadoRelacion = "amigos";
-            } else if (relacion && relacion.estado === "pendiente") {
-                estadoRelacion = relacion.solicitante_id === usuarioId
-                    ? "pendiente_enviada"
-                    : "pendiente_recibida";
+
+            } else if (relacion?.estado === "pendiente") {
+                estadoRelacion = mismoId(relacion.solicitante_id,usuarioId) ? "pendiente_enviada" : "pendiente_recibida";
             }
 
             return {
@@ -140,6 +188,7 @@ async function buscarJugadores(req, res) {
 
         res.status(200).json({
             jugadores,
+
             paginacion: {
                 paginaActual: pagina,
                 porPagina: POR_PAGINA,
@@ -147,233 +196,344 @@ async function buscarJugadores(req, res) {
                 totalPaginas
             }
         });
+
     } catch (error) {
         console.error("Error al buscar jugadores:", error);
-        res.status(500).json({ message: "Error al consultar jugadores" });
+
+        res.status(500).json({
+            message: "Error al consultar jugadores"
+        });
     }
 }
 
-// POST /api/friends/request → enviar solicitud de amistad
+// POST /api/friends/request
 async function enviarSolicitud(req, res) {
     const solicitanteId = req.usuario.id;
-    const receptorId = Number((req.body || {}).receptor_id);
+    const receptorId = leerId(req.body?.receptor_id);
 
-    if (!Number.isSafeInteger(receptorId) || receptorId <= 0) {
-        return res.status(400).json({ message: "Identificadores de usuario inválidos" });
+    if (!receptorId) {
+        return res.status(400).json({
+            message: "Identificador de usuario inválido"
+        });
     }
 
-    if (solicitanteId === receptorId) {
-        return res.status(400).json({ message: "No puedes enviarte una solicitud a ti mismo" });
+    if (mismoId(solicitanteId, receptorId)) {
+        return res.status(400).json({
+            message: "No puedes enviarte una solicitud a ti mismo"
+        });
     }
 
     try {
-        const receptor = await Usuario.findOne({ id: receptorId }).lean();
+        const receptor = await Usuario.findById(receptorId).select("role").lean();
 
         if (!receptor) {
-            return res.status(404).json({ message: "Uno de los usuarios no existe" });
+            return res.status(404).json({
+                message: "Uno de los usuarios no existe"
+            });
         }
 
-        // El solicitante ya es jugador (lo revisa requerirJugador en la ruta)
         if (receptor.role !== "jugador") {
-            return res.status(403).json({ message: "Las amistades solo están disponibles para jugadores" });
+            return res.status(403).json({
+                message: "Las amistades solo están disponibles para jugadores"
+            });
         }
 
-        if (await Amistad.exists(filtroRelacion(solicitanteId, receptorId))) {
-            return res.status(409).json({ message: "Ya existe una solicitud o amistad entre estos usuarios" });
+        const existente = await Amistad.exists(filtroRelacion(solicitanteId, receptorId));
+
+        if (existente) {
+            return res.status(409).json({
+                message: "Ya existe una solicitud o amistad entre estos usuarios"
+            });
         }
 
+        // El esquema genera _id y clave_pareja
         const nuevaSolicitud = await Amistad.create({
-            id: await siguienteId("amistades"),
             solicitante_id: solicitanteId,
             receptor_id: receptorId,
-            estado: "pendiente",
-            fecha_creacion: new Date()
+            estado: "pendiente"
         });
 
         res.status(201).json({
             message: "Solicitud de amistad enviada correctamente",
             solicitud: limpiar(nuevaSolicitud)
         });
+
     } catch (error) {
+
+        // El índice único protege contra solicitudes simultáneas
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: "Ya existe una solicitud o amistad entre estos usuarios"
+            });
+        }
+
         console.error("Error al enviar solicitud:", error);
-        res.status(500).json({ message: "Error al enviar la solicitud de amistad" });
+
+        res.status(500).json({
+            message: "Error al enviar la solicitud de amistad"
+        });
     }
 }
 
-// GET /api/friends/requests → solicitudes recibidas y enviadas
+// GET /api/friends/requests
 async function listarSolicitudes(req, res) {
     const usuarioId = req.usuario.id;
 
     try {
         const pendientes = await Amistad.find({
             estado: "pendiente",
-            $or: [{ receptor_id: usuarioId }, { solicitante_id: usuarioId }]
-        }).sort({ id: -1 }).lean();
 
-        // Datos de los otros jugadores (solo los que siguen existiendo)
-        const otrosIds = pendientes.map(amistad =>
-            amistad.receptor_id === usuarioId ? amistad.solicitante_id : amistad.receptor_id
-        );
+            $or: [
+                { receptor_id: usuarioId },
+                { solicitante_id: usuarioId }
+            ]
 
-        const otros = await Usuario.find({ id: { $in: otrosIds }, role: "jugador" }).lean();
+        }).sort({
+            fecha_creacion: -1,
+            _id: -1
+        }).lean();
+
+        // Obtener los identificadores de los otros jugadores
+        const otrosIds = pendientes.map(amistad => mismoId(amistad.receptor_id, usuarioId) ? amistad.solicitante_id : amistad.receptor_id);
+
+        const otros = await consultarJugadores({
+            _id: { $in: otrosIds }
+        }).lean();
+
         const videojuegos = await cargarJuegosDestacados(otros);
 
         function armar(tipo) {
             return pendientes
-                .filter(amistad => tipo === "recibidas"
-                    ? amistad.receptor_id === usuarioId
-                    : amistad.solicitante_id === usuarioId)
+
+                .filter(amistad => tipo === "recibidas" ? mismoId(amistad.receptor_id, usuarioId) : mismoId(amistad.solicitante_id, usuarioId))
+
                 .map(amistad => {
                     const otroId = tipo === "recibidas" ? amistad.solicitante_id : amistad.receptor_id;
-                    const otroJugador = otros.find(usuario => usuario.id === otroId);
+                    const otroJugador = otros.find(usuario =>
+                        mismoId(usuario._id, otroId)
+                    );
 
-                    // Evitar mostrar referencias a cuentas eliminadas
+                    // Ignorar cuentas que ya no existen
                     if (!otroJugador) return null;
 
                     return {
-                        id: amistad.id,
+                        id: String(amistad._id),
                         fecha_creacion: amistad.fecha_creacion,
-                        jugador: jugadorPublico(otroJugador, videojuegos)
+
+                        jugador: jugadorPublico(
+                            otroJugador,
+                            videojuegos
+                        )
                     };
                 })
-                .filter(solicitud => solicitud !== null);
+                .filter(Boolean);
         }
 
         res.status(200).json({
             recibidas: armar("recibidas"),
             enviadas: armar("enviadas")
         });
+
     } catch (error) {
         console.error("Error al consultar solicitudes:", error);
-        res.status(500).json({ message: "Error al consultar solicitudes de amistad" });
+
+        res.status(500).json({
+            message: "Error al consultar solicitudes de amistad"
+        });
     }
 }
 
-// PATCH /api/friends/request/:id/accept → aceptar una solicitud recibida
+// PATCH /api/friends/request/:id/accept
 async function aceptarSolicitud(req, res) {
-    const solicitudId = Number(req.params.id);
+    const solicitudId = leerId(req.params.id);
     const receptorId = req.usuario.id;
 
-    if (!Number.isSafeInteger(solicitudId) || solicitudId <= 0) {
-        return res.status(400).json({ message: "Identificadores inválidos" });
+    if (!solicitudId) {
+        return res.status(400).json({
+            message: "Identificador inválido"
+        });
     }
 
     try {
-        const solicitud = await Amistad.findOne({ id: solicitudId });
+        const solicitud = await Amistad.findById(solicitudId).lean();
 
         if (!solicitud) {
-            return res.status(404).json({ message: "Solicitud de amistad no encontrada" });
+            return res.status(404).json({
+                message: "Solicitud de amistad no encontrada"
+            });
         }
 
-        // Comprobar que quien acepta sea el receptor
-        if (solicitud.receptor_id !== receptorId) {
-            return res.status(403).json({ message: "No puedes aceptar esta solicitud" });
+        if (!mismoId(solicitud.receptor_id, receptorId)) {
+            return res.status(403).json({
+                message: "No puedes aceptar esta solicitud"
+            });
         }
 
         if (solicitud.estado !== "pendiente") {
-            return res.status(409).json({ message: "La solicitud ya no está pendiente" });
+            return res.status(409).json({
+                message: "La solicitud ya no está pendiente"
+            });
         }
 
-        // Verificar que el solicitante siga existiendo y sea jugador
-        if (!(await Usuario.exists({ id: solicitud.solicitante_id, role: "jugador" }))) {
-            return res.status(404).json({ message: "Uno de los jugadores ya no está disponible" });
+        const solicitanteExiste = await Jugador.exists({
+            _id: solicitud.solicitante_id
+        });
+
+        if (!solicitanteExiste) {
+            return res.status(404).json({
+                message: "Uno de los jugadores ya no está disponible"
+            });
         }
 
-        solicitud.estado = "aceptada";
-        solicitud.fecha_aceptacion = new Date();
-        await solicitud.save();
+        // Actualizar únicamente si sigue pendiente
+        const amistad = await Amistad.findOneAndUpdate(
+            {
+                _id: solicitudId,
+                receptor_id: receptorId,
+                estado: "pendiente"
+            },
+            {
+                $set: {
+                    estado: "aceptada",
+                    fecha_aceptacion: new Date()
+                },
+                $inc: { __v: 1 }
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!amistad) {
+            return res.status(409).json({
+                message: "La solicitud ya no está disponible"
+            });
+        }
 
         res.status(200).json({
             message: "Solicitud de amistad aceptada correctamente",
-            amistad: limpiar(solicitud)
+            amistad: limpiar(amistad)
         });
+
     } catch (error) {
         console.error("Error al aceptar solicitud:", error);
-        res.status(500).json({ message: "Error al aceptar la solicitud de amistad" });
+
+        res.status(500).json({
+            message: "Error al aceptar la solicitud de amistad"
+        });
     }
 }
 
-// DELETE /api/friends/request/:id → cancelar (si la envié) o rechazar (si la recibí)
+// DELETE /api/friends/request/:id
 async function eliminarSolicitud(req, res) {
-    const solicitudId = Number(req.params.id);
+    const solicitudId = leerId(req.params.id);
     const usuarioId = req.usuario.id;
 
-    if (!Number.isSafeInteger(solicitudId) || solicitudId <= 0) {
-        return res.status(400).json({ message: "Identificadores inválidos" });
+    if (!solicitudId) {
+        return res.status(400).json({
+            message: "Identificador inválido"
+        });
     }
 
     try {
-        const solicitud = await Amistad.findOne({ id: solicitudId }).lean();
+        const solicitud = await Amistad.findById(solicitudId).lean();
 
         if (!solicitud) {
-            return res.status(404).json({ message: "Solicitud no encontrada" });
+            return res.status(404).json({
+                message: "Solicitud no encontrada"
+            });
+        }
+
+        const esSolicitante = mismoId(solicitud.solicitante_id, usuarioId);
+        const esReceptor = mismoId(solicitud.receptor_id, usuarioId);
+
+        if (!esSolicitante && !esReceptor) {
+            return res.status(403).json({
+                message: "No puedes modificar esta solicitud"
+            });
         }
 
         if (solicitud.estado !== "pendiente") {
-            return res.status(409).json({ message: "La solicitud ya no está pendiente" });
+            return res.status(409).json({
+                message: "La solicitud ya no está pendiente"
+            });
         }
 
-        const esSolicitante = solicitud.solicitante_id === usuarioId;
-        const esReceptor = solicitud.receptor_id === usuarioId;
+        const resultado = await Amistad.deleteOne({
+            _id: solicitudId,
+            estado: "pendiente",
 
-        if (!esSolicitante && !esReceptor) {
-            return res.status(403).json({ message: "No puedes modificar esta solicitud" });
+            $or: [
+                { solicitante_id: usuarioId },
+                { receptor_id: usuarioId }
+            ]
+        });
+
+        if (resultado.deletedCount !== 1) {
+            return res.status(409).json({
+                message: "La solicitud ya no está disponible"
+            });
         }
-
-        await Amistad.deleteOne({ id: solicitudId });
 
         res.status(200).json({
             message: esSolicitante ? "Solicitud cancelada correctamente" : "Solicitud rechazada correctamente"
         });
+
     } catch (error) {
         console.error("Error al eliminar solicitud:", error);
-        res.status(500).json({ message: "Error al eliminar la solicitud" });
+
+        res.status(500).json({
+            message: "Error al eliminar la solicitud"
+        });
     }
 }
 
-// GET /api/friends/friends → lista de amigos con búsqueda, orden y paginación
+// GET /api/friends/friends
 async function listarAmigos(req, res) {
     const usuarioId = req.usuario.id;
     const pagina = Number(req.query.pagina || 1);
     const orden = req.query.orden || "nombre";
     const busqueda = typeof req.query.busqueda === "string" ? req.query.busqueda.trim().toLowerCase() : "";
 
-    if (
-        !Number.isSafeInteger(pagina) || pagina < 1 ||
-        busqueda.length > 50 ||
-        !["nombre", "reciente"].includes(orden)
-    ) {
-        return res.status(400).json({ message: "Parámetros de búsqueda inválidos" });
+    if (!Number.isSafeInteger(pagina) || pagina < 1 || busqueda.length > 50 ||!["nombre", "reciente"].includes(orden)) {
+        return res.status(400).json({
+            message: "Parámetros de búsqueda inválidos"
+        });
     }
 
     try {
-        // Amistades aceptadas en cualquier dirección
         const aceptadas = await Amistad.find({
             estado: "aceptada",
-            $or: [{ solicitante_id: usuarioId }, { receptor_id: usuarioId }]
+
+            $or: [
+                { solicitante_id: usuarioId },
+                { receptor_id: usuarioId }
+            ]
         }).lean();
 
-        const otrosIds = aceptadas.map(amistad =>
-            amistad.solicitante_id === usuarioId ? amistad.receptor_id : amistad.solicitante_id
-        );
+        const otrosIds = aceptadas.map(amistad => mismoId(amistad.solicitante_id, usuarioId) ? amistad.receptor_id : amistad.solicitante_id);
 
-        const otros = await Usuario.find({ id: { $in: otrosIds }, role: "jugador" }).lean();
-        const videojuegos = await cargarJuegosDestacados(otros);
+        const otros = await consultarJugadores({
+            _id: { $in: otrosIds }
+        }).lean();
 
-        const relaciones = aceptadas
-            .map(amistad => {
-                const otroId = amistad.solicitante_id === usuarioId ? amistad.receptor_id : amistad.solicitante_id;
-                const otroJugador = otros.find(usuario => usuario.id === otroId);
+        const videojuegos =
+            await cargarJuegosDestacados(otros);
 
-                if (!otroJugador) return null;
+        const relaciones = aceptadas.map(amistad => {
+            const otroId = mismoId(amistad.solicitante_id,usuarioId) ? amistad.receptor_id : amistad.solicitante_id;
+            const otroJugador = otros.find(usuario => mismoId(usuario._id, otroId));
 
-                return {
-                    id: amistad.id,
-                    fecha_aceptacion: amistad.fecha_aceptacion,
-                    jugador: jugadorPublico(otroJugador, videojuegos)
-                };
-            })
-            .filter(amistad => amistad !== null);
+            if (!otroJugador) return null;
+
+            return {
+                id: String(amistad._id),
+                fecha_aceptacion: amistad.fecha_aceptacion,
+                jugador: jugadorPublico(otroJugador, videojuegos)
+            };
+
+        }).filter(Boolean);
 
         const totalAmigos = relaciones.length;
 
@@ -384,22 +544,26 @@ async function listarAmigos(req, res) {
 
         // Ordenar antes de paginar
         if (orden === "reciente") {
-            amigosFiltrados.sort((a, b) =>
-                new Date(b.fecha_aceptacion).getTime() - new Date(a.fecha_aceptacion).getTime()
-            );
+            amigosFiltrados.sort((a, b) => new Date(b.fecha_aceptacion).getTime() - new Date(a.fecha_aceptacion).getTime());
+
         } else {
-            amigosFiltrados.sort((a, b) =>
-                a.jugador.nombre_usuario.localeCompare(b.jugador.nombre_usuario)
-            );
+            amigosFiltrados.sort((a, b) => a.jugador.nombre_usuario.localeCompare(b.jugador.nombre_usuario, "es"));
         }
 
         const totalResultados = amigosFiltrados.length;
+
         const totalPaginas = Math.max(1, Math.ceil(totalResultados / POR_PAGINA));
+
         const inicio = (pagina - 1) * POR_PAGINA;
 
         res.status(200).json({
-            amigos: amigosFiltrados.slice(inicio, inicio + POR_PAGINA),
+            amigos: amigosFiltrados.slice(
+                inicio,
+                inicio + POR_PAGINA
+            ),
+
             totalAmigos,
+
             paginacion: {
                 paginaActual: pagina,
                 porPagina: POR_PAGINA,
@@ -407,43 +571,86 @@ async function listarAmigos(req, res) {
                 totalPaginas
             }
         });
+
     } catch (error) {
         console.error("Error al consultar amigos:", error);
-        res.status(500).json({ message: "Error al consultar las amistades" });
+
+        res.status(500).json({
+            message: "Error al consultar las amistades"
+        });
     }
 }
 
-// DELETE /api/friends/friend/:id → eliminar una amistad aceptada
+// DELETE /api/friends/friend/:id
 async function eliminarAmistad(req, res) {
-    const amistadId = Number(req.params.id);
+    const amistadId = leerId(req.params.id);
     const usuarioId = req.usuario.id;
 
-    if (!Number.isSafeInteger(amistadId) || amistadId <= 0) {
-        return res.status(400).json({ message: "Identificadores inválidos" });
+    if (!amistadId) {
+        return res.status(400).json({
+            message: "Identificador inválido"
+        });
     }
 
     try {
-        const amistad = await Amistad.findOne({ id: amistadId }).lean();
+        const amistad = await Amistad.findById(amistadId).lean();
 
         if (!amistad) {
-            return res.status(404).json({ message: "Amistad no encontrada" });
+            return res.status(404).json({
+                message: "Amistad no encontrada"
+            });
+        }
+
+        if (
+            !mismoId(amistad.solicitante_id, usuarioId) &&
+            !mismoId(amistad.receptor_id, usuarioId)
+        ) {
+            return res.status(403).json({
+                message: "No puedes eliminar esta amistad"
+            });
         }
 
         if (amistad.estado !== "aceptada") {
-            return res.status(409).json({ message: "La relación no es una amistad aceptada" });
+            return res.status(409).json({
+                message: "La relación no es una amistad aceptada"
+            });
         }
 
-        if (amistad.solicitante_id !== usuarioId && amistad.receptor_id !== usuarioId) {
-            return res.status(403).json({ message: "No puedes eliminar esta amistad" });
+        const resultado = await Amistad.deleteOne({
+            _id: amistadId,
+            estado: "aceptada",
+
+            $or: [
+                { solicitante_id: usuarioId },
+                { receptor_id: usuarioId }
+            ]
+        });
+
+        if (resultado.deletedCount !== 1) {
+            return res.status(409).json({
+                message: "La amistad ya no está disponible"
+            });
         }
 
-        await Amistad.deleteOne({ id: amistadId });
+        res.status(200).json({
+            message: "Amistad eliminada correctamente"
+        });
 
-        res.status(200).json({ message: "Amistad eliminada correctamente" });
     } catch (error) {
         console.error("Error al eliminar amistad:", error);
-        res.status(500).json({ message: "Error al eliminar la amistad" });
+
+        res.status(500).json({
+            message: "Error al eliminar la amistad"
+        });
     }
 }
 
-module.exports = { buscarJugadores, enviarSolicitud, listarSolicitudes, aceptarSolicitud, eliminarSolicitud, listarAmigos, eliminarAmistad };
+module.exports = {
+    buscarJugadores,
+    enviarSolicitud,
+    listarSolicitudes,
+    aceptarSolicitud,
+    eliminarSolicitud,
+    listarAmigos,
+    eliminarAmistad
+};

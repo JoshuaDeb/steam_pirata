@@ -105,11 +105,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (juego && juego.portada) {
                 const imagen = document.createElement("img");
                 imagen.className = "position-absolute top-0 start-0 w-100 h-100 object-fit-cover";
-                imagen.src = `/assets/images/${encodeURIComponent(juego.portada)}`;
+                imagen.src = juego.portada;
                 imagen.alt = "";
                 portada.appendChild(imagen);
             } else {
-                portada.textContent = juego ? juego.titulo.slice(0, 2).toUpperCase() : "–";
+                portada.textContent = juego ? juego.titulo.slice(0, 2).toUpperCase() : "-";
             }
 
             const detalle = document.createElement("div");
