@@ -8,6 +8,8 @@ const videojuegosRoutes = require("./routes/videojuegos_routes");
 const dlcsRoutes = require("./routes/dlcs_routes");
 const resenasRoutes = require("./routes/resenas_routes");
 const comprasRoutes = require("./routes/compras_routes");
+const conectarDB = require("./config/db");
+const { webhookStripe } = require("./controllers/compras_controller");
 
 
 const app = express();
@@ -15,6 +17,8 @@ const PORT = process.env.PORT || 3000;
 if (!process.env.JWT_SECRET) {
     throw new Error("La variable JWT_SECRET no está configurada");
 }
+// Webhook de Stripe: necesita el cuerpo sin procesar, por eso va antes de express.json
+app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), webhookStripe);
 
 // Permitir recibir datos en formato JSON (las portadas llegan en base64, hasta 2 MB)
 app.use(express.json({ limit: "4mb" }));
@@ -61,7 +65,14 @@ app.use((error, req, res, next) => {
     res.status(500).json({ message: "Error interno del servidor" });
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
-});
+// Conectar a MongoDB y después iniciar el servidor
+conectarDB()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error("No se pudo conectar a MongoDB:", error.message);
+        process.exit(1);
+    });

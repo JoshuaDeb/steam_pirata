@@ -1,8 +1,16 @@
-const { leerDatos, guardarDatos } = require("../storage");
+const Resena = require("../models/resena");
+const Usuario = require("../models/usuario");
+const Videojuego = require("../models/videojuego");
+const Biblioteca = require("../models/biblioteca");
+const { siguienteId } = require("../models/contador");
+const { recalcularCalificaciones } = require("../utils/calificaciones");
 
 
 // Créditos que se ganan por la primera reseña de cada videojuego de la biblioteca
 const PREMIO_RESENA = 10;
+
+
+// ---------- Utilidades ----------
 
 function validarResena(estrellas, texto) {
     if (!Number.isInteger(estrellas) || estrellas < 1 || estrellas > 5) {
@@ -20,42 +28,26 @@ function validarResena(estrellas, texto) {
     return null;
 }
 
+// Convertir un valor en un ID válido (entero positivo) o null
+function leerId(valor) {
+    const id = Number(valor);
 
-// Recalcular la calificación promedio de los videojuegos a partir de las reseñas.
-// Se guarda en cada videojuego (calificacion_promedio y total_resenas) para que
-// el catálogo la pueda mostrar, filtrar y ordenar sin recorrer las reseñas.
-// Si el videojuego no tiene reseñas, el promedio queda en null.
-function recalcularCalificaciones() {
-    const resenas = leerDatos("resenas");
-    const videojuegos = leerDatos("videojuegos");
+    return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
 
-    let cambio = false;
+// Quitar campos internos de MongoDB antes de responder
+function limpiar(documento) {
+    const objeto = documento.toObject ? documento.toObject() : { ...documento };
 
-    videojuegos.forEach(juego => {
-        const delJuego = resenas.filter(resena => resena.juego_id === juego.id);
+    delete objeto._id;
+    delete objeto.__v;
 
-        const total = delJuego.length;
-        const promedio = total > 0
-            ? Math.round(delJuego.reduce((suma, resena) => suma + resena.estrellas, 0) / total * 10) / 10
-            : null;
-
-        if (juego.total_resenas !== total || juego.calificacion_promedio !== promedio) {
-            juego.total_resenas = total;
-            juego.calificacion_promedio = promedio;
-            cambio = true;
-        }
-    });
-
-    if (cambio) {
-        guardarDatos("videojuegos", videojuegos);
-    }
-
-    return videojuegos;
+    return objeto;
 }
 
 // Calificación actual de un videojuego (para devolverla en las respuestas)
-function calificacionDe(videojuegos, juegoId) {
-    const juego = videojuegos.find(item => item.id === juegoId);
+async function calificacionDe(juegoId) {
+    const juego = await Videojuego.findOne({ id: juegoId }, "calificacion_promedio total_resenas").lean();
 
     return {
         calificacion_promedio: juego ? juego.calificacion_promedio : null,
@@ -63,42 +55,57 @@ function calificacionDe(videojuegos, juegoId) {
     };
 }
 
+// Agregar el nombre del autor y el título del juego a cada reseña
+async function armarResenas(resenas) {
+    const autores = await Usuario.find(
+        { id: { $in: resenas.map(resena => resena.usuario_id) } },
+        "id nombre_usuario"
+    ).lean();
 
-function listarResenas(req, res) {
-    const juegoId = Number(req.query.juego_id);
-    const usuarioId = Number(req.query.usuario_id);
+    const juegos = await Videojuego.find(
+        { id: { $in: resenas.map(resena => resena.juego_id) } },
+        "id titulo"
+    ).lean();
 
-    let resenas = leerDatos("resenas");
-    const usuarios = leerDatos("usuarios");
-    const videojuegos = leerDatos("videojuegos");
-
-    if (juegoId) {
-        resenas = resenas.filter(resena => resena.juego_id === juegoId);
-    }
-
-    if (usuarioId) {
-        resenas = resenas.filter(resena => resena.usuario_id === usuarioId);
-    }
-
-    const resultado = resenas.map(resena => {
-        const autor = usuarios.find(usuario => usuario.id === resena.usuario_id);
-        const juego = videojuegos.find(videojuego => videojuego.id === resena.juego_id);
+    return resenas.map(resena => {
+        const autor = autores.find(usuario => usuario.id === resena.usuario_id);
+        const juego = juegos.find(videojuego => videojuego.id === resena.juego_id);
 
         return {
-            ...resena,
+            ...limpiar(resena),
             nombre_usuario: autor ? autor.nombre_usuario : "Usuario eliminado",
             titulo_juego: juego ? juego.titulo : "Juego eliminado"
         };
     });
-
-    res.status(200).json({ resenas: resultado });
 }
 
 
+// ---------- JUGADOR ----------
 
-function crearResena(req, res) {
+// GET /api/resenas (opcional ?juego_id= y/o ?usuario_id=)
+async function listarResenas(req, res) {
+    const juegoId = leerId(req.query.juego_id);
+    const usuarioId = leerId(req.query.usuario_id);
+
+    const filtro = {};
+
+    if (juegoId) filtro.juego_id = juegoId;
+    if (usuarioId) filtro.usuario_id = usuarioId;
+
+    try {
+        const resenas = await Resena.find(filtro).sort({ _id: 1 }).lean();
+
+        res.status(200).json({ resenas: await armarResenas(resenas) });
+    } catch (error) {
+        console.error("Error al consultar reseñas:", error);
+        res.status(500).json({ message: "Error al consultar las reseñas" });
+    }
+}
+
+// POST /api/resenas → escribir una reseña de un juego de la biblioteca
+async function crearResena(req, res) {
     const usuarioId = req.usuario.id;
-    const juegoId = Number(req.body.juego_id);
+    const juegoId = leerId(req.body.juego_id);
     const estrellas = Number(req.body.estrellas);
     const texto = req.body.texto;
 
@@ -108,89 +115,75 @@ function crearResena(req, res) {
         return res.status(400).json({ message: error });
     }
 
-    const resenas = leerDatos("resenas");
-    const usuarios = leerDatos("usuarios");
-    const videojuegos = leerDatos("videojuegos");
+    try {
+        const usuario = await Usuario.findOne({ id: usuarioId }).lean();
 
-    const usuario = usuarios.find(u => u.id === usuarioId);
+        if (!usuario || usuario.role !== "jugador") {
+            return res.status(403).json({ message: "Solo los jugadores pueden escribir reseñas" });
+        }
 
-    if (!usuario || usuario.role !== "jugador") {
-        return res.status(403).json({ message: "Solo los jugadores pueden escribir reseñas" });
-    }
+        if (juegoId === null || !(await Videojuego.exists({ id: juegoId }))) {
+            return res.status(404).json({ message: "El videojuego no existe" });
+        }
 
-    if (!videojuegos.some(juego => juego.id === juegoId)) {
-        return res.status(404).json({ message: "El videojuego no existe" });
-    }
+        // Solo se pueden reseñar los videojuegos adquiridos (los de la biblioteca)
+        if (!(await Biblioteca.exists({ usuario_id: usuarioId, videojuego_id: juegoId }))) {
+            return res.status(403).json({ message: "Solo puedes reseñar los videojuegos de tu biblioteca" });
+        }
 
+        if (await Resena.exists({ usuario_id: usuarioId, juego_id: juegoId })) {
+            return res.status(409).json({ message: "Ya escribiste una reseña de este juego" });
+        }
 
-    // Solo se pueden reseñar los videojuegos adquiridos (los de la biblioteca)
-    const adquirido = leerDatos("bibliotecas").some(registro =>
-        registro.usuario_id === usuarioId && registro.videojuego_id === juegoId
-    );
-
-    if (!adquirido) {
-        return res.status(403).json({
-            message: "Solo puedes reseñar los videojuegos de tu biblioteca"
+        const nuevaResena = await Resena.create({
+            id: await siguienteId("resenas"),
+            usuario_id: usuarioId,
+            juego_id: juegoId,
+            estrellas: estrellas,
+            texto: texto.trim(),
+            fecha: new Date()
         });
+
+        // Actualizar el promedio del videojuego
+        await recalcularCalificaciones([juegoId]);
+
+        // Premio por la primera reseña del videojuego. Los juegos premiados se
+        // guardan en el usuario (resenas_premiadas) para que borrar la reseña y
+        // volver a escribirla no entregue el premio otra vez.
+        // La condición $ne y el $push van en la MISMA operación: es imposible
+        // cobrar el premio dos veces aunque lleguen dos peticiones a la vez.
+        const premiado = await Usuario.findOneAndUpdate(
+            { id: usuarioId, resenas_premiadas: { $ne: juegoId } },
+            { $inc: { creditos: PREMIO_RESENA }, $push: { resenas_premiadas: juegoId } },
+            { new: true }
+        ).lean();
+
+        const premio = premiado ? PREMIO_RESENA : 0;
+        const creditos = premiado ? premiado.creditos : usuario.creditos;
+
+        res.status(201).json({
+            message: premio > 0
+                ? `Reseña publicada. ¡Ganaste ${premio} créditos!`
+                : "Reseña publicada",
+            resena: limpiar(nuevaResena),
+            premio: premio,
+            creditos: creditos,
+            ...(await calificacionDe(juegoId))
+        });
+    } catch (error) {
+        // El índice único (usuario + juego) frena reseñas duplicadas simultáneas
+        if (error.code === 11000) {
+            return res.status(409).json({ message: "Ya escribiste una reseña de este juego" });
+        }
+
+        console.error("Error al crear la reseña:", error);
+        res.status(500).json({ message: "Error al publicar la reseña" });
     }
-
-    const yaExiste = resenas.some(resena =>
-        resena.usuario_id === usuarioId && resena.juego_id === juegoId
-    );
-
-    if (yaExiste) {
-        return res.status(409).json({ message: "Ya escribiste una reseña de este juego" });
-    }
-
-
-    const nuevoId = resenas.length > 0
-        ? Math.max(...resenas.map(resena => resena.id)) + 1
-        : 1;
-
-    const nuevaResena = {
-        id: nuevoId,
-        usuario_id: usuarioId,
-        juego_id: juegoId,
-        estrellas: estrellas,
-        texto: texto.trim(),
-        fecha: new Date().toISOString()
-    };
-
-    resenas.push(nuevaResena);
-    guardarDatos("resenas", resenas);
-
-    // Actualizar el promedio del videojuego
-    const actualizados = recalcularCalificaciones();
-
-    // Premio por la primera reseña del videojuego. Los juegos premiados se
-    // guardan en el usuario (resenas_premiadas) para que borrar la reseña y
-    // volver a escribirla no entregue el premio otra vez.
-    const premiadas = Array.isArray(usuario.resenas_premiadas) ? usuario.resenas_premiadas : [];
-    let premio = 0;
-
-    if (!premiadas.includes(juegoId)) {
-        premio = PREMIO_RESENA;
-        usuario.creditos += premio;
-        usuario.resenas_premiadas = [...premiadas, juegoId];
-
-        guardarDatos("usuarios", usuarios);
-    }
-
-    res.status(201).json({
-        message: premio > 0
-            ? `Reseña publicada. ¡Ganaste ${premio} créditos!`
-            : "Reseña publicada",
-        resena: nuevaResena,
-        premio: premio,
-        creditos: usuario.creditos,
-        ...calificacionDe(actualizados, juegoId)
-    });
 }
 
-
-
-function actualizarResena(req, res) {
-    const id = Number(req.params.id);
+// PUT /api/resenas/:id → editar una reseña propia
+async function actualizarResena(req, res) {
+    const id = leerId(req.params.id);
     const usuarioId = req.usuario.id;
     const estrellas = Number(req.body.estrellas);
     const texto = req.body.texto;
@@ -201,93 +194,85 @@ function actualizarResena(req, res) {
         return res.status(400).json({ message: error });
     }
 
-    const resenas = leerDatos("resenas");
-    const resena = resenas.find(r => r.id === id);
+    try {
+        const resena = id === null ? null : await Resena.findOne({ id });
 
-    if (!resena) {
-        return res.status(404).json({ message: "Reseña no encontrada" });
+        if (!resena) {
+            return res.status(404).json({ message: "Reseña no encontrada" });
+        }
+
+        if (resena.usuario_id !== usuarioId) {
+            return res.status(403).json({ message: "Solo puedes editar tus propias reseñas" });
+        }
+
+        resena.estrellas = estrellas;
+        resena.texto = texto.trim();
+        resena.fecha = new Date();
+        await resena.save();
+
+        await recalcularCalificaciones([resena.juego_id]);
+
+        res.status(200).json({
+            message: "Reseña actualizada",
+            resena: limpiar(resena),
+            ...(await calificacionDe(resena.juego_id))
+        });
+    } catch (error) {
+        console.error("Error al actualizar la reseña:", error);
+        res.status(500).json({ message: "Error al actualizar la reseña" });
     }
-
-    if (resena.usuario_id !== usuarioId) {
-        return res.status(403).json({ message: "Solo puedes editar tus propias reseñas" });
-    }
-
-    resena.estrellas = estrellas;
-    resena.texto = texto.trim();
-    resena.fecha = new Date().toISOString();
-
-    guardarDatos("resenas", resenas);
-
-    const actualizados = recalcularCalificaciones();
-
-    res.status(200).json({
-        message: "Reseña actualizada",
-        resena: resena,
-        ...calificacionDe(actualizados, resena.juego_id)
-    });
 }
 
-
-
-function eliminarResena(req, res) {
-    const id = Number(req.params.id);
+// DELETE /api/resenas/:id → borrar una reseña propia
+async function eliminarResena(req, res) {
+    const id = leerId(req.params.id);
     const usuarioId = req.usuario.id;
 
-    const resenas = leerDatos("resenas");
-    const resena = resenas.find(r => r.id === id);
+    try {
+        const resena = id === null ? null : await Resena.findOne({ id }).lean();
 
-    if (!resena) {
-        return res.status(404).json({ message: "Reseña no encontrada" });
+        if (!resena) {
+            return res.status(404).json({ message: "Reseña no encontrada" });
+        }
+
+        if (resena.usuario_id !== usuarioId) {
+            return res.status(403).json({ message: "Solo puedes borrar tus propias reseñas" });
+        }
+
+        await Resena.deleteOne({ id });
+        await recalcularCalificaciones([resena.juego_id]);
+
+        res.status(200).json({
+            message: "Reseña eliminada",
+            ...(await calificacionDe(resena.juego_id))
+        });
+    } catch (error) {
+        console.error("Error al eliminar la reseña:", error);
+        res.status(500).json({ message: "Error al eliminar la reseña" });
     }
-
-    if (resena.usuario_id !== usuarioId) {
-        return res.status(403).json({ message: "Solo puedes borrar tus propias reseñas" });
-    }
-
-    const restantes = resenas.filter(r => r.id !== id);
-    guardarDatos("resenas", restantes);
-
-    const actualizados = recalcularCalificaciones();
-
-    res.status(200).json({
-        message: "Reseña eliminada",
-        ...calificacionDe(actualizados, resena.juego_id)
-    });
 }
+
 
 // ---------- DESARROLLADOR: ver y responder reseñas de sus juegos ----------
-// req.usuario lo llena requerirDesarrollador
+// req.usuario lo llena autenticarUsuario; requerirDesarrollador revisa el rol
 
-// LEER: las reseñas de los juegos de este desarrollador
-function listarResenasDesarrollador(req, res) {
-    const videojuegos = leerDatos("videojuegos");
-    const usuarios = leerDatos("usuarios");
+// GET /api/resenas/desarrollador → reseñas de los juegos de este desarrollador
+async function listarResenasDesarrollador(req, res) {
+    try {
+        const misJuegos = await Videojuego.distinct("id", { id_desarrollador: req.usuario.id });
 
-    // IDs de los juegos de este desarrollador
-    const misJuegos = videojuegos
-        .filter(juego => juego.id_desarrollador === req.usuario.id)
-        .map(juego => juego.id);
+        const resenas = await Resena.find({ juego_id: { $in: misJuegos } }).sort({ _id: 1 }).lean();
 
-    const resenas = leerDatos("resenas")
-        .filter(resena => misJuegos.includes(resena.juego_id))
-        .map(resena => {
-            const autor = usuarios.find(usuario => usuario.id === resena.usuario_id);
-            const juego = videojuegos.find(videojuego => videojuego.id === resena.juego_id);
-
-            return {
-                ...resena,
-                nombre_usuario: autor ? autor.nombre_usuario : "Usuario eliminado",
-                titulo_juego: juego.titulo
-            };
-        });
-
-    res.status(200).json({ resenas: resenas });
+        res.status(200).json({ resenas: await armarResenas(resenas) });
+    } catch (error) {
+        console.error("Error al consultar reseñas del desarrollador:", error);
+        res.status(500).json({ message: "Error al consultar las reseñas" });
+    }
 }
 
-
-// RESPONDER una reseña (si ya tenía respuesta, se reemplaza)
-function responderResena(req, res) {
-    const id = Number(req.params.id);
+// PUT /api/resenas/:id/respuesta → responder una reseña (si ya tenía respuesta, se reemplaza)
+async function responderResena(req, res) {
+    const id = leerId(req.params.id);
     const texto = req.body?.texto;
 
     if (typeof texto !== "string" || !texto.trim()) {
@@ -298,26 +283,28 @@ function responderResena(req, res) {
         return res.status(400).json({ message: "La respuesta no puede pasar de 500 caracteres" });
     }
 
-    const resenas = leerDatos("resenas");
-    const videojuegos = leerDatos("videojuegos");
+    try {
+        const resena = id === null ? null : await Resena.findOne({ id });
 
-    const resena = resenas.find(r => r.id === id);
+        if (!resena) {
+            return res.status(404).json({ message: "Reseña no encontrada" });
+        }
 
-    if (!resena) {
-        return res.status(404).json({ message: "Reseña no encontrada" });
+        // Revisar que la reseña sea de un juego de este desarrollador
+        const esSuJuego = await Videojuego.exists({ id: resena.juego_id, id_desarrollador: req.usuario.id });
+
+        if (!esSuJuego) {
+            return res.status(403).json({ message: "Solo puedes responder reseñas de tus juegos" });
+        }
+
+        resena.respuesta = texto.trim();
+        await resena.save();
+
+        res.status(200).json({ message: "Respuesta guardada", resena: limpiar(resena) });
+    } catch (error) {
+        console.error("Error al responder la reseña:", error);
+        res.status(500).json({ message: "Error al guardar la respuesta" });
     }
-
-    // Revisar que la reseña sea de un juego de este desarrollador
-    const juego = videojuegos.find(j => j.id === resena.juego_id);
-
-    if (!juego || juego.id_desarrollador !== req.usuario.id) {
-        return res.status(403).json({ message: "Solo puedes responder reseñas de tus juegos" });
-    }
-
-    resena.respuesta = texto.trim();
-    guardarDatos("resenas", resenas);
-
-    res.status(200).json({ message: "Respuesta guardada", resena: resena });
 }
 
 module.exports = {

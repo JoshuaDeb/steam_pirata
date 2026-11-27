@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
-const { leerDatos } = require("../storage");
+const Usuario = require("../models/usuario");
 
 // Verificar que el usuario esté autenticado
-function autenticarUsuario(req, res, next) {
+async function autenticarUsuario(req, res, next) {
     const authorization = req.get("Authorization");
 
     // Verificar que se haya enviado un token
@@ -13,9 +13,7 @@ function autenticarUsuario(req, res, next) {
         });
     }
 
-    // Extraer el token del encabezado
     const token = authorization.split(" ")[1];
-
     let datosToken;
 
     // Verificar la firma y vigencia del token
@@ -30,23 +28,17 @@ function autenticarUsuario(req, res, next) {
         });
     }
 
-    let usuarios;
+    let usuario;
 
-    // Consultar los usuarios registrados
+    // Verificar que el usuario todavía exista en la base de datos
     try {
-        usuarios = leerDatos("usuarios");
+        usuario = await Usuario.findOne({ id: datosToken.id }).lean();
     } catch (error) {
-        console.error("Error al leer usuarios:", error);
-
+        console.error("Error al consultar usuario:", error);
         return res.status(500).json({
             message: "Error al consultar los usuarios"
         });
     }
-
-    // Verificar que el usuario todavía exista
-    const usuario = usuarios.find(user =>
-        user.id === datosToken.id
-    );
 
     if (!usuario) {
         return res.status(401).json({
@@ -62,10 +54,10 @@ function autenticarUsuario(req, res, next) {
         correo: usuario.correo,
         role: usuario.role,
         creditos: usuario.creditos,
-        descripcion_publica: usuario.descripcion_publica || ""
+        descripcion_publica: usuario.descripcion_publica || "",
+        foto_perfil: usuario.foto_perfil || null
     };
 
-    // Continuar con la petición
     next();
 }
 

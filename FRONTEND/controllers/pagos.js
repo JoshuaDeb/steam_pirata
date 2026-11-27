@@ -6,24 +6,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const el = (id) => document.getElementById(id);
 
+    // Nombre visible de cada método de pago (los antiguos se conservan para el historial)
     const NOMBRES_METODO = {
+        card: "Tarjeta (Stripe)",
+        oxxo: "OXXO (Stripe)",
         tarjeta: "Tarjeta",
         paypal: "PayPal",
-        oxxo: "OXXO",
         transferencia: "Transferencia"
     };
 
-
-
-    function digitos(cantidad) {
-        let texto = "";
-
-        for (let i = 0; i < cantidad; i++) {
-            texto += Math.floor(Math.random() * 10);
-        }
-
-        return texto;
-    }
 
     function formatoFecha(fecha) {
         return new Date(fecha).toLocaleDateString("es-MX", {
@@ -31,17 +22,32 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-
     function paqueteElegido() {
         const radio = document.querySelector('input[name="paquete"]:checked');
 
         return radio ? Number(radio.id.replace("paq", "")) : null;
     }
 
-  
+    // Guardar el saldo nuevo en la sesión y mostrarlo en pantalla
+    function actualizarSaldo(creditos) {
+        usuario.creditos = creditos;
+        sessionStorage.setItem("usuario", JSON.stringify(usuario));
+        mostrarSaldo();
+    }
+
     function mostrarSaldo() {
         el("saldoCreditos").textContent = usuario.creditos;
         el("creditosPerfil").textContent = `${usuario.creditos} créditos`;
+    }
+
+    // Consultar el saldo real en el servidor (pudo cambiar mientras el usuario estaba en Stripe)
+    function refrescarSaldo() {
+        apiFetch("/api/auth/me")
+            .then((response) => response.ok ? response.json() : null)
+            .then((datos) => {
+                if (datos && datos.user) actualizarSaldo(datos.user.creditos);
+            })
+            .catch(() => { /* se conserva el saldo guardado */ });
     }
 
 
@@ -83,13 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
         el("listaHistorial").innerHTML = comprasDeLaPagina.map((compra) => `
             <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
                 <div class="d-flex flex-column">
-                    <span class="fila-valor">Compra de créditos · ${NOMBRES_METODO[compra.metodo]}</span>
+                    <span class="fila-valor">Compra de créditos · ${NOMBRES_METODO[compra.metodo] || "Stripe"}</span>
                     <span class="fila-meta">${formatoFecha(compra.fecha)} · $${compra.monto}.00 MXN</span>
                 </div>
                 <span class="movimiento-mas">+${compra.creditos}</span>
             </div>`).join("");
 
-  
         el("paginacionHistorial").hidden = totalPaginas <= 1;
         el("textoPaginaHistorial").textContent = `Página ${pagina} de ${totalPaginas}`;
         el("btnHistorialAnterior").disabled = pagina === 1;
@@ -107,10 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    // ---------- Guardar la compra en el servidor ----------
+    // ---------- Ir a Stripe Checkout ----------
 
-  
-    function comprar(metodo, modalActual, boton) {
+    const btnPagar = el("btnPagarStripe");
+
+    btnPagar.addEventListener("click", () => {
         const paquete = paqueteElegido();
 
         if (!paquete) {
@@ -118,133 +124,87 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        boton.disabled = true;
+        btnPagar.disabled = true;
+        btnPagar.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Redirigiendo a Stripe...`;
 
-        apiFetch("/api/compras", {
+        apiFetch("/api/compras/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ usuario_id: usuario.id, paquete: paquete, metodo: metodo })
+            body: JSON.stringify({ paquete: paquete })
         })
-            .then((response) => response.json().then((respuesta) => {
-                if (!response.ok) throw new Error(respuesta.message);
+            .then((response) => response.json().then((datos) => {
+                if (!response.ok) throw new Error(datos.message);
 
-                // Actualizar el saldo en la sesión y en la pantalla
-                usuario.creditos = respuesta.creditos;
-                sessionStorage.setItem("usuario", JSON.stringify(usuario));
-                mostrarSaldo();
-                cargarHistorial();
-
-                // Cerrar el modal actual y mostrar "¡Compra realizada!"
-                const modal = bootstrap.Modal.getOrCreateInstance(el(modalActual));
-
-                el(modalActual).addEventListener("hidden.bs.modal", () => {
-                    bootstrap.Modal.getOrCreateInstance(el("modalCompraExitosa")).show();
-                }, { once: true });
-
-                modal.hide();
+                // Ir a la página de pago segura de Stripe
+                window.location.href = datos.url;
             }))
-            .catch((error) => alert(error.message))
-            .finally(() => {
-                boton.disabled = false;
+            .catch((error) => {
+                alert(error.message || "No se pudo iniciar el pago");
+                btnPagar.disabled = false;
+                btnPagar.textContent = "Pagar con Stripe";
             });
+    });
+
+
+    // ---------- Resultado al volver de Stripe ----------
+
+    function mostrarResultado(titulo, texto) {
+        el("tituloResultadoPago").textContent = titulo;
+        el("textoResultadoPago").textContent = texto;
+        bootstrap.Modal.getOrCreateInstance(el("modalResultadoPago")).show();
     }
 
+    // Preguntar al backend si el webhook ya acreditó los créditos
+    function verificarPago(sessionId, intento = 0) {
+        apiFetch(`/api/compras/checkout/${encodeURIComponent(sessionId)}`)
+            .then((response) => response.json())
+            .then((datos) => {
+                if (datos.estado === "acreditada") {
+                    actualizarSaldo(datos.saldo);
+                    cargarHistorial();
+                    el("creditosAgregados").textContent = datos.creditos;
+                    bootstrap.Modal.getOrCreateInstance(el("modalCompraExitosa")).show();
+                } else if (datos.estado === "procesando" && intento < 10) {
+                    // El webhook puede tardar unos segundos: volver a preguntar
+                    setTimeout(() => verificarPago(sessionId, intento + 1), 1500);
+                } else if (datos.estado === "procesando") {
+                    mostrarResultado("Pago en proceso",
+                        "Tu pago se confirmó; los créditos aparecerán en unos momentos.");
+                } else if (datos.estado === "pendiente") {
+                    mostrarResultado("Pago pendiente",
+                        "Tus créditos se agregarán cuando se confirme el pago.");
+                } else {
+                    mostrarResultado("Pago no completado",
+                        "El pago falló o expiró. No se realizó ningún cargo.");
+                }
+            })
+            .catch(() => mostrarResultado("Error", "No se pudo verificar el pago."));
+    }
 
-    // ---------- Tarjeta ----------
+    function revisarRegresoDeStripe() {
+        const params = new URLSearchParams(window.location.search);
+        const pago = params.get("pago");
 
-  
-    el("titular").addEventListener("input", () => {
-        el("visualTitular").textContent = el("titular").value.toUpperCase() || "NOMBRE DEL TITULAR";
-    });
+        if (!pago) return;
 
-    el("numTarjeta").addEventListener("input", () => {
-        el("visualNumero").textContent = el("numTarjeta").value || "•••• •••• •••• ••••";
-    });
+        // Limpiar la URL para que al recargar no se repita el mensaje
+        history.replaceState(null, "", window.location.pathname);
 
-    el("vencimiento").addEventListener("input", () => {
-        el("visualVence").textContent = el("vencimiento").value || "MM/AA";
-    });
+        // Abrir la pestaña de Créditos
+        bootstrap.Tab.getOrCreateInstance(el("tabCreditos")).show();
 
-    el("btnPagarTarjeta").addEventListener("click", (event) => {
-        const numero = el("numTarjeta").value.replace(/\s/g, "");   // sin espacios
-        const titular = el("titular").value.trim();
-        const vencimiento = el("vencimiento").value.trim();
-        const cvv = el("cvv").value.trim();
-
-        let error = "";
-
-        if (!/^\d{16}$/.test(numero)) {
-            error = "El número de tarjeta debe tener 16 dígitos";
-        } else if (titular.length < 3) {
-            error = "Escribe el nombre del titular";
-        } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(vencimiento)) {
-            error = "El vencimiento debe tener el formato MM/AA";
-        } else if (!/^\d{3,4}$/.test(cvv)) {
-            error = "El CVV debe tener 3 o 4 dígitos";
+        if (pago === "cancelado") {
+            mostrarResultado("Pago cancelado", "Cancelaste el pago. No se realizó ningún cargo.");
+        } else if (pago === "exito" && params.get("session_id")) {
+            verificarPago(params.get("session_id"));
         }
-
-        if (error) {
-            el("errorTarjeta").innerHTML = `<div class="alert alert-danger py-2 mb-0">${error}</div>`;
-            return;
-        }
-
-        el("errorTarjeta").innerHTML = "";
-        comprar("tarjeta", "modalComprar", event.currentTarget);
-    });
-
-
-    // ---------- PayPal ----------
-
-    el("paypalCuenta").textContent = usuario.correo;
-
-    el("btnPagarPaypal").addEventListener("click", (event) => {
-        comprar("paypal", "modalPaypal", event.currentTarget);
-    });
-
-
-    // ---------- OXXO ----------
-
-    
-    el("modalOxxo").addEventListener("show.bs.modal", () => {
-        el("oxxoReferencia").textContent = digitos(16).match(/.{4}/g).join(" ");
-
-        const vence = new Date();
-        let diasHabiles = 0;
-
-        while (diasHabiles < 5) {
-            vence.setDate(vence.getDate() + 1);
-
-            const dia = vence.getDay();   
-
-            if (dia !== 0 && dia !== 6) diasHabiles++;
-        }
-
-        el("oxxoVence").textContent = `Vence: ${formatoFecha(vence)}, 23:59`;
-    });
-
-    el("btnPagarOxxo").addEventListener("click", (event) => {
-        comprar("oxxo", "modalOxxo", event.currentTarget);
-    });
-
-
-    // ---------- Transferencia ----------
-
-    // Cada vez que se elige Transferencia: CLABE y concepto nuevos
-    el("metSpei").addEventListener("change", () => {
-        const clabe = digitos(18);
-
-        el("speiClabe").textContent =
-            `${clabe.slice(0, 3)} ${clabe.slice(3, 6)} ${clabe.slice(6, 17)} ${clabe.slice(17)}`;
-        el("speiConcepto").textContent = `SP-${usuario.nombre_usuario.toUpperCase()}-${digitos(4)}`;
-    });
-
-    el("btnPagarSpei").addEventListener("click", (event) => {
-        comprar("transferencia", "modalComprar", event.currentTarget);
-    });
+    }
 
 
     // ---------- Inicio ----------
 
     mostrarSaldo();
+    refrescarSaldo();
     cargarHistorial();
+    revisarRegresoDeStripe();
 });

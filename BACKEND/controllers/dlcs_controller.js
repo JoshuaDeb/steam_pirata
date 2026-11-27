@@ -1,14 +1,30 @@
-const { leerDatos, guardarDatos } = require("../storage");
+const Dlc = require("../models/dlc");
+const Videojuego = require("../models/videojuego");
+const { siguienteId } = require("../models/contador");
 
-const TIPOS_CONTENIDO = [
-    "Expansión", "Vehículos", "Personajes", "Cosméticos", "Niveles"
-];
+const TIPOS_CONTENIDO = Dlc.TIPOS_CONTENIDO;
+
+// Comparar nombres sin importar mayúsculas
+const COLACION_NOMBRE = { locale: "es", strength: 2 };
+
+
+// ---------- Utilidades ----------
 
 // Convertir un valor en un ID válido (entero positivo) o null
 function leerId(valor) {
     const id = Number(valor);
 
     return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+// Quitar campos internos de MongoDB antes de responder
+function limpiar(documento) {
+    const objeto = documento.toObject ? documento.toObject() : { ...documento };
+
+    delete objeto._id;
+    delete objeto.__v;
+
+    return objeto;
 }
 
 // Validar los datos de un DLC (se usa al crear y al actualizar)
@@ -51,308 +67,213 @@ function validarDlc(body) {
 }
 
 // Comprobar si el videojuego ya tiene otro DLC con el mismo nombre
-function nombreEnUso(dlcs, idVideojuego, nombre, idExcluido = null) {
-    return dlcs.some(dlc =>
-        dlc.id_videojuego === idVideojuego &&
-        dlc.id !== idExcluido &&
-        dlc.nombre.toLowerCase() === nombre.toLowerCase()
-    );
+async function nombreEnUso(idVideojuego, nombre, idExcluido = null) {
+    const filtro = { id_videojuego: idVideojuego, nombre };
+
+    if (idExcluido !== null) {
+        filtro.id = { $ne: idExcluido };
+    }
+
+    return Boolean(await Dlc.exists(filtro).collation(COLACION_NOMBRE));
+}
+
+// Responder 409 si el índice único (videojuego + nombre) frenó un duplicado
+function esNombreDuplicado(error) {
+    return error && error.code === 11000;
 }
 
 
-function listarDlcs(req, res) {
-    const filtro = req.query.id_videojuego;
+// ---------- Endpoints ----------
 
-    let idVideojuego = null;
+// GET /api/dlcs (opcional ?id_videojuego=)
+async function listarDlcs(req, res) {
+    const filtroTexto = req.query.id_videojuego;
+    const filtro = {};
 
-    if (typeof filtro === "string" && filtro.trim()) {
-        idVideojuego = leerId(filtro);
+    if (typeof filtroTexto === "string" && filtroTexto.trim()) {
+        const idVideojuego = leerId(filtroTexto);
 
         if (idVideojuego === null) {
-            return res.status(400).json({
-                message: "El ID del videojuego no es válido"
-            });
+            return res.status(400).json({ message: "El ID del videojuego no es válido" });
         }
-    }
 
-    let dlcs;
+        filtro.id_videojuego = idVideojuego;
+    }
 
     try {
-        dlcs = leerDatos("dlcs");
+        const dlcs = await Dlc.find(filtro).sort({ id: 1 }).select("-_id").lean();
+
+        res.status(200).json({ dlcs });
     } catch (error) {
-        console.error("Error al leer DLC:", error);
-
-        return res.status(500).json({
-            message: "Error al consultar los DLC"
-        });
+        console.error("Error al consultar DLC:", error);
+        res.status(500).json({ message: "Error al consultar los DLC" });
     }
-
-    if (idVideojuego !== null) {
-        dlcs = dlcs.filter(dlc => dlc.id_videojuego === idVideojuego);
-    }
-
-    res.status(200).json({ dlcs });
 }
 
-
-function obtenerDlc(req, res) {
+// GET /api/dlcs/:id
+async function obtenerDlc(req, res) {
     const id = leerId(req.params.id);
 
     if (id === null) {
-        return res.status(400).json({
-            message: "El ID del DLC no es válido"
-        });
+        return res.status(400).json({ message: "El ID del DLC no es válido" });
     }
-
-    let dlcs;
 
     try {
-        dlcs = leerDatos("dlcs");
+        const dlc = await Dlc.findOne({ id }).select("-_id").lean();
+
+        if (!dlc) {
+            return res.status(404).json({ message: "DLC no encontrado" });
+        }
+
+        res.status(200).json({ dlc });
     } catch (error) {
-        console.error("Error al leer DLC:", error);
-
-        return res.status(500).json({
-            message: "Error al consultar los DLC"
-        });
+        console.error("Error al consultar DLC:", error);
+        res.status(500).json({ message: "Error al consultar los DLC" });
     }
-
-    const dlc = dlcs.find(item => item.id === id);
-
-    if (!dlc) {
-        return res.status(404).json({
-            message: "DLC no encontrado"
-        });
-    }
-
-    res.status(200).json({ dlc });
 }
 
-
-function crearDlc(req, res) {
+// POST /api/dlcs → agregar un DLC a un videojuego propio
+async function crearDlc(req, res) {
     const idVideojuego = leerId(req.body?.id_videojuego);
 
     if (idVideojuego === null) {
-        return res.status(400).json({
-            message: "Debes indicar el videojuego al que pertenece el DLC"
-        });
+        return res.status(400).json({ message: "Debes indicar el videojuego al que pertenece el DLC" });
     }
-
-    let videojuegos;
-    let dlcs;
 
     try {
-        videojuegos = leerDatos("videojuegos");
-        dlcs = leerDatos("dlcs");
+        const juego = await Videojuego.findOne({ id: idVideojuego }).lean();
+
+        if (!juego) {
+            return res.status(404).json({ message: "El videojuego no existe" });
+        }
+
+        if (juego.id_desarrollador !== req.usuario.id) {
+            return res.status(403).json({ message: "No puedes agregar DLC a videojuegos de otro desarrollador" });
+        }
+
+        if (juego.estado !== "publicado") {
+            return res.status(409).json({ message: "No se pueden agregar DLC a un videojuego retirado" });
+        }
+
+        const { error, datos } = validarDlc(req.body);
+
+        if (error) {
+            return res.status(400).json({ message: error });
+        }
+
+        if (await nombreEnUso(idVideojuego, datos.nombre)) {
+            return res.status(409).json({ message: "Este videojuego ya tiene un DLC con ese nombre" });
+        }
+
+        const nuevoDlc = await Dlc.create({
+            id: await siguienteId("dlcs"),
+            id_videojuego: idVideojuego,
+            ...datos
+        });
+
+        res.status(201).json({
+            message: "DLC agregado correctamente",
+            dlc: limpiar(nuevoDlc)
+        });
     } catch (error) {
-        console.error("Error al leer DLC:", error);
+        if (esNombreDuplicado(error)) {
+            return res.status(409).json({ message: "Este videojuego ya tiene un DLC con ese nombre" });
+        }
 
-        return res.status(500).json({
-            message: "Error al consultar los DLC"
-        });
+        console.error("Error al agregar el DLC:", error);
+        res.status(500).json({ message: "Error al agregar el DLC" });
     }
-
-    const juego = videojuegos.find(item => item.id === idVideojuego);
-
-    if (!juego) {
-        return res.status(404).json({
-            message: "El videojuego no existe"
-        });
-    }
-
-    if (juego.id_desarrollador !== req.usuario.id) {
-        return res.status(403).json({
-            message: "No puedes agregar DLC a videojuegos de otro desarrollador"
-        });
-    }
-
-    if (juego.estado !== "publicado") {
-        return res.status(409).json({
-            message: "No se pueden agregar DLC a un videojuego retirado"
-        });
-    }
-
-    const { error, datos } = validarDlc(req.body);
-
-    if (error) {
-        return res.status(400).json({ message: error });
-    }
-
-    if (nombreEnUso(dlcs, idVideojuego, datos.nombre)) {
-        return res.status(409).json({
-            message: "Este videojuego ya tiene un DLC con ese nombre"
-        });
-    }
-
-    // Generar un ID consecutivo
-    const nuevoId = dlcs.length > 0
-        ? Math.max(...dlcs.map(dlc => dlc.id)) + 1
-        : 1;
-
-    const nuevoDlc = {
-        id: nuevoId,
-        id_videojuego: idVideojuego,
-        ...datos
-    };
-
-    dlcs.push(nuevoDlc);
-
-    try {
-        guardarDatos("dlcs", dlcs);
-    } catch (error) {
-        console.error("Error al guardar el DLC:", error);
-
-        return res.status(500).json({
-            message: "Error al agregar el DLC"
-        });
-    }
-
-    res.status(201).json({
-        message: "DLC agregado correctamente",
-        dlc: nuevoDlc
-    });
 }
 
-
-function actualizarDlc(req, res) {
+// PUT /api/dlcs/:id → editar un DLC de un videojuego propio
+async function actualizarDlc(req, res) {
     const id = leerId(req.params.id);
 
     if (id === null) {
-        return res.status(400).json({
-            message: "El ID del DLC no es válido"
-        });
+        return res.status(400).json({ message: "El ID del DLC no es válido" });
     }
-
-    let videojuegos;
-    let dlcs;
 
     try {
-        videojuegos = leerDatos("videojuegos");
-        dlcs = leerDatos("dlcs");
+        const dlc = await Dlc.findOne({ id });
+
+        if (!dlc) {
+            return res.status(404).json({ message: "DLC no encontrado" });
+        }
+
+        const juego = await Videojuego.findOne({ id: dlc.id_videojuego }).lean();
+
+        if (!juego) {
+            return res.status(404).json({ message: "El videojuego del DLC no existe" });
+        }
+
+        if (juego.id_desarrollador !== req.usuario.id) {
+            return res.status(403).json({ message: "No puedes modificar DLC de otro desarrollador" });
+        }
+
+        if (juego.estado !== "publicado") {
+            return res.status(409).json({ message: "No se pueden editar los DLC de un videojuego retirado" });
+        }
+
+        const { error, datos } = validarDlc(req.body);
+
+        if (error) {
+            return res.status(400).json({ message: error });
+        }
+
+        if (await nombreEnUso(dlc.id_videojuego, datos.nombre, dlc.id)) {
+            return res.status(409).json({ message: "Este videojuego ya tiene un DLC con ese nombre" });
+        }
+
+        Object.assign(dlc, datos);
+        await dlc.save();
+
+        res.status(200).json({
+            message: "DLC actualizado correctamente",
+            dlc: limpiar(dlc)
+        });
     } catch (error) {
-        console.error("Error al leer DLC:", error);
+        if (esNombreDuplicado(error)) {
+            return res.status(409).json({ message: "Este videojuego ya tiene un DLC con ese nombre" });
+        }
 
-        return res.status(500).json({
-            message: "Error al consultar los DLC"
-        });
+        console.error("Error al actualizar el DLC:", error);
+        res.status(500).json({ message: "Error al actualizar el DLC" });
     }
-
-    const dlc = dlcs.find(item => item.id === id);
-
-    if (!dlc) {
-        return res.status(404).json({
-            message: "DLC no encontrado"
-        });
-    }
-
-    const juego = videojuegos.find(item => item.id === dlc.id_videojuego);
-
-    if (!juego) {
-        return res.status(404).json({
-            message: "El videojuego del DLC no existe"
-        });
-    }
-
-    if (juego.id_desarrollador !== req.usuario.id) {
-        return res.status(403).json({
-            message: "No puedes modificar DLC de otro desarrollador"
-        });
-    }
-
-    if (juego.estado !== "publicado") {
-        return res.status(409).json({
-            message: "No se pueden editar los DLC de un videojuego retirado"
-        });
-    }
-
-    const { error, datos } = validarDlc(req.body);
-
-    if (error) {
-        return res.status(400).json({ message: error });
-    }
-
-    if (nombreEnUso(dlcs, dlc.id_videojuego, datos.nombre, dlc.id)) {
-        return res.status(409).json({
-            message: "Este videojuego ya tiene un DLC con ese nombre"
-        });
-    }
-
-    Object.assign(dlc, datos);
-
-    try {
-        guardarDatos("dlcs", dlcs);
-    } catch (error) {
-        console.error("Error al guardar el DLC:", error);
-
-        return res.status(500).json({
-            message: "Error al actualizar el DLC"
-        });
-    }
-
-    res.status(200).json({
-        message: "DLC actualizado correctamente",
-        dlc: dlc
-    });
 }
 
-
-function eliminarDlc(req, res) {
+// DELETE /api/dlcs/:id → eliminar un DLC de un videojuego propio
+async function eliminarDlc(req, res) {
     const id = leerId(req.params.id);
 
     if (id === null) {
-        return res.status(400).json({
-            message: "El ID del DLC no es válido"
-        });
+        return res.status(400).json({ message: "El ID del DLC no es válido" });
     }
-
-    let videojuegos;
-    let dlcs;
 
     try {
-        videojuegos = leerDatos("videojuegos");
-        dlcs = leerDatos("dlcs");
-    } catch (error) {
-        console.error("Error al leer DLC:", error);
+        const dlc = await Dlc.findOne({ id }).lean();
 
-        return res.status(500).json({
-            message: "Error al consultar los DLC"
+        if (!dlc) {
+            return res.status(404).json({ message: "DLC no encontrado" });
+        }
+
+        const juego = await Videojuego.findOne({ id: dlc.id_videojuego }).lean();
+
+        // Si el videojuego ya no existe, cualquier desarrollador podría limpiar el DLC
+        // huérfano; por seguridad solo se permite al dueño del videojuego.
+        if (!juego || juego.id_desarrollador !== req.usuario.id) {
+            return res.status(403).json({ message: "No puedes eliminar DLC de otro desarrollador" });
+        }
+
+        await Dlc.deleteOne({ id });
+
+        res.status(200).json({
+            message: "DLC eliminado correctamente",
+            dlc: limpiar(dlc)
         });
-    }
-
-    const indice = dlcs.findIndex(item => item.id === id);
-
-    if (indice === -1) {
-        return res.status(404).json({
-            message: "DLC no encontrado"
-        });
-    }
-
-    const dlc = dlcs[indice];
-    const juego = videojuegos.find(item => item.id === dlc.id_videojuego);
-
-    // Si el videojuego ya no existe, cualquier desarrollador podría limpiar el DLC
-    // huérfano; por seguridad solo se permite al dueño del videojuego.
-    if (!juego || juego.id_desarrollador !== req.usuario.id) {
-        return res.status(403).json({
-            message: "No puedes eliminar DLC de otro desarrollador"
-        });
-    }
-
-    dlcs.splice(indice, 1);
-
-    try {
-        guardarDatos("dlcs", dlcs);
     } catch (error) {
         console.error("Error al eliminar el DLC:", error);
-
-        return res.status(500).json({
-            message: "Error al eliminar el DLC"
-        });
+        res.status(500).json({ message: "Error al eliminar el DLC" });
     }
-
-    res.status(200).json({
-        message: "DLC eliminado correctamente",
-        dlc: dlc
-    });
 }
 
 module.exports = {
