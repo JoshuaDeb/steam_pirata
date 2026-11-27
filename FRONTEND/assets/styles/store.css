@@ -906,3 +906,21 @@ body {
     flex-grow: 0;
   }
 }
+
+
+.avatar-lg {
+  width: 72px;
+  height: 72px;
+  font-size: 24px;
+}
+
+.enlace-desarrollador {
+  font-weight: 600;
+  color: var(--sp-acento-hover);
+  text-decoration: none;
+}
+
+.enlace-desarrollador:hover,
+.enlace-desarrollador:focus-visible {
+  text-decoration: underline;
+}

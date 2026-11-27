@@ -19,6 +19,7 @@
 
     let juegosCargados = [];   // Videojuegos de la página actual
     let juegoActual = null;    // Videojuego abierto en la ficha
+    let juegosDesarrollador = [];   // Videojuegos del perfil de desarrollador abierto
 
     // IDs de videojuegos del jugador (solo referencias, como en el backend)
     const enBiblioteca = new Set();
@@ -30,6 +31,7 @@
     const listaJuegos = el("listaJuegos");
     const modalJuego = el("modalJuego");
     const modalAdquirir = el("modalAdquirir");   // Solo existe en store.html
+    const modalDesarrollador = el("modalDesarrollador");
 
 
     // ---------- Utilidades ----------
@@ -304,7 +306,13 @@
                 <dl class="ficha">
                     <div class="ficha-fila">
                         <dt>Desarrollador</dt>
-                        <dd>${escapar(juego.desarrollador)}</dd>
+                                                <dd>
+                            <button type="button" class="btn btn-link p-0 align-baseline enlace-desarrollador"
+                                data-desarrollador-id="${juego.id_desarrollador}"
+                                data-bs-toggle="modal" data-bs-target="#modalDesarrollador">
+                                ${escapar(juego.desarrollador)}
+                            </button>
+                        </dd>
                     </div>
                     <div class="ficha-fila">
                         <dt>Especificaciones</dt>
@@ -387,6 +395,24 @@
         cargarCatalogo(1);
     });
 
+
+   
+    formFiltros.addEventListener("change", (event) => {
+        if (event.target.name === "q" || event.target.name === "precio_max") return;
+
+        cargarCatalogo(1);
+    });
+
+
+    let temporizadorFiltros = null;
+
+    formFiltros.addEventListener("input", (event) => {
+        if (event.target.name !== "q" && event.target.name !== "precio_max") return;
+
+        clearTimeout(temporizadorFiltros);
+        temporizadorFiltros = setTimeout(() => cargarCatalogo(1), 400);
+    });
+
     // Cambiar de página
     el("listaPaginas").addEventListener("click", (event) => {
         const enlace = event.target.closest("[data-pagina]");
@@ -404,7 +430,7 @@
     modalJuego.addEventListener("show.bs.modal", (event) => {
         const tarjeta = event.relatedTarget?.closest("[data-juego-id]");
 
-        juegoActual = juegosCargados.find((juego) =>
+                juegoActual = [...juegosCargados, ...juegosDesarrollador].find((juego) =>
             juego.id === Number(tarjeta?.dataset.juegoId)
         );
 
@@ -475,6 +501,11 @@
 
                     bootstrap.Modal.getOrCreateInstance(modalAdquirir).hide();
                     bootstrap.Modal.getOrCreateInstance(modalJuego).hide();
+
+                    el("toastExitoTexto").textContent =
+                        `¡Listo! "${juego.titulo}" se agregó a tu biblioteca. Te quedan ${datos.user.creditos} créditos.`;
+                    bootstrap.Toast.getOrCreateInstance(el("toastExito")).show();
+
                 })
                 .catch((error) => {
                     mensaje.textContent = error.message;
@@ -495,6 +526,118 @@
             modalAdquirir.querySelector(".modal-content").innerHTML = confirmacionAdquirir(juegoActual);
         });
     }
+
+
+    // ---------- Perfil público del desarrollador ----------
+
+    // Tarjeta sencilla (sin botón de favorito) para la lista del desarrollador
+    function tarjetaMini(juego) {
+        const edad = CLASIFICACIONES[juego.clasificacion_edad];
+
+        return `
+            <li class="col">
+                <article class="juego position-relative" data-juego-id="${juego.id}">
+                    <div class="juego-portada ${colorPortada(juego.id)}">
+                        ${contenidoPortada(juego)}
+                        <span class="juego-edad" title="${edad.ayuda}">${edad.texto}</span>
+                    </div>
+                    <div class="juego-cuerpo">
+                        <h3 class="juego-titulo">
+                            <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#modalJuego">
+                                ${escapar(juego.titulo)}
+                            </a>
+                        </h3>
+                        <p class="juego-genero">${escapar(juego.genero)}</p>
+                        <div class="juego-pie">
+                            <span class="juego-calif fila-meta">${textoCalificacion(juego)}</span>
+                            <span class="juego-precio">${juego.precio_creditos} créditos</span>
+                        </div>
+                    </div>
+                </article>
+            </li>`;
+    }
+
+    function perfilDesarrollador(desarrollador, juegos) {
+        const total = desarrollador.total_videojuegos;
+
+        const calificacion = typeof desarrollador.calificacion_promedio === "number"
+            ? `★ ${desarrollador.calificacion_promedio.toFixed(1)} de promedio`
+            : "Sin reseñas todavía";
+
+        const descripcion = desarrollador.descripcion_publica
+            ? escapar(desarrollador.descripcion_publica)
+            : `<span class="fila-meta">Este desarrollador todavía no escribe una descripción.</span>`;
+
+        const lista = juegos.length > 0
+            ? juegos.map(tarjetaMini).join("")
+            : `<li class="col-12 fila-meta">Todavía no tiene videojuegos publicados.</li>`;
+
+        return `
+            <button type="button" class="btn-close cerrar-modal" data-bs-dismiss="modal"
+                aria-label="Cerrar"></button>
+
+            <div class="modal-body d-flex flex-column gap-4">
+
+                <div class="d-flex align-items-center gap-3 pe-5">
+                    <div class="avatar avatar-lg" aria-hidden="true">
+                        ${escapar(iniciales(desarrollador.nombre_usuario))}
+                    </div>
+                    <div class="d-flex flex-column gap-1">
+                        <span class="fila-meta">Desarrollador</span>
+                        <h2 class="modal-title" id="tituloDesarrollador">${escapar(desarrollador.nombre_usuario)}</h2>
+                        <span class="fila-meta">
+                            ${total} ${total === 1 ? "videojuego publicado" : "videojuegos publicados"} · ${calificacion}
+                        </span>
+                    </div>
+                </div>
+
+                <p class="mb-0">${descripcion}</p>
+
+                <section aria-labelledby="tituloJuegosDesarrollador">
+                    <h3 class="resenas-titulo" id="tituloJuegosDesarrollador">Videojuegos publicados</h3>
+                    <ul class="row row-cols-2 row-cols-md-3 g-3 list-unstyled mb-0">${lista}</ul>
+                </section>
+            </div>`;
+    }
+
+    // Abrir el perfil del desarrollador pulsado en la ficha de un videojuego
+    modalDesarrollador.addEventListener("show.bs.modal", (event) => {
+        const boton = event.relatedTarget?.closest("[data-desarrollador-id]");
+        const idDesarrollador = Number(boton?.dataset.desarrolladorId);
+
+        if (!idDesarrollador) {
+            event.preventDefault();
+            return;
+        }
+
+        const contenido = modalDesarrollador.querySelector(".modal-content");
+
+        contenido.innerHTML = `
+            <div class="modal-body fila-meta">
+                <span class="spinner-border spinner-border-sm"></span> Cargando perfil...
+            </div>`;
+
+        // Datos del desarrollador + sus videojuegos publicados (mejor calificados primero)
+        Promise.all([
+            pedir(`/api/desarrolladores/${idDesarrollador}`),
+            pedir(`/api/videojuegos?id_desarrollador=${idDesarrollador}&orden=calificacion&limite=50`)
+        ])
+            .then(([perfil, catalogo]) => {
+                juegosDesarrollador = catalogo.videojuegos;
+                contenido.innerHTML = perfilDesarrollador(perfil.desarrollador, juegosDesarrollador);
+            })
+            .catch((error) => {
+                contenido.innerHTML = `
+                    <div class="modal-body d-flex flex-column gap-3">
+                        <div class="alert alert-danger mb-0" role="alert">${escapar(error.message)}</div>
+                        <button type="button" class="btn btn-outline-secondary align-self-end"
+                            data-bs-dismiss="modal">Cerrar</button>
+                    </div>`;
+            });
+    });
+
+
+
 
     // ---------- Reseñas ----------
 
@@ -669,7 +812,30 @@
     });
 
 
+    function abrirJuegoDesdeUrl() {
+        const idJuego = Number(new URLSearchParams(window.location.search).get("juego"));
+
+        if (!idJuego) return;
+
+        history.replaceState(null, "", window.location.pathname);
+
+        pedir(`/api/videojuegos/${idJuego}`)
+            .then((datos) => {
+
+                juegosDesarrollador = [datos.videojuego];
+
+              
+                const origen = document.createElement("span");
+                origen.dataset.juegoId = idJuego;
+
+                bootstrap.Modal.getOrCreateInstance(modalJuego).show(origen);
+            })
+            .catch((error) => alert(error.message));
+    }
+
     // ---------- Inicio ----------
 
-    cargarRelaciones().then(() => cargarCatalogo(1));
+ cargarRelaciones()
+        .then(() => cargarCatalogo(1))
+        .then(abrirJuegoDesdeUrl);
 })();

@@ -148,7 +148,7 @@
                         <p class="metadatos mb-2">
                             ${escapar(juego.desarrollador)} - ${juego.precio_creditos} créditos - ${textoCalificacion(juego)}
                         </p>
-                        <span class="chip">${adquirido ? "Ya adquirido" : "Por adquirir"}</span>
+                        <span class="chip ${adquirido ? "chip-adquirido" : "chip-pendiente"}">${adquirido ? "Ya adquirido" : "Por adquirir"}</span>
                         <div class="tarjeta-acciones">
                             <button class="btn btn-primary flex-grow-1 btn-detalle" data-accion="detalle"
                                 type="button">Ver detalles</button>

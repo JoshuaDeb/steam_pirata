@@ -43,8 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return `
             <div class="list-group-item d-flex flex-column gap-2" data-id="${resena.id}">
                 <span class="fila-label">Reseña de</span>
-                <strong class="fila-valor">${escapar(resena.titulo_juego)}</strong>
-                <select class="form-select estrellas">${opciones}</select>
+                <a class="fila-valor enlace-juego" href="store.html?juego=${resena.juego_id}"
+                    title="Ver los detalles del videojuego">${escapar(resena.titulo_juego)} →</a>                <select class="form-select estrellas">${opciones}</select>
                 <textarea class="form-control texto" rows="3" maxlength="500">${escapar(resena.texto)}</textarea>
 
                 ${resena.respuesta ? `
