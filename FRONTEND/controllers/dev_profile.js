@@ -71,6 +71,7 @@
     // Leer la imagen elegida y convertirla a data URL para enviarla al servidor.
     // Devuelve null si no se eligió archivo.
     function leerPortada(input) {
+
         const archivo = input?.files?.[0];
 
         if (!archivo) return Promise.resolve(null);
@@ -777,6 +778,15 @@
     el("nombreEstudio").textContent = usuario.nombre_usuario;
     el("marcaBanner").textContent = usuario.nombre_usuario;
     el("avatarEstudio").textContent = usuario.nombre_usuario.substring(0, 2).toUpperCase();
+    api(`/api/desarrolladores/${usuario.id}`)
+        .then((datos) => {
+            const total = datos.desarrollador.seguidores;
+
+            el("seguidoresPanel").textContent = `${total} ${total === 1 ? "seguidor" : "seguidores"}`;
+        })
+        .catch(() => {
+            el("seguidoresPanel").textContent = "Seguidores no disponibles";
+        });
 
     cargarJuegos();
 })();

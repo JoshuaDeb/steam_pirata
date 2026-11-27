@@ -24,6 +24,7 @@
     // IDs de videojuegos del jugador (solo referencias, como en el backend)
     const enBiblioteca = new Set();
     const enFavoritos = new Set();
+    const siguiendo = new Set();     // IDs de los desarrolladores que sigue el jugador
 
     const el = (id) => document.getElementById(id);
 
@@ -107,14 +108,17 @@
 
         return Promise.all([
             pedir(`/api/users/${usuario.id}/library`),
-            pedir(`/api/users/${usuario.id}/favorites`)
+            pedir(`/api/users/${usuario.id}/favorites`),
+            pedir("/api/desarrolladores/siguiendo")
         ])
-            .then(([biblioteca, favoritos]) => {
+            .then(([biblioteca, favoritos, seguidos]) => {
                 enBiblioteca.clear();
                 enFavoritos.clear();
+                siguiendo.clear();
 
                 biblioteca.videojuegos.forEach((juego) => enBiblioteca.add(juego.id));
                 favoritos.videojuegos.forEach((juego) => enFavoritos.add(juego.id));
+                seguidos.siguiendo.forEach((idDesarrollador) => siguiendo.add(idDesarrollador));
             })
             .catch((error) => {
                 // El catálogo sigue siendo consultable aunque fallen estas listas
@@ -554,6 +558,26 @@
                 </article>
             </li>`;
     }
+    function textoSeguidores(total) {
+        return `${total} ${total === 1 ? "seguidor" : "seguidores"}`;
+    }
+
+
+    function botonSeguir(desarrollador) {
+        if (esPublico) {
+            return `<button type="button" class="btn btn-primary align-self-start mt-1"
+                data-bs-toggle="modal" data-bs-target="#modalAccesoRequerido">Seguir</button>`;
+        }
+
+        if (!esJugador) return "";
+
+        const loSigo = siguiendo.has(desarrollador.id);
+
+        return `<button type="button" id="btnSeguir" data-id-desarrollador="${desarrollador.id}"
+            class="btn ${loSigo ? "btn-outline-secondary" : "btn-primary"} align-self-start mt-1"
+            aria-pressed="${loSigo}">${loSigo ? "Siguiendo ✓" : "Seguir"}</button>`;
+    }
+
 
     function perfilDesarrollador(desarrollador, juegos) {
         const total = desarrollador.total_videojuegos;
@@ -586,6 +610,8 @@
                         <span class="fila-meta">
                             ${total} ${total === 1 ? "videojuego publicado" : "videojuegos publicados"} · ${calificacion}
                         </span>
+                        <strong class="fila-meta" id="seguidoresDesarrollador">${textoSeguidores(desarrollador.seguidores)}</strong>
+                        ${botonSeguir(desarrollador)}
                     </div>
                 </div>
 
@@ -636,6 +662,35 @@
 
 
 
+    // Seguir o dejar de seguir al desarrollador abierto
+    modalDesarrollador.addEventListener("click", (event) => {
+        const boton = event.target.closest("#btnSeguir");
+
+        if (!boton) return;
+
+        const idDesarrollador = boton.dataset.idDesarrollador;
+        const loSigo = siguiendo.has(idDesarrollador);
+
+        boton.disabled = true;
+
+        pedir(`/api/desarrolladores/${idDesarrollador}/seguir`, { method: loSigo ? "DELETE" : "POST" })
+            .then((datos) => {
+                if (datos.siguiendo) siguiendo.add(idDesarrollador);
+                else siguiendo.delete(idDesarrollador);
+
+                // Cambiar el botón y el contador sin volver a cargar el perfil
+                boton.textContent = datos.siguiendo ? "Siguiendo ✓" : "Seguir";
+                boton.classList.toggle("btn-primary", !datos.siguiendo);
+                boton.classList.toggle("btn-outline-secondary", datos.siguiendo);
+                boton.setAttribute("aria-pressed", datos.siguiendo);
+
+                el("seguidoresDesarrollador").textContent = textoSeguidores(datos.seguidores);
+            })
+            .catch((error) => alert(error.message))
+            .finally(() => {
+                boton.disabled = false;
+            });
+    });
 
     // ---------- Reseñas ----------
 
