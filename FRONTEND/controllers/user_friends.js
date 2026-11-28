@@ -253,6 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Actualizar el botón sin recargar
                 boton.textContent = "Solicitud enviada";
+                mostrarAviso("Solicitud de amistad enviada");
                 boton.disabled = true;
 
                 // Actualizar las solicitudes enviadas y sus contadores
@@ -537,6 +538,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(() => {
                 bootstrap.Modal.getOrCreateInstance(modalEliminarAmigo).hide();
                 amistadAEliminar = null;
+                mostrarAviso("Amistad eliminada", "info");
 
                 cargarAmigos();
                 cargarJugadores();
@@ -578,6 +580,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(datos => {
                 aceptada = true;
+                mostrarAviso("¡Ahora son amigos!");
                 cargarSolicitudes();
                 cargarJugadores();
                 cargarAmigos();
@@ -626,6 +629,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Actualizar solicitudes, contadores y estados de búsqueda
                 cargarSolicitudes();
                 cargarJugadores();
+                mostrarAviso(esRechazo ? "Solicitud rechazada" : "Solicitud cancelada", "info");
             })
             .catch(error => {
                 bootstrap.Modal.getOrCreateInstance(elementoModal).hide();

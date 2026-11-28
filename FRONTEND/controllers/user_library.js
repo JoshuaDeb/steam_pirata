@@ -378,9 +378,11 @@
                 }
 
                 pintarTodo();
+                mostrarAviso(agregar ? "Agregado a favoritos" : "Quitado de favoritos", agregar ? "success" : "info");
             })
             .catch(() => {
                 casilla.checked = !agregar;
+                mostrarAviso("No se pudo actualizar favoritos. Intenta de nuevo.", "danger");
                 casilla.disabled = false;
             });
     });
@@ -506,10 +508,12 @@
     });
 
     // Borrar la reseña propia
-    el("btnBorrarResena").addEventListener("click", () => {
+        el("btnBorrarResena").addEventListener("click", async () => {
         const existente = misResenas.get(juegoResena.id);
 
-        if (!existente || !confirm("¿Seguro que quieres borrar tu reseña?")) return;
+                if (!existente) return;
+
+        if (!(await confirmar("Tu reseña se borrará para siempre.", { titulo: "¿Borrar tu reseña?", textoBoton: "Sí, borrar" }))) return;
 
         enviarResena(`/api/resenas/${existente.id}`, "DELETE", {}, "Reseña eliminada");
     });
@@ -519,6 +523,9 @@
 
     el("coleccionDe").textContent = `Colección de ${usuario.nombre_usuario}`;
     el("creditosBiblioteca").textContent = usuario.creditos;
+    document.querySelectorAll(".lottie-vacio").forEach((contenedor) => {
+        reproducirLottie(contenedor, "vacio", { loop: true });
+    });
 
     cargar();
 })();

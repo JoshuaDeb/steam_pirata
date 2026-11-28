@@ -550,12 +550,15 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-center">
                 <div class="modal-body d-flex flex-column align-items-center gap-3 pt-4">
+                <div id="lottieExito" class="d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;" aria-hidden="true">
                     <div class="icono-exito" aria-hidden="true">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="3">
                             <path d="M5 12l5 5 9-10"></path>
                         </svg>
                     </div>
+                    </div>
+
                     <h2 class="modal-title" id="modalExitoTitulo">¡Compra realizada!</h2>
                     <p class="text-body-secondary mb-0">
                         Se agregaron <strong><span id="creditosAgregados"></span> créditos</strong> a tu cuenta.
@@ -604,6 +607,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
     <script src="../controllers/user_profile.js"></script>
     <script src="../controllers/foto_perfil.js"></script>
     <script src="../controllers/mis_resenas.js"></script>

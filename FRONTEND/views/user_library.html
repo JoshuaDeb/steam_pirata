@@ -174,14 +174,17 @@
                     </div>
                 </div>
                 <p aria-live="polite" class="cuenta-resultados" id="resultadosBiblioteca">
+                    <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
                     Cargando…
                 </p>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 grilla-juegos" id="listaBiblioteca">
                 </div>
                 <div class="vacio" hidden="" id="sinBiblioteca">
+                <div class="lottie-vacio mx-auto" style="width: 120px; height: 120px;" aria-hidden="true">
                     <span aria-hidden="true" class="icono-vacio">
                         :/
                     </span>
+                    </div>
                     <strong>
                         No encontramos videojuegos
                     </strong>
@@ -229,14 +232,17 @@
                     </div>
                 </div>
                 <p aria-live="polite" class="cuenta-resultados" id="resultadosFavoritos">
+                    <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
                     Cargando…
                 </p>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 grilla-juegos" id="listaFavoritos">
                 </div>
                 <div class="vacio" hidden="" id="sinFavoritos">
+                <div class="lottie-vacio mx-auto" style="width: 120px; height: 120px;" aria-hidden="true">
                     <span aria-hidden="true" class="icono-vacio">
                         ♡
                     </span>
+                 </div>
                     <strong>No hay favoritos que mostrar</strong>
                     <p class="mb-3">
                         Guarda juegos desde el catálogo para encontrarlos aquí.
@@ -358,6 +364,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
     <script src="../controllers/user_library.js"></script>
 </body>
 

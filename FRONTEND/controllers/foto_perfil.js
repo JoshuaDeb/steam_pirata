@@ -111,6 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         mostrarMensaje("Subiendo foto...", "secondary");
+        mensaje.insertAdjacentHTML("afterbegin", '<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>');
 
         reducirImagen(archivo)
             .then((foto) => enviarFoto("PATCH", foto))
@@ -118,8 +119,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Eliminar la foto
-    btnEliminar.addEventListener("click", () => {
-        if (!confirm("¿Seguro que quieres eliminar tu foto de perfil?")) return;
+        btnEliminar.addEventListener("click", async () => {
+                if (!(await confirmar("Volverán a mostrarse tus iniciales en lugar de la foto.", { titulo: "¿Eliminar tu foto de perfil?", textoBoton: "Sí, eliminar" }))) return;
 
         btnEliminar.disabled = true;
 

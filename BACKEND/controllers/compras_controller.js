@@ -249,7 +249,16 @@ async function estadoSesion(req, res) {
             });
         }
 
-        const acreditada = (jugador.atributos.compras || []).some(compra => compra.stripe_session_id === sessionId);
+                let acreditada = (jugador.atributos.compras || []).some(compra => compra.stripe_session_id === sessionId);
+
+        if (!acreditada && sesion.payment_status === "paid") {
+            await acreditarCompra(sesion);
+
+            const actualizado = await Jugador.findById(req.usuario.id).select("creditos atributos.compras").lean();
+
+            acreditada = (actualizado.atributos.compras || []).some(compra => compra.stripe_session_id === sessionId);
+            jugador.creditos = actualizado.creditos;
+        }
 
         let estado;
 

@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const paquete = paqueteElegido();
 
         if (!paquete) {
-            alert("Elige un paquete de créditos");
+            mostrarAviso("Elige un paquete de créditos", "danger");
             return;
         }
 
@@ -135,16 +135,29 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((response) => response.json().then((datos) => {
                 if (!response.ok) throw new Error(datos.message);
 
-                // Ir a la página de pago segura de Stripe
+
                 window.location.href = datos.url;
             }))
             .catch((error) => {
-                alert(error.message || "No se pudo iniciar el pago");
-                btnPagar.disabled = false;
-                btnPagar.textContent = "Pagar con Stripe";
+                mostrarAviso(error.message || "No se pudo iniciar el pago", "danger");
+                reiniciarBotonPago();
             });
     });
 
+    
+
+    function reiniciarBotonPago() {
+        btnPagar.disabled = false;
+        btnPagar.textContent = "Pagar con Stripe";
+    }
+
+
+    window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+            reiniciarBotonPago();
+            refrescarSaldo();
+        }
+    });
 
     // ---------- Resultado al volver de Stripe ----------
 
@@ -164,6 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     cargarHistorial();
                     el("creditosAgregados").textContent = datos.creditos;
                     bootstrap.Modal.getOrCreateInstance(el("modalCompraExitosa")).show();
+                    reproducirLottie(el("lottieExito"), "exito");
                 } else if (datos.estado === "procesando" && intento < 10) {
                     // El webhook puede tardar unos segundos: volver a preguntar
                     setTimeout(() => verificarPago(sessionId, intento + 1), 1500);

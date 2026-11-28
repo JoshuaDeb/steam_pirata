@@ -160,6 +160,12 @@
             filtros.q || filtros.genero || filtros.clasificacion || filtros.precio_max || filtros.calificacion_min
         );
 
+
+    
+        el("resumenResultados").textContent = "Cargando catálogo…";
+        listaJuegos.innerHTML = `<li class="col-12 w-100">${htmlCargando("Cargando catálogo…")}</li>`;
+
+
         return apiFetch(`/api/videojuegos?${params}`, { credentials: "same-origin" })
             .then((response) => {
                 return response.json().catch(() => ({})).then((datos) => {
@@ -181,7 +187,7 @@
                 el("paginacionCatalogo").hidden = true;
 
                 listaJuegos.innerHTML = `
-                    <li class="col-12">
+                    <li class="col-12 w-100">
                         <div class="alert alert-danger mb-0" role="alert">${escapar(error.message)}</div>
                     </li>`;
             });
@@ -198,11 +204,13 @@
             el("paginacionCatalogo").hidden = true;
 
             listaJuegos.innerHTML = `
-                <li class="col-12 fila-meta text-center py-5">
+                <li class="col-12 w-100 fila-meta text-center py-5">
+                <div class="lottie-vacio mx-auto mb-2" style="width: 140px; height: 140px;" aria-hidden="true"></div>
                     ${hayFiltros
                     ? "Ningún videojuego coincide con tu búsqueda."
                     : "Todavía no hay videojuegos publicados."}
                 </li>`;
+                reproducirLottie(listaJuegos.querySelector(".lottie-vacio"), "vacio", { loop: true });
             return;
         }
 
@@ -468,10 +476,11 @@
             .then(() => {
                 if (agregar) enFavoritos.add(idJuego);
                 else enFavoritos.delete(idJuego);
+                mostrarAviso(agregar ? "Agregado a favoritos" : "Quitado de favoritos", agregar ? "success" : "info");
             })
             .catch(() => {
-                // Revertir la casilla si el servidor no guardó el cambio
                 casilla.checked = !agregar;
+                mostrarAviso("No se pudo actualizar favoritos. Intenta de nuevo.", "danger");
             })
             .finally(() => {
                 casilla.disabled = false;
@@ -507,6 +516,7 @@
                     el("toastExitoTexto").textContent =
                         `¡Listo! "${juego.titulo}" se agregó a tu biblioteca. Te quedan ${datos.user.creditos} créditos.`;
                     bootstrap.Toast.getOrCreateInstance(el("toastExito")).show();
+                    celebrar();
 
                 })
                 .catch((error) => {
@@ -672,10 +682,11 @@
         const idDesarrollador = boton.dataset.idDesarrollador;
         const loSigo = siguiendo.has(idDesarrollador);
 
-        boton.disabled = true;
+        botonCargando(boton, true, loSigo ? "Dejando de seguir…" : "Siguiendo…");
 
         pedir(`/api/desarrolladores/${idDesarrollador}/seguir`, { method: loSigo ? "DELETE" : "POST" })
             .then((datos) => {
+                 botonCargando(boton, false);
                 if (datos.siguiendo) siguiendo.add(idDesarrollador);
                 else siguiendo.delete(idDesarrollador);
 
@@ -687,9 +698,9 @@
 
                 el("seguidoresDesarrollador").textContent = textoSeguidores(datos.seguidores);
             })
-            .catch((error) => alert(error.message))
+            .catch((error) => mostrarAviso(error.message, "danger"))
             .finally(() => {
-                boton.disabled = false;
+                botonCargando(boton, false);
             });
     });
 
@@ -857,10 +868,10 @@
     });
 
     // Borrar la reseña
-    modalJuego.addEventListener("click", (event) => {
+        modalJuego.addEventListener("click", async (event) => {
         if (event.target.id !== "btnBorrarResena") return;
 
-        if (!confirm("¿Seguro que quieres borrar tu reseña?")) return;
+            if (!(await confirmar("Tu reseña se borrará para siempre.", { titulo: "¿Borrar tu reseña?", textoBoton: "Sí, borrar" }))) return;
 
         enviarResena(`/api/resenas/${miResena.id}`, "DELETE", {}, "Reseña eliminada");
     });
@@ -882,7 +893,7 @@
                 origen.dataset.juegoId = datos.videojuego.id;
                 bootstrap.Modal.getOrCreateInstance(modalJuego).show(origen);
             })
-            .catch((error) => alert(error.message));
+            .catch((error) => mostrarAviso(error.message, "danger"));
     }
 
     // ---------- Inicio ----------

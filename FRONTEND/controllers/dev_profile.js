@@ -174,7 +174,7 @@
         const error = form.querySelector("[data-error]");
 
         error.classList.add("d-none");
-        boton.disabled = true;
+        botonCargando(boton, true, "Guardando…");
 
         peticion()
             .then(alTerminar)
@@ -183,7 +183,7 @@
                 error.classList.remove("d-none");
             })
             .finally(() => {
-                boton.disabled = false;
+                botonCargando(boton, false);
             });
     }
 
@@ -679,7 +679,7 @@
         const boton = event.currentTarget;
         const juego = juegoPorRetirar;
 
-        boton.disabled = true;
+        botonCargando(boton, true, "Retirando…");
 
         api(`/api/videojuegos/${juego.id}`, "DELETE")
             .then(() => {
@@ -692,7 +692,7 @@
                 el("errorRetirar").classList.remove("d-none");
             })
             .finally(() => {
-                boton.disabled = false;
+                botonCargando(boton, false);
             });
     });
 
@@ -755,7 +755,7 @@
         const boton = event.currentTarget;
         const dlc = dlcPorEliminar;
 
-        boton.disabled = true;
+        botonCargando(boton, true, "Eliminando…");
 
         api(`/api/dlcs/${dlc.id}`, "DELETE")
             .then(() => {
@@ -768,7 +768,7 @@
                 el("errorEliminarDlc").classList.remove("d-none");
             })
             .finally(() => {
-                boton.disabled = false;
+                botonCargando(boton, false);
             });
     });
 

@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    lista.addEventListener("click", (event) => {
+       lista.addEventListener("click", async (event) => {
         const tarjeta = event.target.closest("[data-id]");
 
         if (!tarjeta) return;
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (event.target.classList.contains("btn-borrar")) {
-            if (!confirm("¿Seguro que quieres borrar esta reseña?")) return;
+                        if (!(await confirmar("Tu reseña se borrará para siempre.", { titulo: "¿Borrar esta reseña?", textoBoton: "Sí, borrar" }))) return;
 
             apiFetch(`/api/resenas/${id}`, {
                 method: "DELETE"
